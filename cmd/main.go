@@ -1,7 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 func main() {
-	fmt.Println("Hello, world.")
+	r := gin.Default()
+	fmt.Println(r)
+
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
+	})
+
+	r.Run()
+
+
+
+
 }
