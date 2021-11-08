@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"github.com/tingpo/pupgobackend/internal/handler"
 	"net/http"
 )
 
@@ -18,12 +19,15 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
+	server := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
+	server.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
 	})
 
-	r.Run(viper.GetString("server.address"))
+	server.GET("/playground", handler.PlaygroundHandler())
+	server.POST("/query", handler.GraphQLHandler())
+
+	server.Run(viper.GetString("server.address"))
 
 }
