@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -43,32 +44,275 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Coordinate struct {
+		IsBlur    func(childComplexity int) int
+		Latitude  func(childComplexity int) int
+		Longitude func(childComplexity int) int
+	}
+
+	Event struct {
+		Description       func(childComplexity int) int
+		Holder            func(childComplexity int) int
+		ID                func(childComplexity int) int
+		Image             func(childComplexity int) int
+		Limit             func(childComplexity int) int
+		Location          func(childComplexity int) int
+		Participants      func(childComplexity int) int
+		ParticipantsHuman func(childComplexity int) int
+		TimeRange         func(childComplexity int) int
+	}
+
+	EventRequest struct {
+		Description func(childComplexity int) int
+		Eventid     func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Requester   func(childComplexity int) int
+	}
+
+	EventsCreatePayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	EventsJoinPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	EventsLimits struct {
+		LimitOfDog   func(childComplexity int) int
+		LimitOfHuman func(childComplexity int) int
+	}
+
+	EventsListGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	FriendRemovePayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	FriendsListGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	Location struct {
+		Address func(childComplexity int) int
+		City    func(childComplexity int) int
+		Coor    func(childComplexity int) int
+		Country func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateTodo func(childComplexity int, input model.NewTodo) int
+		EventsCreate                func(childComplexity int, eventsCreateInput model.EventsCreateInput) int
+		EventsJoin                  func(childComplexity int, eventsJoinInput model.EventsJoinInput) int
+		FriendRemove                func(childComplexity int, friendRemoveInput model.FriendRemoveInput) int
+		NotificationRemove          func(childComplexity int, notificationRemoveInput model.NotificationRemoveInput) int
+		PetCreate                   func(childComplexity int, petCreateInput model.PetCreateInput) int
+		PetDelete                   func(childComplexity int, petDeleteInput model.PetDeleteInput) int
+		PetProfileUpdates           func(childComplexity int, petProfileUpdatesInput model.PetProfileUpdatesInput) int
+		RecommendationResponse      func(childComplexity int, recommendationResponseInput model.RecommendationResponseInput) int
+		UpdatesNotificationSettings func(childComplexity int, updatesNotificationSettingsInput model.UpdatesNotificationSettingsInput) int
+		UserCreateByID              func(childComplexity int, userCreateByIDInput model.UserCreateByIDInput) int
+	}
+
+	NotifiactionsGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	Notification struct {
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Time        func(childComplexity int) int
+		Title       func(childComplexity int) int
+	}
+
+	NotificationRemovePayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	NotificationSetting struct {
+		AllowedNotificationWhenEventsStatusChanged     func(childComplexity int) int
+		AllowedNotificationWhenEventsWillStartIn30Mins func(childComplexity int) int
+		AllowedNotificationWhenNewEventsFromFriends    func(childComplexity int) int
+	}
+
+	Pet struct {
+		EventList       func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Owner           func(childComplexity int) int
+		PetProfile      func(childComplexity int) int
+		PetRelationShip func(childComplexity int) int
+	}
+
+	PetConnection struct {
+		FriendList func(childComplexity int) int
+	}
+
+	PetCreatePayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	PetDeletePayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	PetOwner struct {
+		PetLists func(childComplexity int) int
+		User     func(childComplexity int) int
+	}
+
+	PetProfile struct {
+		Birthday     func(childComplexity int) int
+		Breed        func(childComplexity int) int
+		Gender       func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Image        func(childComplexity int) int
+		IsCastration func(childComplexity int) int
+		Location     func(childComplexity int) int
+		Name         func(childComplexity int) int
+	}
+
+	PetProfileListGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	PetProfileUpdatesPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	PetRecommned struct {
+		Recommend func(childComplexity int) int
+	}
+
+	PetRelationship struct {
+		Connection func(childComplexity int) int
+		Parentpet  func(childComplexity int) int
+		Recommend  func(childComplexity int) int
+	}
+
+	ProfileListGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
 	}
 
 	Query struct {
-		Todos func(childComplexity int) int
+		EventsListGet      func(childComplexity int, eventsListGetInput model.EventsListGetInput) int
+		FriendsListGet     func(childComplexity int, friendsListGetInput model.FriendsListGetInput) int
+		NotifiactionsGet   func(childComplexity int, notifiactionsGetInput model.NotifiactionsGetInput) int
+		PetProfileListGet  func(childComplexity int, petProfileListGetInput model.PetProfileListGetInput) int
+		ProfileListGet     func(childComplexity int, profileListGetInput model.ProfileListGetInput) int
+		RecommendationGet  func(childComplexity int, recommendationGetInput model.RecommendationGetInput) int
+		UserProfileListGet func(childComplexity int, userProfileListGetInput model.UserProfileListGetInput) int
 	}
 
-	Todo struct {
-		Done func(childComplexity int) int
-		ID   func(childComplexity int) int
-		Text func(childComplexity int) int
-		User func(childComplexity int) int
+	Recommendation struct {
+		ID     func(childComplexity int) int
+		Pet    func(childComplexity int) int
+		Status func(childComplexity int) int
+	}
+
+	RecommendationGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	RecommendationResponsePayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	TimeRange struct {
+		EndTime   func(childComplexity int) int
+		StartTime func(childComplexity int) int
+	}
+
+	UpdatesNotificationSettings struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
 	}
 
 	User struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+		Cooldown            func(childComplexity int) int
+		CreatedTime         func(childComplexity int) int
+		Email               func(childComplexity int) int
+		EventList           func(childComplexity int) int
+		ID                  func(childComplexity int) int
+		NotificationSetting func(childComplexity int) int
+		PetOwner            func(childComplexity int) int
+		UserProfile         func(childComplexity int) int
+	}
+
+	UserCreateByIDPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	UserNotification struct {
+		NotificationList func(childComplexity int) int
+	}
+
+	UserProfile struct {
+		Age      func(childComplexity int) int
+		Email    func(childComplexity int) int
+		Gender   func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Location func(childComplexity int) int
+		Name     func(childComplexity int) int
+	}
+
+	UserProfileListGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
-	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
+	UserCreateByID(ctx context.Context, userCreateByIDInput model.UserCreateByIDInput) (*model.UserCreateByIDPayload, error)
+	EventsCreate(ctx context.Context, eventsCreateInput model.EventsCreateInput) (*model.EventsCreatePayload, error)
+	EventsJoin(ctx context.Context, eventsJoinInput model.EventsJoinInput) (*model.EventsJoinPayload, error)
+	NotificationRemove(ctx context.Context, notificationRemoveInput model.NotificationRemoveInput) (*model.NotificationRemovePayload, error)
+	RecommendationResponse(ctx context.Context, recommendationResponseInput model.RecommendationResponseInput) (*model.RecommendationResponsePayload, error)
+	FriendRemove(ctx context.Context, friendRemoveInput model.FriendRemoveInput) (*model.FriendRemovePayload, error)
+	PetProfileUpdates(ctx context.Context, petProfileUpdatesInput model.PetProfileUpdatesInput) (*model.PetProfileUpdatesPayload, error)
+	PetCreate(ctx context.Context, petCreateInput model.PetCreateInput) (*model.PetCreatePayload, error)
+	PetDelete(ctx context.Context, petDeleteInput model.PetDeleteInput) (*model.PetDeletePayload, error)
+	UpdatesNotificationSettings(ctx context.Context, updatesNotificationSettingsInput model.UpdatesNotificationSettingsInput) (*model.UpdatesNotificationSettings, error)
 }
 type QueryResolver interface {
-	Todos(ctx context.Context) ([]*model.Todo, error)
+	EventsListGet(ctx context.Context, eventsListGetInput model.EventsListGetInput) (*model.EventsListGetPayload, error)
+	NotifiactionsGet(ctx context.Context, notifiactionsGetInput model.NotifiactionsGetInput) (*model.NotifiactionsGetPayload, error)
+	RecommendationGet(ctx context.Context, recommendationGetInput model.RecommendationGetInput) (*model.RecommendationGetPayload, error)
+	FriendsListGet(ctx context.Context, friendsListGetInput model.FriendsListGetInput) (*model.FriendsListGetPayload, error)
+	PetProfileListGet(ctx context.Context, petProfileListGetInput model.PetProfileListGetInput) (*model.PetProfileListGetPayload, error)
+	UserProfileListGet(ctx context.Context, userProfileListGetInput model.UserProfileListGetInput) (*model.UserProfileListGetPayload, error)
+	ProfileListGet(ctx context.Context, profileListGetInput model.ProfileListGetInput) (*model.ProfileListGetPayload, error)
 }
 
 type executableSchema struct {
@@ -86,52 +330,930 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Mutation.createTodo":
-		if e.complexity.Mutation.CreateTodo == nil {
+	case "Coordinate.isBlur":
+		if e.complexity.Coordinate.IsBlur == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createTodo_args(context.TODO(), rawArgs)
+		return e.complexity.Coordinate.IsBlur(childComplexity), true
+
+	case "Coordinate.latitude":
+		if e.complexity.Coordinate.Latitude == nil {
+			break
+		}
+
+		return e.complexity.Coordinate.Latitude(childComplexity), true
+
+	case "Coordinate.longitude":
+		if e.complexity.Coordinate.Longitude == nil {
+			break
+		}
+
+		return e.complexity.Coordinate.Longitude(childComplexity), true
+
+	case "Event.description":
+		if e.complexity.Event.Description == nil {
+			break
+		}
+
+		return e.complexity.Event.Description(childComplexity), true
+
+	case "Event.holder":
+		if e.complexity.Event.Holder == nil {
+			break
+		}
+
+		return e.complexity.Event.Holder(childComplexity), true
+
+	case "Event.id":
+		if e.complexity.Event.ID == nil {
+			break
+		}
+
+		return e.complexity.Event.ID(childComplexity), true
+
+	case "Event.image":
+		if e.complexity.Event.Image == nil {
+			break
+		}
+
+		return e.complexity.Event.Image(childComplexity), true
+
+	case "Event.limit":
+		if e.complexity.Event.Limit == nil {
+			break
+		}
+
+		return e.complexity.Event.Limit(childComplexity), true
+
+	case "Event.location":
+		if e.complexity.Event.Location == nil {
+			break
+		}
+
+		return e.complexity.Event.Location(childComplexity), true
+
+	case "Event.participants":
+		if e.complexity.Event.Participants == nil {
+			break
+		}
+
+		return e.complexity.Event.Participants(childComplexity), true
+
+	case "Event.participantsHuman":
+		if e.complexity.Event.ParticipantsHuman == nil {
+			break
+		}
+
+		return e.complexity.Event.ParticipantsHuman(childComplexity), true
+
+	case "Event.timeRange":
+		if e.complexity.Event.TimeRange == nil {
+			break
+		}
+
+		return e.complexity.Event.TimeRange(childComplexity), true
+
+	case "EventRequest.description":
+		if e.complexity.EventRequest.Description == nil {
+			break
+		}
+
+		return e.complexity.EventRequest.Description(childComplexity), true
+
+	case "EventRequest.eventid":
+		if e.complexity.EventRequest.Eventid == nil {
+			break
+		}
+
+		return e.complexity.EventRequest.Eventid(childComplexity), true
+
+	case "EventRequest.id":
+		if e.complexity.EventRequest.ID == nil {
+			break
+		}
+
+		return e.complexity.EventRequest.ID(childComplexity), true
+
+	case "EventRequest.requester":
+		if e.complexity.EventRequest.Requester == nil {
+			break
+		}
+
+		return e.complexity.EventRequest.Requester(childComplexity), true
+
+	case "EventsCreatePayload.error":
+		if e.complexity.EventsCreatePayload.Error == nil {
+			break
+		}
+
+		return e.complexity.EventsCreatePayload.Error(childComplexity), true
+
+	case "EventsCreatePayload.result":
+		if e.complexity.EventsCreatePayload.Result == nil {
+			break
+		}
+
+		return e.complexity.EventsCreatePayload.Result(childComplexity), true
+
+	case "EventsCreatePayload.timestamp":
+		if e.complexity.EventsCreatePayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.EventsCreatePayload.Timestamp(childComplexity), true
+
+	case "EventsJoinPayload.error":
+		if e.complexity.EventsJoinPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.EventsJoinPayload.Error(childComplexity), true
+
+	case "EventsJoinPayload.result":
+		if e.complexity.EventsJoinPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.EventsJoinPayload.Result(childComplexity), true
+
+	case "EventsJoinPayload.timestamp":
+		if e.complexity.EventsJoinPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.EventsJoinPayload.Timestamp(childComplexity), true
+
+	case "EventsLimits.limitOfDog":
+		if e.complexity.EventsLimits.LimitOfDog == nil {
+			break
+		}
+
+		return e.complexity.EventsLimits.LimitOfDog(childComplexity), true
+
+	case "EventsLimits.limitOfHuman":
+		if e.complexity.EventsLimits.LimitOfHuman == nil {
+			break
+		}
+
+		return e.complexity.EventsLimits.LimitOfHuman(childComplexity), true
+
+	case "EventsListGetPayload.error":
+		if e.complexity.EventsListGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.EventsListGetPayload.Error(childComplexity), true
+
+	case "EventsListGetPayload.result":
+		if e.complexity.EventsListGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.EventsListGetPayload.Result(childComplexity), true
+
+	case "EventsListGetPayload.timestamp":
+		if e.complexity.EventsListGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.EventsListGetPayload.Timestamp(childComplexity), true
+
+	case "FriendRemovePayload.error":
+		if e.complexity.FriendRemovePayload.Error == nil {
+			break
+		}
+
+		return e.complexity.FriendRemovePayload.Error(childComplexity), true
+
+	case "FriendRemovePayload.result":
+		if e.complexity.FriendRemovePayload.Result == nil {
+			break
+		}
+
+		return e.complexity.FriendRemovePayload.Result(childComplexity), true
+
+	case "FriendRemovePayload.timestamp":
+		if e.complexity.FriendRemovePayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.FriendRemovePayload.Timestamp(childComplexity), true
+
+	case "FriendsListGetPayload.error":
+		if e.complexity.FriendsListGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.FriendsListGetPayload.Error(childComplexity), true
+
+	case "FriendsListGetPayload.result":
+		if e.complexity.FriendsListGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.FriendsListGetPayload.Result(childComplexity), true
+
+	case "FriendsListGetPayload.timestamp":
+		if e.complexity.FriendsListGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.FriendsListGetPayload.Timestamp(childComplexity), true
+
+	case "Location.address":
+		if e.complexity.Location.Address == nil {
+			break
+		}
+
+		return e.complexity.Location.Address(childComplexity), true
+
+	case "Location.city":
+		if e.complexity.Location.City == nil {
+			break
+		}
+
+		return e.complexity.Location.City(childComplexity), true
+
+	case "Location.coor":
+		if e.complexity.Location.Coor == nil {
+			break
+		}
+
+		return e.complexity.Location.Coor(childComplexity), true
+
+	case "Location.country":
+		if e.complexity.Location.Country == nil {
+			break
+		}
+
+		return e.complexity.Location.Country(childComplexity), true
+
+	case "Mutation.eventsCreate":
+		if e.complexity.Mutation.EventsCreate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_eventsCreate_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
+		return e.complexity.Mutation.EventsCreate(childComplexity, args["eventsCreateInput"].(model.EventsCreateInput)), true
 
-	case "Query.todos":
-		if e.complexity.Query.Todos == nil {
+	case "Mutation.eventsJoin":
+		if e.complexity.Mutation.EventsJoin == nil {
 			break
 		}
 
-		return e.complexity.Query.Todos(childComplexity), true
+		args, err := ec.field_Mutation_eventsJoin_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
 
-	case "Todo.done":
-		if e.complexity.Todo.Done == nil {
+		return e.complexity.Mutation.EventsJoin(childComplexity, args["eventsJoinInput"].(model.EventsJoinInput)), true
+
+	case "Mutation.friendRemove":
+		if e.complexity.Mutation.FriendRemove == nil {
 			break
 		}
 
-		return e.complexity.Todo.Done(childComplexity), true
+		args, err := ec.field_Mutation_friendRemove_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
 
-	case "Todo.id":
-		if e.complexity.Todo.ID == nil {
+		return e.complexity.Mutation.FriendRemove(childComplexity, args["friendRemoveInput"].(model.FriendRemoveInput)), true
+
+	case "Mutation.notificationRemove":
+		if e.complexity.Mutation.NotificationRemove == nil {
 			break
 		}
 
-		return e.complexity.Todo.ID(childComplexity), true
+		args, err := ec.field_Mutation_notificationRemove_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
 
-	case "Todo.text":
-		if e.complexity.Todo.Text == nil {
+		return e.complexity.Mutation.NotificationRemove(childComplexity, args["notificationRemoveInput"].(model.NotificationRemoveInput)), true
+
+	case "Mutation.petCreate":
+		if e.complexity.Mutation.PetCreate == nil {
 			break
 		}
 
-		return e.complexity.Todo.Text(childComplexity), true
+		args, err := ec.field_Mutation_petCreate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
 
-	case "Todo.user":
-		if e.complexity.Todo.User == nil {
+		return e.complexity.Mutation.PetCreate(childComplexity, args["petCreateInput"].(model.PetCreateInput)), true
+
+	case "Mutation.petDelete":
+		if e.complexity.Mutation.PetDelete == nil {
 			break
 		}
 
-		return e.complexity.Todo.User(childComplexity), true
+		args, err := ec.field_Mutation_petDelete_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.PetDelete(childComplexity, args["petDeleteInput"].(model.PetDeleteInput)), true
+
+	case "Mutation.petProfileUpdates":
+		if e.complexity.Mutation.PetProfileUpdates == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_petProfileUpdates_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.PetProfileUpdates(childComplexity, args["petProfileUpdatesInput"].(model.PetProfileUpdatesInput)), true
+
+	case "Mutation.recommendationResponse":
+		if e.complexity.Mutation.RecommendationResponse == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_recommendationResponse_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RecommendationResponse(childComplexity, args["recommendationResponseInput"].(model.RecommendationResponseInput)), true
+
+	case "Mutation.updatesNotificationSettings":
+		if e.complexity.Mutation.UpdatesNotificationSettings == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updatesNotificationSettings_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdatesNotificationSettings(childComplexity, args["updatesNotificationSettingsInput"].(model.UpdatesNotificationSettingsInput)), true
+
+	case "Mutation.userCreateByID":
+		if e.complexity.Mutation.UserCreateByID == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_userCreateByID_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UserCreateByID(childComplexity, args["userCreateByIDInput"].(model.UserCreateByIDInput)), true
+
+	case "NotifiactionsGetPayload.error":
+		if e.complexity.NotifiactionsGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.NotifiactionsGetPayload.Error(childComplexity), true
+
+	case "NotifiactionsGetPayload.result":
+		if e.complexity.NotifiactionsGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.NotifiactionsGetPayload.Result(childComplexity), true
+
+	case "NotifiactionsGetPayload.timestamp":
+		if e.complexity.NotifiactionsGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.NotifiactionsGetPayload.Timestamp(childComplexity), true
+
+	case "Notification.description":
+		if e.complexity.Notification.Description == nil {
+			break
+		}
+
+		return e.complexity.Notification.Description(childComplexity), true
+
+	case "Notification.id":
+		if e.complexity.Notification.ID == nil {
+			break
+		}
+
+		return e.complexity.Notification.ID(childComplexity), true
+
+	case "Notification.time":
+		if e.complexity.Notification.Time == nil {
+			break
+		}
+
+		return e.complexity.Notification.Time(childComplexity), true
+
+	case "Notification.title":
+		if e.complexity.Notification.Title == nil {
+			break
+		}
+
+		return e.complexity.Notification.Title(childComplexity), true
+
+	case "NotificationRemovePayload.error":
+		if e.complexity.NotificationRemovePayload.Error == nil {
+			break
+		}
+
+		return e.complexity.NotificationRemovePayload.Error(childComplexity), true
+
+	case "NotificationRemovePayload.result":
+		if e.complexity.NotificationRemovePayload.Result == nil {
+			break
+		}
+
+		return e.complexity.NotificationRemovePayload.Result(childComplexity), true
+
+	case "NotificationRemovePayload.timestamp":
+		if e.complexity.NotificationRemovePayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.NotificationRemovePayload.Timestamp(childComplexity), true
+
+	case "NotificationSetting.allowedNotificationWhenEventsStatusChanged":
+		if e.complexity.NotificationSetting.AllowedNotificationWhenEventsStatusChanged == nil {
+			break
+		}
+
+		return e.complexity.NotificationSetting.AllowedNotificationWhenEventsStatusChanged(childComplexity), true
+
+	case "NotificationSetting.allowedNotificationWhenEventsWillStartIn30Mins":
+		if e.complexity.NotificationSetting.AllowedNotificationWhenEventsWillStartIn30Mins == nil {
+			break
+		}
+
+		return e.complexity.NotificationSetting.AllowedNotificationWhenEventsWillStartIn30Mins(childComplexity), true
+
+	case "NotificationSetting.allowedNotificationWhenNewEventsFromFriends":
+		if e.complexity.NotificationSetting.AllowedNotificationWhenNewEventsFromFriends == nil {
+			break
+		}
+
+		return e.complexity.NotificationSetting.AllowedNotificationWhenNewEventsFromFriends(childComplexity), true
+
+	case "Pet.eventList":
+		if e.complexity.Pet.EventList == nil {
+			break
+		}
+
+		return e.complexity.Pet.EventList(childComplexity), true
+
+	case "Pet.id":
+		if e.complexity.Pet.ID == nil {
+			break
+		}
+
+		return e.complexity.Pet.ID(childComplexity), true
+
+	case "Pet.owner":
+		if e.complexity.Pet.Owner == nil {
+			break
+		}
+
+		return e.complexity.Pet.Owner(childComplexity), true
+
+	case "Pet.petProfile":
+		if e.complexity.Pet.PetProfile == nil {
+			break
+		}
+
+		return e.complexity.Pet.PetProfile(childComplexity), true
+
+	case "Pet.petRelationShip":
+		if e.complexity.Pet.PetRelationShip == nil {
+			break
+		}
+
+		return e.complexity.Pet.PetRelationShip(childComplexity), true
+
+	case "PetConnection.friendList":
+		if e.complexity.PetConnection.FriendList == nil {
+			break
+		}
+
+		return e.complexity.PetConnection.FriendList(childComplexity), true
+
+	case "PetCreatePayload.error":
+		if e.complexity.PetCreatePayload.Error == nil {
+			break
+		}
+
+		return e.complexity.PetCreatePayload.Error(childComplexity), true
+
+	case "PetCreatePayload.result":
+		if e.complexity.PetCreatePayload.Result == nil {
+			break
+		}
+
+		return e.complexity.PetCreatePayload.Result(childComplexity), true
+
+	case "PetCreatePayload.timestamp":
+		if e.complexity.PetCreatePayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.PetCreatePayload.Timestamp(childComplexity), true
+
+	case "PetDeletePayload.error":
+		if e.complexity.PetDeletePayload.Error == nil {
+			break
+		}
+
+		return e.complexity.PetDeletePayload.Error(childComplexity), true
+
+	case "PetDeletePayload.result":
+		if e.complexity.PetDeletePayload.Result == nil {
+			break
+		}
+
+		return e.complexity.PetDeletePayload.Result(childComplexity), true
+
+	case "PetDeletePayload.timestamp":
+		if e.complexity.PetDeletePayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.PetDeletePayload.Timestamp(childComplexity), true
+
+	case "PetOwner.petLists":
+		if e.complexity.PetOwner.PetLists == nil {
+			break
+		}
+
+		return e.complexity.PetOwner.PetLists(childComplexity), true
+
+	case "PetOwner.user":
+		if e.complexity.PetOwner.User == nil {
+			break
+		}
+
+		return e.complexity.PetOwner.User(childComplexity), true
+
+	case "PetProfile.birthday":
+		if e.complexity.PetProfile.Birthday == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Birthday(childComplexity), true
+
+	case "PetProfile.breed":
+		if e.complexity.PetProfile.Breed == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Breed(childComplexity), true
+
+	case "PetProfile.gender":
+		if e.complexity.PetProfile.Gender == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Gender(childComplexity), true
+
+	case "PetProfile.id":
+		if e.complexity.PetProfile.ID == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.ID(childComplexity), true
+
+	case "PetProfile.image":
+		if e.complexity.PetProfile.Image == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Image(childComplexity), true
+
+	case "PetProfile.isCastration":
+		if e.complexity.PetProfile.IsCastration == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.IsCastration(childComplexity), true
+
+	case "PetProfile.location":
+		if e.complexity.PetProfile.Location == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Location(childComplexity), true
+
+	case "PetProfile.name":
+		if e.complexity.PetProfile.Name == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Name(childComplexity), true
+
+	case "PetProfileListGetPayload.error":
+		if e.complexity.PetProfileListGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.PetProfileListGetPayload.Error(childComplexity), true
+
+	case "PetProfileListGetPayload.result":
+		if e.complexity.PetProfileListGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.PetProfileListGetPayload.Result(childComplexity), true
+
+	case "PetProfileListGetPayload.timestamp":
+		if e.complexity.PetProfileListGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.PetProfileListGetPayload.Timestamp(childComplexity), true
+
+	case "PetProfileUpdatesPayload.error":
+		if e.complexity.PetProfileUpdatesPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.PetProfileUpdatesPayload.Error(childComplexity), true
+
+	case "PetProfileUpdatesPayload.result":
+		if e.complexity.PetProfileUpdatesPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.PetProfileUpdatesPayload.Result(childComplexity), true
+
+	case "PetProfileUpdatesPayload.timestamp":
+		if e.complexity.PetProfileUpdatesPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.PetProfileUpdatesPayload.Timestamp(childComplexity), true
+
+	case "PetRecommned.recommend":
+		if e.complexity.PetRecommned.Recommend == nil {
+			break
+		}
+
+		return e.complexity.PetRecommned.Recommend(childComplexity), true
+
+	case "PetRelationship.connection":
+		if e.complexity.PetRelationship.Connection == nil {
+			break
+		}
+
+		return e.complexity.PetRelationship.Connection(childComplexity), true
+
+	case "PetRelationship.parentpet":
+		if e.complexity.PetRelationship.Parentpet == nil {
+			break
+		}
+
+		return e.complexity.PetRelationship.Parentpet(childComplexity), true
+
+	case "PetRelationship.recommend":
+		if e.complexity.PetRelationship.Recommend == nil {
+			break
+		}
+
+		return e.complexity.PetRelationship.Recommend(childComplexity), true
+
+	case "ProfileListGetPayload.error":
+		if e.complexity.ProfileListGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.ProfileListGetPayload.Error(childComplexity), true
+
+	case "ProfileListGetPayload.result":
+		if e.complexity.ProfileListGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.ProfileListGetPayload.Result(childComplexity), true
+
+	case "ProfileListGetPayload.timestamp":
+		if e.complexity.ProfileListGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.ProfileListGetPayload.Timestamp(childComplexity), true
+
+	case "Query.eventsListGet":
+		if e.complexity.Query.EventsListGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_eventsListGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.EventsListGet(childComplexity, args["eventsListGetInput"].(model.EventsListGetInput)), true
+
+	case "Query.friendsListGet":
+		if e.complexity.Query.FriendsListGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_friendsListGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FriendsListGet(childComplexity, args["friendsListGetInput"].(model.FriendsListGetInput)), true
+
+	case "Query.notifiactionsGet":
+		if e.complexity.Query.NotifiactionsGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_notifiactionsGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.NotifiactionsGet(childComplexity, args["notifiactionsGetInput"].(model.NotifiactionsGetInput)), true
+
+	case "Query.petProfileListGet":
+		if e.complexity.Query.PetProfileListGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_petProfileListGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.PetProfileListGet(childComplexity, args["petProfileListGetInput"].(model.PetProfileListGetInput)), true
+
+	case "Query.profileListGet":
+		if e.complexity.Query.ProfileListGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_profileListGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProfileListGet(childComplexity, args["profileListGetInput"].(model.ProfileListGetInput)), true
+
+	case "Query.recommendationGet":
+		if e.complexity.Query.RecommendationGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_recommendationGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.RecommendationGet(childComplexity, args["recommendationGetInput"].(model.RecommendationGetInput)), true
+
+	case "Query.userProfileListGet":
+		if e.complexity.Query.UserProfileListGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_userProfileListGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.UserProfileListGet(childComplexity, args["userProfileListGetInput"].(model.UserProfileListGetInput)), true
+
+	case "Recommendation.id":
+		if e.complexity.Recommendation.ID == nil {
+			break
+		}
+
+		return e.complexity.Recommendation.ID(childComplexity), true
+
+	case "Recommendation.pet":
+		if e.complexity.Recommendation.Pet == nil {
+			break
+		}
+
+		return e.complexity.Recommendation.Pet(childComplexity), true
+
+	case "Recommendation.status":
+		if e.complexity.Recommendation.Status == nil {
+			break
+		}
+
+		return e.complexity.Recommendation.Status(childComplexity), true
+
+	case "RecommendationGetPayload.error":
+		if e.complexity.RecommendationGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.RecommendationGetPayload.Error(childComplexity), true
+
+	case "RecommendationGetPayload.result":
+		if e.complexity.RecommendationGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.RecommendationGetPayload.Result(childComplexity), true
+
+	case "RecommendationGetPayload.timestamp":
+		if e.complexity.RecommendationGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.RecommendationGetPayload.Timestamp(childComplexity), true
+
+	case "RecommendationResponsePayload.error":
+		if e.complexity.RecommendationResponsePayload.Error == nil {
+			break
+		}
+
+		return e.complexity.RecommendationResponsePayload.Error(childComplexity), true
+
+	case "RecommendationResponsePayload.result":
+		if e.complexity.RecommendationResponsePayload.Result == nil {
+			break
+		}
+
+		return e.complexity.RecommendationResponsePayload.Result(childComplexity), true
+
+	case "RecommendationResponsePayload.timestamp":
+		if e.complexity.RecommendationResponsePayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.RecommendationResponsePayload.Timestamp(childComplexity), true
+
+	case "TimeRange.endTime":
+		if e.complexity.TimeRange.EndTime == nil {
+			break
+		}
+
+		return e.complexity.TimeRange.EndTime(childComplexity), true
+
+	case "TimeRange.startTime":
+		if e.complexity.TimeRange.StartTime == nil {
+			break
+		}
+
+		return e.complexity.TimeRange.StartTime(childComplexity), true
+
+	case "UpdatesNotificationSettings.error":
+		if e.complexity.UpdatesNotificationSettings.Error == nil {
+			break
+		}
+
+		return e.complexity.UpdatesNotificationSettings.Error(childComplexity), true
+
+	case "UpdatesNotificationSettings.result":
+		if e.complexity.UpdatesNotificationSettings.Result == nil {
+			break
+		}
+
+		return e.complexity.UpdatesNotificationSettings.Result(childComplexity), true
+
+	case "UpdatesNotificationSettings.timestamp":
+		if e.complexity.UpdatesNotificationSettings.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.UpdatesNotificationSettings.Timestamp(childComplexity), true
+
+	case "User.cooldown":
+		if e.complexity.User.Cooldown == nil {
+			break
+		}
+
+		return e.complexity.User.Cooldown(childComplexity), true
+
+	case "User.createdTime":
+		if e.complexity.User.CreatedTime == nil {
+			break
+		}
+
+		return e.complexity.User.CreatedTime(childComplexity), true
+
+	case "User.email":
+		if e.complexity.User.Email == nil {
+			break
+		}
+
+		return e.complexity.User.Email(childComplexity), true
+
+	case "User.eventList":
+		if e.complexity.User.EventList == nil {
+			break
+		}
+
+		return e.complexity.User.EventList(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -140,12 +1262,117 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.ID(childComplexity), true
 
-	case "User.name":
-		if e.complexity.User.Name == nil {
+	case "User.notificationSetting":
+		if e.complexity.User.NotificationSetting == nil {
 			break
 		}
 
-		return e.complexity.User.Name(childComplexity), true
+		return e.complexity.User.NotificationSetting(childComplexity), true
+
+	case "User.petOwner":
+		if e.complexity.User.PetOwner == nil {
+			break
+		}
+
+		return e.complexity.User.PetOwner(childComplexity), true
+
+	case "User.userProfile":
+		if e.complexity.User.UserProfile == nil {
+			break
+		}
+
+		return e.complexity.User.UserProfile(childComplexity), true
+
+	case "UserCreateByIDPayload.error":
+		if e.complexity.UserCreateByIDPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.UserCreateByIDPayload.Error(childComplexity), true
+
+	case "UserCreateByIDPayload.result":
+		if e.complexity.UserCreateByIDPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.UserCreateByIDPayload.Result(childComplexity), true
+
+	case "UserCreateByIDPayload.timestamp":
+		if e.complexity.UserCreateByIDPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.UserCreateByIDPayload.Timestamp(childComplexity), true
+
+	case "UserNotification.notificationList":
+		if e.complexity.UserNotification.NotificationList == nil {
+			break
+		}
+
+		return e.complexity.UserNotification.NotificationList(childComplexity), true
+
+	case "UserProfile.age":
+		if e.complexity.UserProfile.Age == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Age(childComplexity), true
+
+	case "UserProfile.email":
+		if e.complexity.UserProfile.Email == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Email(childComplexity), true
+
+	case "UserProfile.gender":
+		if e.complexity.UserProfile.Gender == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Gender(childComplexity), true
+
+	case "UserProfile.id":
+		if e.complexity.UserProfile.ID == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.ID(childComplexity), true
+
+	case "UserProfile.location":
+		if e.complexity.UserProfile.Location == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Location(childComplexity), true
+
+	case "UserProfile.name":
+		if e.complexity.UserProfile.Name == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Name(childComplexity), true
+
+	case "UserProfileListGetPayload.error":
+		if e.complexity.UserProfileListGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.UserProfileListGetPayload.Error(childComplexity), true
+
+	case "UserProfileListGetPayload.result":
+		if e.complexity.UserProfileListGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.UserProfileListGetPayload.Result(childComplexity), true
+
+	case "UserProfileListGetPayload.timestamp":
+		if e.complexity.UserProfileListGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.UserProfileListGetPayload.Timestamp(childComplexity), true
 
 	}
 	return 0, false
@@ -211,33 +1438,400 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "internal/graph/schema.graphqls", Input: `# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+	{Name: "internal/graph/mutation.graphqls", Input: `
+type Mutation{
+    "[testing] new a user with special id"
+    userCreateByID(userCreateByIDInput: UserCreateByIDInput!): UserCreateByIDPayload!
+    eventsCreate(eventsCreateInput: EventsCreateInput!): EventsCreatePayload!
+    eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
+    notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
+    recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
+    friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!
+    petProfileUpdates(petProfileUpdatesInput: PetProfileUpdatesInput!) : PetProfileUpdatesPayload!
+    petCreate(petCreateInput: PetCreateInput!): PetCreatePayload!
+    petDelete(petDeleteInput: PetDeleteInput!) :PetDeletePayload!
+    updatesNotificationSettings(updatesNotificationSettingsInput: UpdatesNotificationSettingsInput!) : UpdatesNotificationSettings!
+    #update user/dog profile for location
 }
 
+type UserCreateByIDPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: User
+}
+type EventsCreatePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Event
+}
+type EventsJoinPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: EventRequest
+}
+type NotificationRemovePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
+type RecommendationResponsePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    "If the other already accepts, return petprofile otherwise return null"
+    result: PetProfile
+}
+type FriendRemovePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
+type PetProfileUpdatesPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: PetProfile
+}
+type PetCreatePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: PetProfile
+}
+type PetDeletePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
+type UpdatesNotificationSettings implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: NotificationSetting
+}
+input UserCreateByIDInput{
+    id: ID!
+}
+input EventsCreateInput{
+    id: ID!
+    location: LocationInput
+    timeRange: TimeRangeInput
+    limit: EventsLimitsInput
+    image: URL
+    description: [String!]
+}
+input EventsJoinInput{
+    pid:ID!
+    eventID:ID!
+}
+input NotificationRemoveInput{
+    pid:ID!
+    notificationID:ID!
+}
+input RecommendationResponseInput{
+    rid:ID!
+    result:Boolean!
+}
+
+input FriendRemoveInput{
+    petID:ID!
+    friendID:ID!
+}
+
+input PetProfileUpdatesInput{
+    id: ID!
+    name: String
+    image: URL
+    "only two"
+    gender: PetGender
+    "breed of dog, cat etc"
+    breed: String
+    "is castration or not: true for castration"
+    isCastration: Boolean!
+    birthday: Timestamp
+    location: LocationInput
+}
+input LocationInput{
+    country: String
+    city: String
+    address: String
+    Coordinate: CoordinateInput
+}
+input PetCreateInput{
+    name: String
+    image: URL
+    "only two"
+    gender: PetGender
+    "breed of dog, cat etc"
+    breed: String
+    "is castration or not: true for castration"
+    isCastration: Boolean!
+    birthday: Timestamp
+    location: LocationInput
+}
+input PetDeleteInput{
+    pid:ID!
+}
+input UpdatesNotificationSettingsInput{
+    uid:ID!
+    allowedNotificationWhenNewEventsFromFriends: Boolean!
+    allowedNotificationWhenEventsWillStartIn30Mins: Boolean!
+    allowedNotificationWhenEventsStatusChanged: Boolean!
+}
+
+
+`, BuiltIn: false},
+	{Name: "internal/graph/query.graphqls", Input: `
+type Query{
+    eventsListGet(eventsListGetInput: EventsListGetInput!) : EventsListGetPayload!
+    notifiactionsGet(notifiactionsGetInput: NotifiactionsGetInput!) : NotifiactionsGetPayload!
+    recommendationGet(recommendationGetInput: RecommendationGetInput!) : RecommendationGetPayload!
+    friendsListGet(friendsListGetInput: FriendsListGetInput!) : FriendsListGetPayload!
+    petProfileListGet(petProfileListGetInput: PetProfileListGetInput!) : PetProfileListGetPayload!
+    userProfileListGet(userProfileListGetInput:UserProfileListGetInput!): UserProfileListGetPayload!
+    profileListGet(profileListGetInput: ProfileListGetInput!): ProfileListGetPayload!
+}
+input EventsListGetInput{
+    pid: ID!
+}
+
+type EventsListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Event!]!
+}
+
+input NotifiactionsGetInput{
+    pid:ID!
+}
+type NotifiactionsGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Notification!]!
+}
+
+input RecommendationGetInput{
+    pid:ID!
+}
+type RecommendationGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Recommendation!]!
+}
+
+input FriendsListGetInput{
+    pid:ID!
+}
+type FriendsListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Pet!]!
+}
+input PetProfileListGetInput{
+    pid:[ID!]
+}
+type PetProfileListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [PetProfile!]!
+}
+
+input UserProfileListGetInput{
+    uid:[ID!]!
+}
+type UserProfileListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [UserProfile!]!
+}
+input ProfileListGetInput{
+    id:[ID!]!
+}
+type ProfileListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [ProfileNode!]!
+}`, BuiltIn: false},
+	{Name: "internal/graph/schema.graphqls", Input: `"User total profile, if want to get other user data. Always use userprofile!"
 type User {
-  id: ID!
-  name: String!
+    id: ID!
+    cooldown: Timestamp
+    createdTime: Timestamp
+    email: Email!
+    petOwner: PetOwner
+    userProfile: UserProfile
+    notificationSetting: NotificationSetting
+    eventList: [Event!]
+}
+"User Notification Setting."
+type NotificationSetting{
+    allowedNotificationWhenNewEventsFromFriends: Boolean!
+    allowedNotificationWhenEventsWillStartIn30Mins: Boolean!
+    allowedNotificationWhenEventsStatusChanged: Boolean!
 }
 
-type Query {
-  todos: [Todo!]!
+"PetOwner relationship. Hide behide user"
+type PetOwner{
+    user: User!
+    petLists: [Pet!]!
+}
+type Pet{
+    id: ID!
+    owner: PetOwner
+    petProfile: PetProfile
+    petRelationShip: PetRelationship
+    eventList: [Event!]
+}
+"ProfileNode is a interface that stands for both pet and human"
+interface ProfileNode{
+    id: ID
+    name: String
+    location: Location
+}
+type PetProfile implements ProfileNode{
+    id: ID
+    name: String
+    image: URL
+    "only two"
+    gender: PetGender
+    "breed of dog, cat etc"
+    breed: String
+    "is castration or not: true for castration"
+    isCastration: Boolean!
+    birthday: Timestamp
+    location: Location
+}
+"User profile let open to public"
+type UserProfile implements ProfileNode{
+    id: ID
+    name: String
+    gender: UserGender
+    "only use year as unit not month"
+    age: Int
+    email: Email
+    location: Location
+}
+"PetRelationship to other roles"
+type PetRelationship{
+    parentpet: Pet
+    connection: PetConnection
+    recommend: PetRecommned
+}
+"Pet Connection Friends List "
+type PetConnection{
+    friendList: [PetProfile!]!
+}
+"recommendation friends (always should be pet not user)"
+type PetRecommned{
+    recommend: [Recommendation!]!
+}
+type Event{
+    id: ID!
+    location: Location
+    timeRange: TimeRange
+    limit: EventsLimits
+    image: URL
+    description: [String!]
+    "holder shuold be pet"
+    holder: PetProfile
+    participants: [PetProfile!]!
+    participantsHuman: [UserProfile!]!
+}
+"Limitation of Events"
+type EventsLimits{
+    limitOfDog: Int
+    limitOfHuman: Int
+}
+type TimeRange{
+    startTime: Timestamp
+    endTime: Timestamp
+}
+"location relation"
+type Location{
+    country: String
+    city: String
+    address: String
+    coor: Coordinate
+}
+type Coordinate{
+    "when blur is setting that means the latitude and longitude is not the precise."
+    isBlur: Boolean!
+    latitude: Numbers
+    longitude: Numbers
+}
+type Recommendation{
+    id: ID!
+    pet: PetProfile
+    status: RecommendationStatus
+}
+type Notification{
+    id:ID!
+    title: String
+    description: String
+    time: Timestamp
+}
+type UserNotification{
+    notificationList: [Notification!]
+}
+type EventRequest{
+    id:ID!
+    requester: ProfileNode
+    eventid: ID!
+    description: [String!]!
+}
+schema {
+  query: Query
+  mutation: Mutation
+}
+"only user 3 cases"
+enum UserGender {
+  MALE
+  FEMALE
+  "put all other to this"
+  NOT_TO_DECLARED
+}
+"Pet have no not to declared"
+enum PetGender {
+  MALE
+  FEMALE
+}
+enum RecommendationStatus{
+    NO_ONE_ANSWERED
+    AGREE
+    DISAGREE
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
+interface Payload{
+  error: [Error!]!
+  "執行時間"
+  timestamp: Timestamp
+}
+interface Error{
+    code: String
+    message: String!
+    # Path to input field which caused the error.
+    field: [String!]
 }
 
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
+input NewEmail{
+    email: String!
+}
+input TimeRangeInput{
+    startTime: Timestamp
+    endTime: Timestamp
+}
+input EventsLimitsInput{
+    limitOfDog: Int
+    limitOfHuman: Int
+}
+
+"timestamp should gives timezone and time"
+scalar Timestamp
+scalar URL
+scalar Numbers
+scalar Email
+
+input CoordinateInput{
+    "when blur is setting that means the latitude and longitude is not the precise."
+    isBlur: Boolean!
+    latitude: Numbers
+    longitude: Numbers
 }
 `, BuiltIn: false},
 }
@@ -247,18 +1841,153 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_eventsCreate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewTodo
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewTodo2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
+	var arg0 model.EventsCreateInput
+	if tmp, ok := rawArgs["eventsCreateInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventsCreateInput"))
+		arg0, err = ec.unmarshalNEventsCreateInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsCreateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["eventsCreateInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_eventsJoin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EventsJoinInput
+	if tmp, ok := rawArgs["eventsJoinInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventsJoinInput"))
+		arg0, err = ec.unmarshalNEventsJoinInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsJoinInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["eventsJoinInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_friendRemove_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.FriendRemoveInput
+	if tmp, ok := rawArgs["friendRemoveInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("friendRemoveInput"))
+		arg0, err = ec.unmarshalNFriendRemoveInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendRemoveInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["friendRemoveInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_notificationRemove_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NotificationRemoveInput
+	if tmp, ok := rawArgs["notificationRemoveInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notificationRemoveInput"))
+		arg0, err = ec.unmarshalNNotificationRemoveInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationRemoveInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["notificationRemoveInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_petCreate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.PetCreateInput
+	if tmp, ok := rawArgs["petCreateInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("petCreateInput"))
+		arg0, err = ec.unmarshalNPetCreateInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetCreateInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["petCreateInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_petDelete_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.PetDeleteInput
+	if tmp, ok := rawArgs["petDeleteInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("petDeleteInput"))
+		arg0, err = ec.unmarshalNPetDeleteInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetDeleteInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["petDeleteInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_petProfileUpdates_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.PetProfileUpdatesInput
+	if tmp, ok := rawArgs["petProfileUpdatesInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("petProfileUpdatesInput"))
+		arg0, err = ec.unmarshalNPetProfileUpdatesInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileUpdatesInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["petProfileUpdatesInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_recommendationResponse_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.RecommendationResponseInput
+	if tmp, ok := rawArgs["recommendationResponseInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recommendationResponseInput"))
+		arg0, err = ec.unmarshalNRecommendationResponseInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationResponseInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["recommendationResponseInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updatesNotificationSettings_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdatesNotificationSettingsInput
+	if tmp, ok := rawArgs["updatesNotificationSettingsInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatesNotificationSettingsInput"))
+		arg0, err = ec.unmarshalNUpdatesNotificationSettingsInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUpdatesNotificationSettingsInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["updatesNotificationSettingsInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_userCreateByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UserCreateByIDInput
+	if tmp, ok := rawArgs["userCreateByIDInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userCreateByIDInput"))
+		arg0, err = ec.unmarshalNUserCreateByIDInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserCreateByIDInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userCreateByIDInput"] = arg0
 	return args, nil
 }
 
@@ -274,6 +2003,111 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_eventsListGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EventsListGetInput
+	if tmp, ok := rawArgs["eventsListGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventsListGetInput"))
+		arg0, err = ec.unmarshalNEventsListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsListGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["eventsListGetInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_friendsListGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.FriendsListGetInput
+	if tmp, ok := rawArgs["friendsListGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("friendsListGetInput"))
+		arg0, err = ec.unmarshalNFriendsListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendsListGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["friendsListGetInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_notifiactionsGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NotifiactionsGetInput
+	if tmp, ok := rawArgs["notifiactionsGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notifiactionsGetInput"))
+		arg0, err = ec.unmarshalNNotifiactionsGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotifiactionsGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["notifiactionsGetInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_petProfileListGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.PetProfileListGetInput
+	if tmp, ok := rawArgs["petProfileListGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("petProfileListGetInput"))
+		arg0, err = ec.unmarshalNPetProfileListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileListGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["petProfileListGetInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_profileListGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.ProfileListGetInput
+	if tmp, ok := rawArgs["profileListGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profileListGetInput"))
+		arg0, err = ec.unmarshalNProfileListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileListGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["profileListGetInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_recommendationGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.RecommendationGetInput
+	if tmp, ok := rawArgs["recommendationGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recommendationGetInput"))
+		arg0, err = ec.unmarshalNRecommendationGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["recommendationGetInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_userProfileListGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UserProfileListGetInput
+	if tmp, ok := rawArgs["userProfileListGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userProfileListGetInput"))
+		arg0, err = ec.unmarshalNUserProfileListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileListGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userProfileListGetInput"] = arg0
 	return args, nil
 }
 
@@ -315,7 +2149,1236 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Coordinate_isBlur(ctx context.Context, field graphql.CollectedField, obj *model.Coordinate) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Coordinate",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsBlur, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Coordinate_latitude(ctx context.Context, field graphql.CollectedField, obj *model.Coordinate) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Coordinate",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Latitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalONumbers2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Coordinate_longitude(ctx context.Context, field graphql.CollectedField, obj *model.Coordinate) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Coordinate",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Longitude, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalONumbers2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_id(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_location(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Location)
+	fc.Result = res
+	return ec.marshalOLocation2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_timeRange(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TimeRange, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.TimeRange)
+	fc.Result = res
+	return ec.marshalOTimeRange2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTimeRange(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_limit(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Limit, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.EventsLimits)
+	fc.Result = res
+	return ec.marshalOEventsLimits2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsLimits(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_image(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOURL2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_description(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_holder(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Holder, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetProfile)
+	fc.Result = res
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_participants(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Participants, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PetProfile)
+	fc.Result = res
+	return ec.marshalNPetProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_participantsHuman(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ParticipantsHuman, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.UserProfile)
+	fc.Result = res
+	return ec.marshalNUserProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventRequest_id(ctx context.Context, field graphql.CollectedField, obj *model.EventRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventRequest_requester(ctx context.Context, field graphql.CollectedField, obj *model.EventRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Requester, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(model.ProfileNode)
+	fc.Result = res
+	return ec.marshalOProfileNode2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileNode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventRequest_eventid(ctx context.Context, field graphql.CollectedField, obj *model.EventRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Eventid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventRequest_description(ctx context.Context, field graphql.CollectedField, obj *model.EventRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsCreatePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.EventsCreatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsCreatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsCreatePayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.EventsCreatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsCreatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsCreatePayload_result(ctx context.Context, field graphql.CollectedField, obj *model.EventsCreatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsCreatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Event)
+	fc.Result = res
+	return ec.marshalOEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsJoinPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.EventsJoinPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsJoinPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsJoinPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.EventsJoinPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsJoinPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsJoinPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.EventsJoinPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsJoinPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.EventRequest)
+	fc.Result = res
+	return ec.marshalOEventRequest2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventRequest(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsLimits_limitOfDog(ctx context.Context, field graphql.CollectedField, obj *model.EventsLimits) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsLimits",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LimitOfDog, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsLimits_limitOfHuman(ctx context.Context, field graphql.CollectedField, obj *model.EventsLimits) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsLimits",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LimitOfHuman, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsListGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.EventsListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsListGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.EventsListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsListGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.EventsListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Event)
+	fc.Result = res
+	return ec.marshalNEvent2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FriendRemovePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.FriendRemovePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FriendRemovePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FriendRemovePayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.FriendRemovePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FriendRemovePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FriendRemovePayload_result(ctx context.Context, field graphql.CollectedField, obj *model.FriendRemovePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FriendRemovePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FriendsListGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.FriendsListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FriendsListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FriendsListGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.FriendsListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FriendsListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FriendsListGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.FriendsListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FriendsListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Pet)
+	fc.Result = res
+	return ec.marshalNPet2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Location_country(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Location_city(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.City, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Location_address(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Location_coor(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Coordinate)
+	fc.Result = res
+	return ec.marshalOCoordinate2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐCoordinate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_userCreateByID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -332,7 +3395,7 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createTodo_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_userCreateByID_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -340,7 +3403,7 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTodo(rctx, args["input"].(model.NewTodo))
+		return ec.resolvers.Mutation().UserCreateByID(rctx, args["userCreateByIDInput"].(model.UserCreateByIDInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -352,12 +3415,1992 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Todo)
+	res := resTmp.(*model.UserCreateByIDPayload)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNUserCreateByIDPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserCreateByIDPayload(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_eventsCreate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_eventsCreate_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EventsCreate(rctx, args["eventsCreateInput"].(model.EventsCreateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.EventsCreatePayload)
+	fc.Result = res
+	return ec.marshalNEventsCreatePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsCreatePayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_eventsJoin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_eventsJoin_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EventsJoin(rctx, args["eventsJoinInput"].(model.EventsJoinInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.EventsJoinPayload)
+	fc.Result = res
+	return ec.marshalNEventsJoinPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsJoinPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_notificationRemove(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_notificationRemove_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().NotificationRemove(rctx, args["notificationRemoveInput"].(model.NotificationRemoveInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.NotificationRemovePayload)
+	fc.Result = res
+	return ec.marshalNNotificationRemovePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationRemovePayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_recommendationResponse(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_recommendationResponse_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RecommendationResponse(rctx, args["recommendationResponseInput"].(model.RecommendationResponseInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.RecommendationResponsePayload)
+	fc.Result = res
+	return ec.marshalNRecommendationResponsePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationResponsePayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_friendRemove(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_friendRemove_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().FriendRemove(rctx, args["friendRemoveInput"].(model.FriendRemoveInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.FriendRemovePayload)
+	fc.Result = res
+	return ec.marshalNFriendRemovePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendRemovePayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_petProfileUpdates(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_petProfileUpdates_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().PetProfileUpdates(rctx, args["petProfileUpdatesInput"].(model.PetProfileUpdatesInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetProfileUpdatesPayload)
+	fc.Result = res
+	return ec.marshalNPetProfileUpdatesPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileUpdatesPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_petCreate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_petCreate_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().PetCreate(rctx, args["petCreateInput"].(model.PetCreateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetCreatePayload)
+	fc.Result = res
+	return ec.marshalNPetCreatePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetCreatePayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_petDelete(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_petDelete_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().PetDelete(rctx, args["petDeleteInput"].(model.PetDeleteInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetDeletePayload)
+	fc.Result = res
+	return ec.marshalNPetDeletePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetDeletePayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updatesNotificationSettings(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updatesNotificationSettings_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdatesNotificationSettings(rctx, args["updatesNotificationSettingsInput"].(model.UpdatesNotificationSettingsInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UpdatesNotificationSettings)
+	fc.Result = res
+	return ec.marshalNUpdatesNotificationSettings2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUpdatesNotificationSettings(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotifiactionsGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.NotifiactionsGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotifiactionsGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotifiactionsGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.NotifiactionsGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotifiactionsGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotifiactionsGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.NotifiactionsGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotifiactionsGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Notification)
+	fc.Result = res
+	return ec.marshalNNotification2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_id(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Notification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_title(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Notification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_description(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Notification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_time(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Notification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Time, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationRemovePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.NotificationRemovePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationRemovePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationRemovePayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.NotificationRemovePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationRemovePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationRemovePayload_result(ctx context.Context, field graphql.CollectedField, obj *model.NotificationRemovePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationRemovePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationSetting_allowedNotificationWhenNewEventsFromFriends(ctx context.Context, field graphql.CollectedField, obj *model.NotificationSetting) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationSetting",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AllowedNotificationWhenNewEventsFromFriends, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationSetting_allowedNotificationWhenEventsWillStartIn30Mins(ctx context.Context, field graphql.CollectedField, obj *model.NotificationSetting) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationSetting",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AllowedNotificationWhenEventsWillStartIn30Mins, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationSetting_allowedNotificationWhenEventsStatusChanged(ctx context.Context, field graphql.CollectedField, obj *model.NotificationSetting) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationSetting",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AllowedNotificationWhenEventsStatusChanged, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pet_id(ctx context.Context, field graphql.CollectedField, obj *model.Pet) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pet_owner(ctx context.Context, field graphql.CollectedField, obj *model.Pet) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Owner, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetOwner)
+	fc.Result = res
+	return ec.marshalOPetOwner2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetOwner(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pet_petProfile(ctx context.Context, field graphql.CollectedField, obj *model.Pet) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PetProfile, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetProfile)
+	fc.Result = res
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pet_petRelationShip(ctx context.Context, field graphql.CollectedField, obj *model.Pet) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PetRelationShip, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetRelationship)
+	fc.Result = res
+	return ec.marshalOPetRelationship2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetRelationship(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pet_eventList(ctx context.Context, field graphql.CollectedField, obj *model.Pet) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EventList, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Event)
+	fc.Result = res
+	return ec.marshalOEvent2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetConnection_friendList(ctx context.Context, field graphql.CollectedField, obj *model.PetConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FriendList, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PetProfile)
+	fc.Result = res
+	return ec.marshalNPetProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetCreatePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.PetCreatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetCreatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetCreatePayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.PetCreatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetCreatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetCreatePayload_result(ctx context.Context, field graphql.CollectedField, obj *model.PetCreatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetCreatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetProfile)
+	fc.Result = res
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetDeletePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.PetDeletePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetDeletePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetDeletePayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.PetDeletePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetDeletePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetDeletePayload_result(ctx context.Context, field graphql.CollectedField, obj *model.PetDeletePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetDeletePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetOwner_user(ctx context.Context, field graphql.CollectedField, obj *model.PetOwner) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetOwner",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetOwner_petLists(ctx context.Context, field graphql.CollectedField, obj *model.PetOwner) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetOwner",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PetLists, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Pet)
+	fc.Result = res
+	return ec.marshalNPet2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_id(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_name(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_image(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOURL2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_gender(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gender, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetGender)
+	fc.Result = res
+	return ec.marshalOPetGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetGender(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_breed(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Breed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_isCastration(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsCastration, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_birthday(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Birthday, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_location(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Location)
+	fc.Result = res
+	return ec.marshalOLocation2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfileListGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfileListGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfileListGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PetProfile)
+	fc.Result = res
+	return ec.marshalNPetProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfileUpdatesPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileUpdatesPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfileUpdatesPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfileUpdatesPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileUpdatesPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfileUpdatesPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfileUpdatesPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileUpdatesPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfileUpdatesPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetProfile)
+	fc.Result = res
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetRecommned_recommend(ctx context.Context, field graphql.CollectedField, obj *model.PetRecommned) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetRecommned",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Recommend, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Recommendation)
+	fc.Result = res
+	return ec.marshalNRecommendation2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetRelationship_parentpet(ctx context.Context, field graphql.CollectedField, obj *model.PetRelationship) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetRelationship",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Parentpet, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Pet)
+	fc.Result = res
+	return ec.marshalOPet2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPet(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetRelationship_connection(ctx context.Context, field graphql.CollectedField, obj *model.PetRelationship) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetRelationship",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Connection, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetConnection)
+	fc.Result = res
+	return ec.marshalOPetConnection2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetRelationship_recommend(ctx context.Context, field graphql.CollectedField, obj *model.PetRelationship) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetRelationship",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Recommend, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetRecommned)
+	fc.Result = res
+	return ec.marshalOPetRecommned2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetRecommned(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProfileListGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.ProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProfileListGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.ProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProfileListGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.ProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.ProfileNode)
+	fc.Result = res
+	return ec.marshalNProfileNode2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileNodeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_eventsListGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -373,9 +5416,16 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_eventsListGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Todos(rctx)
+		return ec.resolvers.Query().EventsListGet(rctx, args["eventsListGetInput"].(model.EventsListGetInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -387,9 +5437,261 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Todo)
+	res := resTmp.(*model.EventsListGetPayload)
 	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
+	return ec.marshalNEventsListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsListGetPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_notifiactionsGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_notifiactionsGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().NotifiactionsGet(rctx, args["notifiactionsGetInput"].(model.NotifiactionsGetInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.NotifiactionsGetPayload)
+	fc.Result = res
+	return ec.marshalNNotifiactionsGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotifiactionsGetPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_recommendationGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_recommendationGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().RecommendationGet(rctx, args["recommendationGetInput"].(model.RecommendationGetInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.RecommendationGetPayload)
+	fc.Result = res
+	return ec.marshalNRecommendationGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationGetPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_friendsListGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_friendsListGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FriendsListGet(rctx, args["friendsListGetInput"].(model.FriendsListGetInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.FriendsListGetPayload)
+	fc.Result = res
+	return ec.marshalNFriendsListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendsListGetPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_petProfileListGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_petProfileListGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PetProfileListGet(rctx, args["petProfileListGetInput"].(model.PetProfileListGetInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetProfileListGetPayload)
+	fc.Result = res
+	return ec.marshalNPetProfileListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileListGetPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_userProfileListGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_userProfileListGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().UserProfileListGet(rctx, args["userProfileListGetInput"].(model.UserProfileListGetInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserProfileListGetPayload)
+	fc.Result = res
+	return ec.marshalNUserProfileListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileListGetPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_profileListGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_profileListGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProfileListGet(rctx, args["profileListGetInput"].(model.ProfileListGetInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.ProfileListGetPayload)
+	fc.Result = res
+	return ec.marshalNProfileListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileListGetPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -463,7 +5765,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Recommendation_id(ctx context.Context, field graphql.CollectedField, obj *model.Recommendation) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -471,7 +5773,7 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "Recommendation",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -498,7 +5800,7 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Recommendation_pet(ctx context.Context, field graphql.CollectedField, obj *model.Recommendation) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -506,7 +5808,7 @@ func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "Recommendation",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -516,24 +5818,21 @@ func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.Collec
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Text, nil
+		return obj.Pet, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*model.PetProfile)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Recommendation_status(ctx context.Context, field graphql.CollectedField, obj *model.Recommendation) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -541,7 +5840,7 @@ func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "Recommendation",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -551,24 +5850,21 @@ func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.Collec
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Done, nil
+		return obj.Status, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*model.RecommendationStatus)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalORecommendationStatus2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationStatus(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _RecommendationGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.RecommendationGetPayload) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -576,7 +5872,7 @@ func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "RecommendationGetPayload",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -586,7 +5882,7 @@ func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.Collec
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.User, nil
+		return obj.Error, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -598,9 +5894,338 @@ func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.([]model.Error)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RecommendationGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.RecommendationGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RecommendationGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RecommendationGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.RecommendationGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RecommendationGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Recommendation)
+	fc.Result = res
+	return ec.marshalNRecommendation2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RecommendationResponsePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.RecommendationResponsePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RecommendationResponsePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RecommendationResponsePayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.RecommendationResponsePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RecommendationResponsePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RecommendationResponsePayload_result(ctx context.Context, field graphql.CollectedField, obj *model.RecommendationResponsePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RecommendationResponsePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetProfile)
+	fc.Result = res
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TimeRange_startTime(ctx context.Context, field graphql.CollectedField, obj *model.TimeRange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TimeRange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TimeRange_endTime(ctx context.Context, field graphql.CollectedField, obj *model.TimeRange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TimeRange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UpdatesNotificationSettings_error(ctx context.Context, field graphql.CollectedField, obj *model.UpdatesNotificationSettings) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UpdatesNotificationSettings",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UpdatesNotificationSettings_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.UpdatesNotificationSettings) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UpdatesNotificationSettings",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UpdatesNotificationSettings_result(ctx context.Context, field graphql.CollectedField, obj *model.UpdatesNotificationSettings) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UpdatesNotificationSettings",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.NotificationSetting)
+	fc.Result = res
+	return ec.marshalONotificationSetting2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationSetting(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
@@ -638,7 +6263,7 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_cooldown(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -656,7 +6281,71 @@ func (ec *executionContext) _User_name(ctx context.Context, field graphql.Collec
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
+		return obj.Cooldown, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_createdTime(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Email, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -670,7 +6359,560 @@ func (ec *executionContext) _User_name(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNEmail2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_petOwner(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PetOwner, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PetOwner)
+	fc.Result = res
+	return ec.marshalOPetOwner2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetOwner(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_userProfile(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserProfile, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserProfile)
+	fc.Result = res
+	return ec.marshalOUserProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_notificationSetting(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NotificationSetting, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.NotificationSetting)
+	fc.Result = res
+	return ec.marshalONotificationSetting2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationSetting(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_eventList(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EventList, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Event)
+	fc.Result = res
+	return ec.marshalOEvent2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserCreateByIDPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.UserCreateByIDPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserCreateByIDPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserCreateByIDPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.UserCreateByIDPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserCreateByIDPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserCreateByIDPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.UserCreateByIDPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserCreateByIDPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserNotification_notificationList(ctx context.Context, field graphql.CollectedField, obj *model.UserNotification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserNotification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NotificationList, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Notification)
+	fc.Result = res
+	return ec.marshalONotification2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfile_id(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfile_name(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfile_gender(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gender, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserGender)
+	fc.Result = res
+	return ec.marshalOUserGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserGender(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfile_age(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Age, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfile_email(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Email, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOEmail2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfile_location(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Location)
+	fc.Result = res
+	return ec.marshalOLocation2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfileListGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.UserProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfileListGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.UserProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserProfileListGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.UserProfileListGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserProfileListGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.UserProfile)
+	fc.Result = res
+	return ec.marshalNUserProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -1795,8 +8037,8 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj interface{}) (model.NewTodo, error) {
-	var it model.NewTodo
+func (ec *executionContext) unmarshalInputCoordinateInput(ctx context.Context, obj interface{}) (model.CoordinateInput, error) {
+	var it model.CoordinateInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -1804,19 +8046,750 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 
 	for k, v := range asMap {
 		switch k {
-		case "text":
+		case "isBlur":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
-			it.Text, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isBlur"))
+			it.IsBlur, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "userId":
+		case "latitude":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("latitude"))
+			it.Latitude, err = ec.unmarshalONumbers2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "longitude":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("longitude"))
+			it.Longitude, err = ec.unmarshalONumbers2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEventsCreateInput(ctx context.Context, obj interface{}) (model.EventsCreateInput, error) {
+	var it model.EventsCreateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalOLocationInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocationInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "timeRange":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timeRange"))
+			it.TimeRange, err = ec.unmarshalOTimeRangeInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTimeRangeInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			it.Limit, err = ec.unmarshalOEventsLimitsInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsLimitsInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			it.Image, err = ec.unmarshalOURL2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEventsJoinInput(ctx context.Context, obj interface{}) (model.EventsJoinInput, error) {
+	var it model.EventsJoinInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "eventID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventID"))
+			it.EventID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEventsLimitsInput(ctx context.Context, obj interface{}) (model.EventsLimitsInput, error) {
+	var it model.EventsLimitsInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "limitOfDog":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limitOfDog"))
+			it.LimitOfDog, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "limitOfHuman":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limitOfHuman"))
+			it.LimitOfHuman, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEventsListGetInput(ctx context.Context, obj interface{}) (model.EventsListGetInput, error) {
+	var it model.EventsListGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputFriendRemoveInput(ctx context.Context, obj interface{}) (model.FriendRemoveInput, error) {
+	var it model.FriendRemoveInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "petID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("petID"))
+			it.PetID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "friendID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("friendID"))
+			it.FriendID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputFriendsListGetInput(ctx context.Context, obj interface{}) (model.FriendsListGetInput, error) {
+	var it model.FriendsListGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputLocationInput(ctx context.Context, obj interface{}) (model.LocationInput, error) {
+	var it model.LocationInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "country":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("country"))
+			it.Country, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "city":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
+			it.City, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "address":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			it.Address, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "Coordinate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("Coordinate"))
+			it.Coordinate, err = ec.unmarshalOCoordinateInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐCoordinateInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNewEmail(ctx context.Context, obj interface{}) (model.NewEmail, error) {
+	var it model.NewEmail
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNotifiactionsGetInput(ctx context.Context, obj interface{}) (model.NotifiactionsGetInput, error) {
+	var it model.NotifiactionsGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNotificationRemoveInput(ctx context.Context, obj interface{}) (model.NotificationRemoveInput, error) {
+	var it model.NotificationRemoveInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "notificationID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notificationID"))
+			it.NotificationID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPetCreateInput(ctx context.Context, obj interface{}) (model.PetCreateInput, error) {
+	var it model.PetCreateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			it.Image, err = ec.unmarshalOURL2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gender":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
+			it.Gender, err = ec.unmarshalOPetGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetGender(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "breed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("breed"))
+			it.Breed, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isCastration":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isCastration"))
+			it.IsCastration, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "birthday":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthday"))
+			it.Birthday, err = ec.unmarshalOTimestamp2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalOLocationInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocationInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPetDeleteInput(ctx context.Context, obj interface{}) (model.PetDeleteInput, error) {
+	var it model.PetDeleteInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPetProfileListGetInput(ctx context.Context, obj interface{}) (model.PetProfileListGetInput, error) {
+	var it model.PetProfileListGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPetProfileUpdatesInput(ctx context.Context, obj interface{}) (model.PetProfileUpdatesInput, error) {
+	var it model.PetProfileUpdatesInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			it.Image, err = ec.unmarshalOURL2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gender":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
+			it.Gender, err = ec.unmarshalOPetGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetGender(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "breed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("breed"))
+			it.Breed, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isCastration":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isCastration"))
+			it.IsCastration, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "birthday":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthday"))
+			it.Birthday, err = ec.unmarshalOTimestamp2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalOLocationInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocationInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputProfileListGetInput(ctx context.Context, obj interface{}) (model.ProfileListGetInput, error) {
+	var it model.ProfileListGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputRecommendationGetInput(ctx context.Context, obj interface{}) (model.RecommendationGetInput, error) {
+	var it model.RecommendationGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputRecommendationResponseInput(ctx context.Context, obj interface{}) (model.RecommendationResponseInput, error) {
+	var it model.RecommendationResponseInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "rid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rid"))
+			it.Rid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "result":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("result"))
+			it.Result, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTimeRangeInput(ctx context.Context, obj interface{}) (model.TimeRangeInput, error) {
+	var it model.TimeRangeInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "startTime":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startTime"))
+			it.StartTime, err = ec.unmarshalOTimestamp2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "endTime":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("endTime"))
+			it.EndTime, err = ec.unmarshalOTimestamp2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdatesNotificationSettingsInput(ctx context.Context, obj interface{}) (model.UpdatesNotificationSettingsInput, error) {
+	var it model.UpdatesNotificationSettingsInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "uid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
+			it.UID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "allowedNotificationWhenNewEventsFromFriends":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("allowedNotificationWhenNewEventsFromFriends"))
+			it.AllowedNotificationWhenNewEventsFromFriends, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "allowedNotificationWhenEventsWillStartIn30Mins":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("allowedNotificationWhenEventsWillStartIn30Mins"))
+			it.AllowedNotificationWhenEventsWillStartIn30Mins, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "allowedNotificationWhenEventsStatusChanged":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("allowedNotificationWhenEventsStatusChanged"))
+			it.AllowedNotificationWhenEventsStatusChanged, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUserCreateByIDInput(ctx context.Context, obj interface{}) (model.UserCreateByIDInput, error) {
+	var it model.UserCreateByIDInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUserProfileListGetInput(ctx context.Context, obj interface{}) (model.UserProfileListGetInput, error) {
+	var it model.UserProfileListGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "uid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
+			it.UID, err = ec.unmarshalNID2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -1830,9 +8803,508 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 
 // region    ************************** interface.gotpl ***************************
 
+func (ec *executionContext) _Error(ctx context.Context, sel ast.SelectionSet, obj model.Error) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
+func (ec *executionContext) _Payload(ctx context.Context, sel ast.SelectionSet, obj model.Payload) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case model.UserCreateByIDPayload:
+		return ec._UserCreateByIDPayload(ctx, sel, &obj)
+	case *model.UserCreateByIDPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._UserCreateByIDPayload(ctx, sel, obj)
+	case model.EventsCreatePayload:
+		return ec._EventsCreatePayload(ctx, sel, &obj)
+	case *model.EventsCreatePayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._EventsCreatePayload(ctx, sel, obj)
+	case model.EventsJoinPayload:
+		return ec._EventsJoinPayload(ctx, sel, &obj)
+	case *model.EventsJoinPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._EventsJoinPayload(ctx, sel, obj)
+	case model.NotificationRemovePayload:
+		return ec._NotificationRemovePayload(ctx, sel, &obj)
+	case *model.NotificationRemovePayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._NotificationRemovePayload(ctx, sel, obj)
+	case model.RecommendationResponsePayload:
+		return ec._RecommendationResponsePayload(ctx, sel, &obj)
+	case *model.RecommendationResponsePayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._RecommendationResponsePayload(ctx, sel, obj)
+	case model.FriendRemovePayload:
+		return ec._FriendRemovePayload(ctx, sel, &obj)
+	case *model.FriendRemovePayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._FriendRemovePayload(ctx, sel, obj)
+	case model.PetProfileUpdatesPayload:
+		return ec._PetProfileUpdatesPayload(ctx, sel, &obj)
+	case *model.PetProfileUpdatesPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._PetProfileUpdatesPayload(ctx, sel, obj)
+	case model.PetCreatePayload:
+		return ec._PetCreatePayload(ctx, sel, &obj)
+	case *model.PetCreatePayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._PetCreatePayload(ctx, sel, obj)
+	case model.PetDeletePayload:
+		return ec._PetDeletePayload(ctx, sel, &obj)
+	case *model.PetDeletePayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._PetDeletePayload(ctx, sel, obj)
+	case model.UpdatesNotificationSettings:
+		return ec._UpdatesNotificationSettings(ctx, sel, &obj)
+	case *model.UpdatesNotificationSettings:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._UpdatesNotificationSettings(ctx, sel, obj)
+	case model.EventsListGetPayload:
+		return ec._EventsListGetPayload(ctx, sel, &obj)
+	case *model.EventsListGetPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._EventsListGetPayload(ctx, sel, obj)
+	case model.NotifiactionsGetPayload:
+		return ec._NotifiactionsGetPayload(ctx, sel, &obj)
+	case *model.NotifiactionsGetPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._NotifiactionsGetPayload(ctx, sel, obj)
+	case model.RecommendationGetPayload:
+		return ec._RecommendationGetPayload(ctx, sel, &obj)
+	case *model.RecommendationGetPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._RecommendationGetPayload(ctx, sel, obj)
+	case model.FriendsListGetPayload:
+		return ec._FriendsListGetPayload(ctx, sel, &obj)
+	case *model.FriendsListGetPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._FriendsListGetPayload(ctx, sel, obj)
+	case model.PetProfileListGetPayload:
+		return ec._PetProfileListGetPayload(ctx, sel, &obj)
+	case *model.PetProfileListGetPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._PetProfileListGetPayload(ctx, sel, obj)
+	case model.UserProfileListGetPayload:
+		return ec._UserProfileListGetPayload(ctx, sel, &obj)
+	case *model.UserProfileListGetPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._UserProfileListGetPayload(ctx, sel, obj)
+	case model.ProfileListGetPayload:
+		return ec._ProfileListGetPayload(ctx, sel, &obj)
+	case *model.ProfileListGetPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ProfileListGetPayload(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
+func (ec *executionContext) _ProfileNode(ctx context.Context, sel ast.SelectionSet, obj model.ProfileNode) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case model.PetProfile:
+		return ec._PetProfile(ctx, sel, &obj)
+	case *model.PetProfile:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._PetProfile(ctx, sel, obj)
+	case model.UserProfile:
+		return ec._UserProfile(ctx, sel, &obj)
+	case *model.UserProfile:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._UserProfile(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var coordinateImplementors = []string{"Coordinate"}
+
+func (ec *executionContext) _Coordinate(ctx context.Context, sel ast.SelectionSet, obj *model.Coordinate) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, coordinateImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Coordinate")
+		case "isBlur":
+			out.Values[i] = ec._Coordinate_isBlur(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "latitude":
+			out.Values[i] = ec._Coordinate_latitude(ctx, field, obj)
+		case "longitude":
+			out.Values[i] = ec._Coordinate_longitude(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var eventImplementors = []string{"Event"}
+
+func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, obj *model.Event) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Event")
+		case "id":
+			out.Values[i] = ec._Event_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "location":
+			out.Values[i] = ec._Event_location(ctx, field, obj)
+		case "timeRange":
+			out.Values[i] = ec._Event_timeRange(ctx, field, obj)
+		case "limit":
+			out.Values[i] = ec._Event_limit(ctx, field, obj)
+		case "image":
+			out.Values[i] = ec._Event_image(ctx, field, obj)
+		case "description":
+			out.Values[i] = ec._Event_description(ctx, field, obj)
+		case "holder":
+			out.Values[i] = ec._Event_holder(ctx, field, obj)
+		case "participants":
+			out.Values[i] = ec._Event_participants(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "participantsHuman":
+			out.Values[i] = ec._Event_participantsHuman(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var eventRequestImplementors = []string{"EventRequest"}
+
+func (ec *executionContext) _EventRequest(ctx context.Context, sel ast.SelectionSet, obj *model.EventRequest) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventRequestImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventRequest")
+		case "id":
+			out.Values[i] = ec._EventRequest_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requester":
+			out.Values[i] = ec._EventRequest_requester(ctx, field, obj)
+		case "eventid":
+			out.Values[i] = ec._EventRequest_eventid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "description":
+			out.Values[i] = ec._EventRequest_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var eventsCreatePayloadImplementors = []string{"EventsCreatePayload", "Payload"}
+
+func (ec *executionContext) _EventsCreatePayload(ctx context.Context, sel ast.SelectionSet, obj *model.EventsCreatePayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventsCreatePayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventsCreatePayload")
+		case "error":
+			out.Values[i] = ec._EventsCreatePayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._EventsCreatePayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._EventsCreatePayload_result(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var eventsJoinPayloadImplementors = []string{"EventsJoinPayload", "Payload"}
+
+func (ec *executionContext) _EventsJoinPayload(ctx context.Context, sel ast.SelectionSet, obj *model.EventsJoinPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventsJoinPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventsJoinPayload")
+		case "error":
+			out.Values[i] = ec._EventsJoinPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._EventsJoinPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._EventsJoinPayload_result(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var eventsLimitsImplementors = []string{"EventsLimits"}
+
+func (ec *executionContext) _EventsLimits(ctx context.Context, sel ast.SelectionSet, obj *model.EventsLimits) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventsLimitsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventsLimits")
+		case "limitOfDog":
+			out.Values[i] = ec._EventsLimits_limitOfDog(ctx, field, obj)
+		case "limitOfHuman":
+			out.Values[i] = ec._EventsLimits_limitOfHuman(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var eventsListGetPayloadImplementors = []string{"EventsListGetPayload", "Payload"}
+
+func (ec *executionContext) _EventsListGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.EventsListGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventsListGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventsListGetPayload")
+		case "error":
+			out.Values[i] = ec._EventsListGetPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._EventsListGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._EventsListGetPayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var friendRemovePayloadImplementors = []string{"FriendRemovePayload", "Payload"}
+
+func (ec *executionContext) _FriendRemovePayload(ctx context.Context, sel ast.SelectionSet, obj *model.FriendRemovePayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, friendRemovePayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FriendRemovePayload")
+		case "error":
+			out.Values[i] = ec._FriendRemovePayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._FriendRemovePayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._FriendRemovePayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var friendsListGetPayloadImplementors = []string{"FriendsListGetPayload", "Payload"}
+
+func (ec *executionContext) _FriendsListGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.FriendsListGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, friendsListGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FriendsListGetPayload")
+		case "error":
+			out.Values[i] = ec._FriendsListGetPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._FriendsListGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._FriendsListGetPayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var locationImplementors = []string{"Location"}
+
+func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet, obj *model.Location) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, locationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Location")
+		case "country":
+			out.Values[i] = ec._Location_country(ctx, field, obj)
+		case "city":
+			out.Values[i] = ec._Location_city(ctx, field, obj)
+		case "address":
+			out.Values[i] = ec._Location_address(ctx, field, obj)
+		case "coor":
+			out.Values[i] = ec._Location_coor(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var mutationImplementors = []string{"Mutation"}
 
@@ -1849,8 +9321,545 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "createTodo":
-			out.Values[i] = ec._Mutation_createTodo(ctx, field)
+		case "userCreateByID":
+			out.Values[i] = ec._Mutation_userCreateByID(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eventsCreate":
+			out.Values[i] = ec._Mutation_eventsCreate(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eventsJoin":
+			out.Values[i] = ec._Mutation_eventsJoin(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "notificationRemove":
+			out.Values[i] = ec._Mutation_notificationRemove(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "recommendationResponse":
+			out.Values[i] = ec._Mutation_recommendationResponse(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "friendRemove":
+			out.Values[i] = ec._Mutation_friendRemove(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "petProfileUpdates":
+			out.Values[i] = ec._Mutation_petProfileUpdates(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "petCreate":
+			out.Values[i] = ec._Mutation_petCreate(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "petDelete":
+			out.Values[i] = ec._Mutation_petDelete(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatesNotificationSettings":
+			out.Values[i] = ec._Mutation_updatesNotificationSettings(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notifiactionsGetPayloadImplementors = []string{"NotifiactionsGetPayload", "Payload"}
+
+func (ec *executionContext) _NotifiactionsGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.NotifiactionsGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notifiactionsGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NotifiactionsGetPayload")
+		case "error":
+			out.Values[i] = ec._NotifiactionsGetPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._NotifiactionsGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._NotifiactionsGetPayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notificationImplementors = []string{"Notification"}
+
+func (ec *executionContext) _Notification(ctx context.Context, sel ast.SelectionSet, obj *model.Notification) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notificationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Notification")
+		case "id":
+			out.Values[i] = ec._Notification_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "title":
+			out.Values[i] = ec._Notification_title(ctx, field, obj)
+		case "description":
+			out.Values[i] = ec._Notification_description(ctx, field, obj)
+		case "time":
+			out.Values[i] = ec._Notification_time(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notificationRemovePayloadImplementors = []string{"NotificationRemovePayload", "Payload"}
+
+func (ec *executionContext) _NotificationRemovePayload(ctx context.Context, sel ast.SelectionSet, obj *model.NotificationRemovePayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notificationRemovePayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NotificationRemovePayload")
+		case "error":
+			out.Values[i] = ec._NotificationRemovePayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._NotificationRemovePayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._NotificationRemovePayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notificationSettingImplementors = []string{"NotificationSetting"}
+
+func (ec *executionContext) _NotificationSetting(ctx context.Context, sel ast.SelectionSet, obj *model.NotificationSetting) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notificationSettingImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NotificationSetting")
+		case "allowedNotificationWhenNewEventsFromFriends":
+			out.Values[i] = ec._NotificationSetting_allowedNotificationWhenNewEventsFromFriends(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "allowedNotificationWhenEventsWillStartIn30Mins":
+			out.Values[i] = ec._NotificationSetting_allowedNotificationWhenEventsWillStartIn30Mins(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "allowedNotificationWhenEventsStatusChanged":
+			out.Values[i] = ec._NotificationSetting_allowedNotificationWhenEventsStatusChanged(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petImplementors = []string{"Pet"}
+
+func (ec *executionContext) _Pet(ctx context.Context, sel ast.SelectionSet, obj *model.Pet) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Pet")
+		case "id":
+			out.Values[i] = ec._Pet_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "owner":
+			out.Values[i] = ec._Pet_owner(ctx, field, obj)
+		case "petProfile":
+			out.Values[i] = ec._Pet_petProfile(ctx, field, obj)
+		case "petRelationShip":
+			out.Values[i] = ec._Pet_petRelationShip(ctx, field, obj)
+		case "eventList":
+			out.Values[i] = ec._Pet_eventList(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petConnectionImplementors = []string{"PetConnection"}
+
+func (ec *executionContext) _PetConnection(ctx context.Context, sel ast.SelectionSet, obj *model.PetConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetConnection")
+		case "friendList":
+			out.Values[i] = ec._PetConnection_friendList(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petCreatePayloadImplementors = []string{"PetCreatePayload", "Payload"}
+
+func (ec *executionContext) _PetCreatePayload(ctx context.Context, sel ast.SelectionSet, obj *model.PetCreatePayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petCreatePayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetCreatePayload")
+		case "error":
+			out.Values[i] = ec._PetCreatePayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._PetCreatePayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._PetCreatePayload_result(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petDeletePayloadImplementors = []string{"PetDeletePayload", "Payload"}
+
+func (ec *executionContext) _PetDeletePayload(ctx context.Context, sel ast.SelectionSet, obj *model.PetDeletePayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petDeletePayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetDeletePayload")
+		case "error":
+			out.Values[i] = ec._PetDeletePayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._PetDeletePayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._PetDeletePayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petOwnerImplementors = []string{"PetOwner"}
+
+func (ec *executionContext) _PetOwner(ctx context.Context, sel ast.SelectionSet, obj *model.PetOwner) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petOwnerImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetOwner")
+		case "user":
+			out.Values[i] = ec._PetOwner_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "petLists":
+			out.Values[i] = ec._PetOwner_petLists(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petProfileImplementors = []string{"PetProfile", "ProfileNode"}
+
+func (ec *executionContext) _PetProfile(ctx context.Context, sel ast.SelectionSet, obj *model.PetProfile) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petProfileImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetProfile")
+		case "id":
+			out.Values[i] = ec._PetProfile_id(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._PetProfile_name(ctx, field, obj)
+		case "image":
+			out.Values[i] = ec._PetProfile_image(ctx, field, obj)
+		case "gender":
+			out.Values[i] = ec._PetProfile_gender(ctx, field, obj)
+		case "breed":
+			out.Values[i] = ec._PetProfile_breed(ctx, field, obj)
+		case "isCastration":
+			out.Values[i] = ec._PetProfile_isCastration(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "birthday":
+			out.Values[i] = ec._PetProfile_birthday(ctx, field, obj)
+		case "location":
+			out.Values[i] = ec._PetProfile_location(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petProfileListGetPayloadImplementors = []string{"PetProfileListGetPayload", "Payload"}
+
+func (ec *executionContext) _PetProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.PetProfileListGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petProfileListGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetProfileListGetPayload")
+		case "error":
+			out.Values[i] = ec._PetProfileListGetPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._PetProfileListGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._PetProfileListGetPayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petProfileUpdatesPayloadImplementors = []string{"PetProfileUpdatesPayload", "Payload"}
+
+func (ec *executionContext) _PetProfileUpdatesPayload(ctx context.Context, sel ast.SelectionSet, obj *model.PetProfileUpdatesPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petProfileUpdatesPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetProfileUpdatesPayload")
+		case "error":
+			out.Values[i] = ec._PetProfileUpdatesPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._PetProfileUpdatesPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._PetProfileUpdatesPayload_result(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petRecommnedImplementors = []string{"PetRecommned"}
+
+func (ec *executionContext) _PetRecommned(ctx context.Context, sel ast.SelectionSet, obj *model.PetRecommned) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petRecommnedImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetRecommned")
+		case "recommend":
+			out.Values[i] = ec._PetRecommned_recommend(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var petRelationshipImplementors = []string{"PetRelationship"}
+
+func (ec *executionContext) _PetRelationship(ctx context.Context, sel ast.SelectionSet, obj *model.PetRelationship) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, petRelationshipImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PetRelationship")
+		case "parentpet":
+			out.Values[i] = ec._PetRelationship_parentpet(ctx, field, obj)
+		case "connection":
+			out.Values[i] = ec._PetRelationship_connection(ctx, field, obj)
+		case "recommend":
+			out.Values[i] = ec._PetRelationship_recommend(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var profileListGetPayloadImplementors = []string{"ProfileListGetPayload", "Payload"}
+
+func (ec *executionContext) _ProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.ProfileListGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, profileListGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProfileListGetPayload")
+		case "error":
+			out.Values[i] = ec._ProfileListGetPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._ProfileListGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._ProfileListGetPayload_result(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -1880,7 +9889,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "todos":
+		case "eventsListGet":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1888,7 +9897,91 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_todos(ctx, field)
+				res = ec._Query_eventsListGet(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "notifiactionsGet":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_notifiactionsGet(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "recommendationGet":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_recommendationGet(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "friendsListGet":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_friendsListGet(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "petProfileListGet":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_petProfileListGet(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "userProfileListGet":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_userProfileListGet(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "profileListGet":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_profileListGet(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -1909,37 +10002,148 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var todoImplementors = []string{"Todo"}
+var recommendationImplementors = []string{"Recommendation"}
 
-func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *model.Todo) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, todoImplementors)
+func (ec *executionContext) _Recommendation(ctx context.Context, sel ast.SelectionSet, obj *model.Recommendation) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, recommendationImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Todo")
+			out.Values[i] = graphql.MarshalString("Recommendation")
 		case "id":
-			out.Values[i] = ec._Todo_id(ctx, field, obj)
+			out.Values[i] = ec._Recommendation_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "text":
-			out.Values[i] = ec._Todo_text(ctx, field, obj)
+		case "pet":
+			out.Values[i] = ec._Recommendation_pet(ctx, field, obj)
+		case "status":
+			out.Values[i] = ec._Recommendation_status(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var recommendationGetPayloadImplementors = []string{"RecommendationGetPayload", "Payload"}
+
+func (ec *executionContext) _RecommendationGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.RecommendationGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, recommendationGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RecommendationGetPayload")
+		case "error":
+			out.Values[i] = ec._RecommendationGetPayload_error(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "done":
-			out.Values[i] = ec._Todo_done(ctx, field, obj)
+		case "timestamp":
+			out.Values[i] = ec._RecommendationGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._RecommendationGetPayload_result(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "user":
-			out.Values[i] = ec._Todo_user(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var recommendationResponsePayloadImplementors = []string{"RecommendationResponsePayload", "Payload"}
+
+func (ec *executionContext) _RecommendationResponsePayload(ctx context.Context, sel ast.SelectionSet, obj *model.RecommendationResponsePayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, recommendationResponsePayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RecommendationResponsePayload")
+		case "error":
+			out.Values[i] = ec._RecommendationResponsePayload_error(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "timestamp":
+			out.Values[i] = ec._RecommendationResponsePayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._RecommendationResponsePayload_result(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var timeRangeImplementors = []string{"TimeRange"}
+
+func (ec *executionContext) _TimeRange(ctx context.Context, sel ast.SelectionSet, obj *model.TimeRange) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, timeRangeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TimeRange")
+		case "startTime":
+			out.Values[i] = ec._TimeRange_startTime(ctx, field, obj)
+		case "endTime":
+			out.Values[i] = ec._TimeRange_endTime(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var updatesNotificationSettingsImplementors = []string{"UpdatesNotificationSettings", "Payload"}
+
+func (ec *executionContext) _UpdatesNotificationSettings(ctx context.Context, sel ast.SelectionSet, obj *model.UpdatesNotificationSettings) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, updatesNotificationSettingsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UpdatesNotificationSettings")
+		case "error":
+			out.Values[i] = ec._UpdatesNotificationSettings_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._UpdatesNotificationSettings_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._UpdatesNotificationSettings_result(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1967,8 +10171,143 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "cooldown":
+			out.Values[i] = ec._User_cooldown(ctx, field, obj)
+		case "createdTime":
+			out.Values[i] = ec._User_createdTime(ctx, field, obj)
+		case "email":
+			out.Values[i] = ec._User_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "petOwner":
+			out.Values[i] = ec._User_petOwner(ctx, field, obj)
+		case "userProfile":
+			out.Values[i] = ec._User_userProfile(ctx, field, obj)
+		case "notificationSetting":
+			out.Values[i] = ec._User_notificationSetting(ctx, field, obj)
+		case "eventList":
+			out.Values[i] = ec._User_eventList(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userCreateByIDPayloadImplementors = []string{"UserCreateByIDPayload", "Payload"}
+
+func (ec *executionContext) _UserCreateByIDPayload(ctx context.Context, sel ast.SelectionSet, obj *model.UserCreateByIDPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userCreateByIDPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserCreateByIDPayload")
+		case "error":
+			out.Values[i] = ec._UserCreateByIDPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._UserCreateByIDPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._UserCreateByIDPayload_result(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userNotificationImplementors = []string{"UserNotification"}
+
+func (ec *executionContext) _UserNotification(ctx context.Context, sel ast.SelectionSet, obj *model.UserNotification) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userNotificationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserNotification")
+		case "notificationList":
+			out.Values[i] = ec._UserNotification_notificationList(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userProfileImplementors = []string{"UserProfile", "ProfileNode"}
+
+func (ec *executionContext) _UserProfile(ctx context.Context, sel ast.SelectionSet, obj *model.UserProfile) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userProfileImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserProfile")
+		case "id":
+			out.Values[i] = ec._UserProfile_id(ctx, field, obj)
 		case "name":
-			out.Values[i] = ec._User_name(ctx, field, obj)
+			out.Values[i] = ec._UserProfile_name(ctx, field, obj)
+		case "gender":
+			out.Values[i] = ec._UserProfile_gender(ctx, field, obj)
+		case "age":
+			out.Values[i] = ec._UserProfile_age(ctx, field, obj)
+		case "email":
+			out.Values[i] = ec._UserProfile_email(ctx, field, obj)
+		case "location":
+			out.Values[i] = ec._UserProfile_location(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userProfileListGetPayloadImplementors = []string{"UserProfileListGetPayload", "Payload"}
+
+func (ec *executionContext) _UserProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.UserProfileListGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userProfileListGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserProfileListGetPayload")
+		case "error":
+			out.Values[i] = ec._UserProfileListGetPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._UserProfileListGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._UserProfileListGetPayload_result(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2248,32 +10587,12 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v interface{}) (model.NewTodo, error) {
-	res, err := ec.unmarshalInputNewTodo(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalNEmail2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+func (ec *executionContext) marshalNEmail2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -2283,11 +10602,17 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTodo2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v model.Todo) graphql.Marshaler {
-	return ec._Todo(ctx, sel, &v)
+func (ec *executionContext) marshalNError2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐError(ctx context.Context, sel ast.SelectionSet, v model.Error) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Error(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx context.Context, sel ast.SelectionSet, v []model.Error) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2311,7 +10636,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋtingpoᚋpupgoback
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
+			ret[i] = ec.marshalNError2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐError(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2331,14 +10656,715 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋtingpoᚋpupgoback
 	return ret
 }
 
-func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNEvent2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Event) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._Todo(ctx, sel, v)
+	return ec._Event(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNEventsCreateInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsCreateInput(ctx context.Context, v interface{}) (model.EventsCreateInput, error) {
+	res, err := ec.unmarshalInputEventsCreateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNEventsCreatePayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsCreatePayload(ctx context.Context, sel ast.SelectionSet, v model.EventsCreatePayload) graphql.Marshaler {
+	return ec._EventsCreatePayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNEventsCreatePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsCreatePayload(ctx context.Context, sel ast.SelectionSet, v *model.EventsCreatePayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._EventsCreatePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNEventsJoinInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsJoinInput(ctx context.Context, v interface{}) (model.EventsJoinInput, error) {
+	res, err := ec.unmarshalInputEventsJoinInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNEventsJoinPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsJoinPayload(ctx context.Context, sel ast.SelectionSet, v model.EventsJoinPayload) graphql.Marshaler {
+	return ec._EventsJoinPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNEventsJoinPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsJoinPayload(ctx context.Context, sel ast.SelectionSet, v *model.EventsJoinPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._EventsJoinPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNEventsListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsListGetInput(ctx context.Context, v interface{}) (model.EventsListGetInput, error) {
+	res, err := ec.unmarshalInputEventsListGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNEventsListGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsListGetPayload(ctx context.Context, sel ast.SelectionSet, v model.EventsListGetPayload) graphql.Marshaler {
+	return ec._EventsListGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNEventsListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsListGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.EventsListGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._EventsListGetPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNFriendRemoveInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendRemoveInput(ctx context.Context, v interface{}) (model.FriendRemoveInput, error) {
+	res, err := ec.unmarshalInputFriendRemoveInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFriendRemovePayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendRemovePayload(ctx context.Context, sel ast.SelectionSet, v model.FriendRemovePayload) graphql.Marshaler {
+	return ec._FriendRemovePayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFriendRemovePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendRemovePayload(ctx context.Context, sel ast.SelectionSet, v *model.FriendRemovePayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._FriendRemovePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNFriendsListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendsListGetInput(ctx context.Context, v interface{}) (model.FriendsListGetInput, error) {
+	res, err := ec.unmarshalInputFriendsListGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFriendsListGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendsListGetPayload(ctx context.Context, sel ast.SelectionSet, v model.FriendsListGetPayload) graphql.Marshaler {
+	return ec._FriendsListGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFriendsListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐFriendsListGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.FriendsListGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._FriendsListGetPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNID2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNNotifiactionsGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotifiactionsGetInput(ctx context.Context, v interface{}) (model.NotifiactionsGetInput, error) {
+	res, err := ec.unmarshalInputNotifiactionsGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNNotifiactionsGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotifiactionsGetPayload(ctx context.Context, sel ast.SelectionSet, v model.NotifiactionsGetPayload) graphql.Marshaler {
+	return ec._NotifiactionsGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNotifiactionsGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotifiactionsGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.NotifiactionsGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._NotifiactionsGetPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNotification2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Notification) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNotification2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotification(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNNotification2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotification(ctx context.Context, sel ast.SelectionSet, v *model.Notification) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Notification(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNNotificationRemoveInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationRemoveInput(ctx context.Context, v interface{}) (model.NotificationRemoveInput, error) {
+	res, err := ec.unmarshalInputNotificationRemoveInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNNotificationRemovePayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationRemovePayload(ctx context.Context, sel ast.SelectionSet, v model.NotificationRemovePayload) graphql.Marshaler {
+	return ec._NotificationRemovePayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNotificationRemovePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationRemovePayload(ctx context.Context, sel ast.SelectionSet, v *model.NotificationRemovePayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._NotificationRemovePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPet2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Pet) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPet2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPet(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNPet2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPet(ctx context.Context, sel ast.SelectionSet, v *model.Pet) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Pet(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPetCreateInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetCreateInput(ctx context.Context, v interface{}) (model.PetCreateInput, error) {
+	res, err := ec.unmarshalInputPetCreateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPetCreatePayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetCreatePayload(ctx context.Context, sel ast.SelectionSet, v model.PetCreatePayload) graphql.Marshaler {
+	return ec._PetCreatePayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPetCreatePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetCreatePayload(ctx context.Context, sel ast.SelectionSet, v *model.PetCreatePayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PetCreatePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPetDeleteInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetDeleteInput(ctx context.Context, v interface{}) (model.PetDeleteInput, error) {
+	res, err := ec.unmarshalInputPetDeleteInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPetDeletePayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetDeletePayload(ctx context.Context, sel ast.SelectionSet, v model.PetDeletePayload) graphql.Marshaler {
+	return ec._PetDeletePayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPetDeletePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetDeletePayload(ctx context.Context, sel ast.SelectionSet, v *model.PetDeletePayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PetDeletePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPetProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.PetProfile) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx context.Context, sel ast.SelectionSet, v *model.PetProfile) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PetProfile(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPetProfileListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileListGetInput(ctx context.Context, v interface{}) (model.PetProfileListGetInput, error) {
+	res, err := ec.unmarshalInputPetProfileListGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPetProfileListGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, v model.PetProfileListGetPayload) graphql.Marshaler {
+	return ec._PetProfileListGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPetProfileListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.PetProfileListGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PetProfileListGetPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPetProfileUpdatesInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileUpdatesInput(ctx context.Context, v interface{}) (model.PetProfileUpdatesInput, error) {
+	res, err := ec.unmarshalInputPetProfileUpdatesInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPetProfileUpdatesPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileUpdatesPayload(ctx context.Context, sel ast.SelectionSet, v model.PetProfileUpdatesPayload) graphql.Marshaler {
+	return ec._PetProfileUpdatesPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPetProfileUpdatesPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileUpdatesPayload(ctx context.Context, sel ast.SelectionSet, v *model.PetProfileUpdatesPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PetProfileUpdatesPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNProfileListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileListGetInput(ctx context.Context, v interface{}) (model.ProfileListGetInput, error) {
+	res, err := ec.unmarshalInputProfileListGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNProfileListGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, v model.ProfileListGetPayload) graphql.Marshaler {
+	return ec._ProfileListGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProfileListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.ProfileListGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ProfileListGetPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNProfileNode2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileNode(ctx context.Context, sel ast.SelectionSet, v model.ProfileNode) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ProfileNode(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNProfileNode2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileNodeᚄ(ctx context.Context, sel ast.SelectionSet, v []model.ProfileNode) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNProfileNode2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileNode(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNRecommendation2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Recommendation) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRecommendation2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendation(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNRecommendation2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendation(ctx context.Context, sel ast.SelectionSet, v *model.Recommendation) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Recommendation(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNRecommendationGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationGetInput(ctx context.Context, v interface{}) (model.RecommendationGetInput, error) {
+	res, err := ec.unmarshalInputRecommendationGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNRecommendationGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationGetPayload(ctx context.Context, sel ast.SelectionSet, v model.RecommendationGetPayload) graphql.Marshaler {
+	return ec._RecommendationGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRecommendationGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.RecommendationGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RecommendationGetPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNRecommendationResponseInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationResponseInput(ctx context.Context, v interface{}) (model.RecommendationResponseInput, error) {
+	res, err := ec.unmarshalInputRecommendationResponseInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNRecommendationResponsePayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationResponsePayload(ctx context.Context, sel ast.SelectionSet, v model.RecommendationResponsePayload) graphql.Marshaler {
+	return ec._RecommendationResponsePayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRecommendationResponsePayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationResponsePayload(ctx context.Context, sel ast.SelectionSet, v *model.RecommendationResponsePayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RecommendationResponsePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNUpdatesNotificationSettings2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUpdatesNotificationSettings(ctx context.Context, sel ast.SelectionSet, v model.UpdatesNotificationSettings) graphql.Marshaler {
+	return ec._UpdatesNotificationSettings(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUpdatesNotificationSettings2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUpdatesNotificationSettings(ctx context.Context, sel ast.SelectionSet, v *model.UpdatesNotificationSettings) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UpdatesNotificationSettings(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdatesNotificationSettingsInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUpdatesNotificationSettingsInput(ctx context.Context, v interface{}) (model.UpdatesNotificationSettingsInput, error) {
+	res, err := ec.unmarshalInputUpdatesNotificationSettingsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
@@ -2349,6 +11375,98 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋtingpoᚋpupgobackend
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUserCreateByIDInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserCreateByIDInput(ctx context.Context, v interface{}) (model.UserCreateByIDInput, error) {
+	res, err := ec.unmarshalInputUserCreateByIDInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUserCreateByIDPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserCreateByIDPayload(ctx context.Context, sel ast.SelectionSet, v model.UserCreateByIDPayload) graphql.Marshaler {
+	return ec._UserCreateByIDPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUserCreateByIDPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserCreateByIDPayload(ctx context.Context, sel ast.SelectionSet, v *model.UserCreateByIDPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UserCreateByIDPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNUserProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.UserProfile) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNUserProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfile(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNUserProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfile(ctx context.Context, sel ast.SelectionSet, v *model.UserProfile) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UserProfile(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUserProfileListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileListGetInput(ctx context.Context, v interface{}) (model.UserProfileListGetInput, error) {
+	res, err := ec.unmarshalInputUserProfileListGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUserProfileListGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, v model.UserProfileListGetPayload) graphql.Marshaler {
+	return ec._UserProfileListGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUserProfileListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileListGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.UserProfileListGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UserProfileListGetPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -2632,6 +11750,349 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
+func (ec *executionContext) marshalOCoordinate2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐCoordinate(ctx context.Context, sel ast.SelectionSet, v *model.Coordinate) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Coordinate(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOCoordinateInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐCoordinateInput(ctx context.Context, v interface{}) (*model.CoordinateInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCoordinateInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOEmail2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOEmail2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOEvent2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Event) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEvent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalOEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEvent(ctx context.Context, sel ast.SelectionSet, v *model.Event) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Event(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOEventRequest2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventRequest(ctx context.Context, sel ast.SelectionSet, v *model.EventRequest) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._EventRequest(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOEventsLimits2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsLimits(ctx context.Context, sel ast.SelectionSet, v *model.EventsLimits) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._EventsLimits(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOEventsLimitsInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsLimitsInput(ctx context.Context, v interface{}) (*model.EventsLimitsInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputEventsLimitsInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalID(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalID(*v)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) marshalOLocation2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Location(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOLocationInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocationInput(ctx context.Context, v interface{}) (*model.LocationInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputLocationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalONotification2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Notification) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNNotification2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotification(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalONotificationSetting2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationSetting(ctx context.Context, sel ast.SelectionSet, v *model.NotificationSetting) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NotificationSetting(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalONumbers2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalONumbers2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOPet2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPet(ctx context.Context, sel ast.SelectionSet, v *model.Pet) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Pet(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPetConnection2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetConnection(ctx context.Context, sel ast.SelectionSet, v *model.PetConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PetConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOPetGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetGender(ctx context.Context, v interface{}) (*model.PetGender, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.PetGender)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOPetGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetGender(ctx context.Context, sel ast.SelectionSet, v *model.PetGender) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOPetOwner2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetOwner(ctx context.Context, sel ast.SelectionSet, v *model.PetOwner) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PetOwner(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx context.Context, sel ast.SelectionSet, v *model.PetProfile) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PetProfile(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPetRecommned2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetRecommned(ctx context.Context, sel ast.SelectionSet, v *model.PetRecommned) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PetRecommned(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPetRelationship2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetRelationship(ctx context.Context, sel ast.SelectionSet, v *model.PetRelationship) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PetRelationship(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProfileNode2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐProfileNode(ctx context.Context, sel ast.SelectionSet, v model.ProfileNode) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProfileNode(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalORecommendationStatus2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationStatus(ctx context.Context, v interface{}) (*model.RecommendationStatus, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.RecommendationStatus)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalORecommendationStatus2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐRecommendationStatus(ctx context.Context, sel ast.SelectionSet, v *model.RecommendationStatus) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2639,6 +12100,48 @@ func (ec *executionContext) unmarshalOString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
@@ -2654,6 +12157,81 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOTimeRange2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTimeRange(ctx context.Context, sel ast.SelectionSet, v *model.TimeRange) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TimeRange(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOTimeRangeInput2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐTimeRangeInput(ctx context.Context, v interface{}) (*model.TimeRangeInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputTimeRangeInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOTimestamp2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTimestamp2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) unmarshalOURL2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOURL2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOUserGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserGender(ctx context.Context, v interface{}) (*model.UserGender, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.UserGender)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOUserGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserGender(ctx context.Context, sel ast.SelectionSet, v *model.UserGender) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOUserProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfile(ctx context.Context, sel ast.SelectionSet, v *model.UserProfile) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserProfile(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

@@ -1,0 +1,71 @@
+
+type Query{
+    eventsListGet(eventsListGetInput: EventsListGetInput!) : EventsListGetPayload!
+    notifiactionsGet(notifiactionsGetInput: NotifiactionsGetInput!) : NotifiactionsGetPayload!
+    recommendationGet(recommendationGetInput: RecommendationGetInput!) : RecommendationGetPayload!
+    friendsListGet(friendsListGetInput: FriendsListGetInput!) : FriendsListGetPayload!
+    petProfileListGet(petProfileListGetInput: PetProfileListGetInput!) : PetProfileListGetPayload!
+    userProfileListGet(userProfileListGetInput:UserProfileListGetInput!): UserProfileListGetPayload!
+    profileListGet(profileListGetInput: ProfileListGetInput!): ProfileListGetPayload!
+}
+input EventsListGetInput{
+    pid: ID!
+}
+
+type EventsListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Event!]!
+}
+
+input NotifiactionsGetInput{
+    pid:ID!
+}
+type NotifiactionsGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Notification!]!
+}
+
+input RecommendationGetInput{
+    pid:ID!
+}
+type RecommendationGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Recommendation!]!
+}
+
+input FriendsListGetInput{
+    pid:ID!
+}
+type FriendsListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [Pet!]!
+}
+input PetProfileListGetInput{
+    pid:[ID!]
+}
+type PetProfileListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [PetProfile!]!
+}
+
+input UserProfileListGetInput{
+    uid:[ID!]!
+}
+type UserProfileListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [UserProfile!]!
+}
+input ProfileListGetInput{
+    id:[ID!]!
+}
+type ProfileListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [ProfileNode!]!
+}
