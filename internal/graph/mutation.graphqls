@@ -1,0 +1,138 @@
+
+type Mutation{
+    "[testing] new a user with special id"
+    userCreateByID(userCreateByIDInput: UserCreateByIDInput!): UserCreateByIDPayload!
+    eventsCreate(eventsCreateInput: EventsCreateInput!): EventsCreatePayload!
+    eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
+    notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
+    recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
+    friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!
+    petProfileUpdates(petProfileUpdatesInput: PetProfileUpdatesInput!) : PetProfileUpdatesPayload!
+    petCreate(petCreateInput: PetCreateInput!): PetCreatePayload!
+    petDelete(petDeleteInput: PetDeleteInput!) :PetDeletePayload!
+    updatesNotificationSettings(updatesNotificationSettingsInput: UpdatesNotificationSettingsInput!) : UpdatesNotificationSettings!
+    #update user/dog profile for location
+}
+
+type UserCreateByIDPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: User
+}
+type EventsCreatePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Event
+}
+type EventsJoinPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: EventRequest
+}
+type NotificationRemovePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
+type RecommendationResponsePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    "If the other already accepts, return petprofile otherwise return null"
+    result: PetProfile
+}
+type FriendRemovePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
+type PetProfileUpdatesPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: PetProfile
+}
+type PetCreatePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: PetProfile
+}
+type PetDeletePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
+type UpdatesNotificationSettings implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: NotificationSetting
+}
+input UserCreateByIDInput{
+    id: ID!
+}
+input EventsCreateInput{
+    id: ID!
+    location: LocationInput
+    timeRange: TimeRangeInput
+    limit: EventsLimitsInput
+    image: URL
+    description: [String!]
+}
+input EventsJoinInput{
+    pid:ID!
+    eventID:ID!
+}
+input NotificationRemoveInput{
+    pid:ID!
+    notificationID:ID!
+}
+input RecommendationResponseInput{
+    rid:ID!
+    result:Boolean!
+}
+
+input FriendRemoveInput{
+    petID:ID!
+    friendID:ID!
+}
+
+input PetProfileUpdatesInput{
+    id: ID!
+    name: String
+    image: URL
+    "only two"
+    gender: PetGender
+    "breed of dog, cat etc"
+    breed: String
+    "is castration or not: true for castration"
+    isCastration: Boolean!
+    birthday: Timestamp
+    location: LocationInput
+}
+input LocationInput{
+    country: String
+    city: String
+    address: String
+    Coordinate: CoordinateInput
+}
+input PetCreateInput{
+    name: String
+    image: URL
+    "only two"
+    gender: PetGender
+    "breed of dog, cat etc"
+    breed: String
+    "is castration or not: true for castration"
+    isCastration: Boolean!
+    birthday: Timestamp
+    location: LocationInput
+}
+input PetDeleteInput{
+    pid:ID!
+}
+input UpdatesNotificationSettingsInput{
+    uid:ID!
+    allowedNotificationWhenNewEventsFromFriends: Boolean!
+    allowedNotificationWhenEventsWillStartIn30Mins: Boolean!
+    allowedNotificationWhenEventsStatusChanged: Boolean!
+}
+
+

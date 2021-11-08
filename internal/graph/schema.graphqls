@@ -1,0 +1,185 @@
+"User total profile, if want to get other user data. Always use userprofile!"
+type User {
+    id: ID!
+    cooldown: Timestamp
+    createdTime: Timestamp
+    email: Email!
+    petOwner: PetOwner
+    userProfile: UserProfile
+    notificationSetting: NotificationSetting
+    eventList: [Event!]
+}
+"User Notification Setting."
+type NotificationSetting{
+    allowedNotificationWhenNewEventsFromFriends: Boolean!
+    allowedNotificationWhenEventsWillStartIn30Mins: Boolean!
+    allowedNotificationWhenEventsStatusChanged: Boolean!
+}
+
+"PetOwner relationship. Hide behide user"
+type PetOwner{
+    user: User!
+    petLists: [Pet!]!
+}
+type Pet{
+    id: ID!
+    owner: PetOwner
+    petProfile: PetProfile
+    petRelationShip: PetRelationship
+    eventList: [Event!]
+}
+"ProfileNode is a interface that stands for both pet and human"
+interface ProfileNode{
+    id: ID
+    name: String
+    location: Location
+}
+type PetProfile implements ProfileNode{
+    id: ID
+    name: String
+    image: URL
+    "only two"
+    gender: PetGender
+    "breed of dog, cat etc"
+    breed: String
+    "is castration or not: true for castration"
+    isCastration: Boolean!
+    birthday: Timestamp
+    location: Location
+}
+"User profile let open to public"
+type UserProfile implements ProfileNode{
+    id: ID
+    name: String
+    gender: UserGender
+    "only use year as unit not month"
+    age: Int
+    email: Email
+    location: Location
+}
+"PetRelationship to other roles"
+type PetRelationship{
+    parentpet: Pet
+    connection: PetConnection
+    recommend: PetRecommned
+}
+"Pet Connection Friends List "
+type PetConnection{
+    friendList: [PetProfile!]!
+}
+"recommendation friends (always should be pet not user)"
+type PetRecommned{
+    recommend: [Recommendation!]!
+}
+type Event{
+    id: ID!
+    location: Location
+    timeRange: TimeRange
+    limit: EventsLimits
+    image: URL
+    description: [String!]
+    "holder shuold be pet"
+    holder: PetProfile
+    participants: [PetProfile!]!
+    participantsHuman: [UserProfile!]!
+}
+"Limitation of Events"
+type EventsLimits{
+    limitOfDog: Int
+    limitOfHuman: Int
+}
+type TimeRange{
+    startTime: Timestamp
+    endTime: Timestamp
+}
+"location relation"
+type Location{
+    country: String
+    city: String
+    address: String
+    coor: Coordinate
+}
+type Coordinate{
+    "when blur is setting that means the latitude and longitude is not the precise."
+    isBlur: Boolean!
+    latitude: Numbers
+    longitude: Numbers
+}
+type Recommendation{
+    id: ID!
+    pet: PetProfile
+    status: RecommendationStatus
+}
+type Notification{
+    id:ID!
+    title: String
+    description: String
+    time: Timestamp
+}
+type UserNotification{
+    notificationList: [Notification!]
+}
+type EventRequest{
+    id:ID!
+    requester: ProfileNode
+    eventid: ID!
+    description: [String!]!
+}
+schema {
+  query: Query
+  mutation: Mutation
+}
+"only user 3 cases"
+enum UserGender {
+  MALE
+  FEMALE
+  "put all other to this"
+  NOT_TO_DECLARED
+}
+"Pet have no not to declared"
+enum PetGender {
+  MALE
+  FEMALE
+}
+enum RecommendationStatus{
+    NO_ONE_ANSWERED
+    AGREE
+    DISAGREE
+}
+
+interface Payload{
+  error: [Error!]!
+  "執行時間"
+  timestamp: Timestamp
+}
+interface Error{
+    code: String
+    message: String!
+    # Path to input field which caused the error.
+    field: [String!]
+}
+
+input NewEmail{
+    email: String!
+}
+input TimeRangeInput{
+    startTime: Timestamp
+    endTime: Timestamp
+}
+input EventsLimitsInput{
+    limitOfDog: Int
+    limitOfHuman: Int
+}
+
+"timestamp should gives timezone and time"
+scalar Timestamp
+scalar URL
+scalar Numbers
+scalar Email
+
+input CoordinateInput{
+    "when blur is setting that means the latitude and longitude is not the precise."
+    isBlur: Boolean!
+    latitude: Numbers
+    longitude: Numbers
+}
