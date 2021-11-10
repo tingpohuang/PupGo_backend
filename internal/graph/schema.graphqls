@@ -10,6 +10,8 @@ type User {
     eventList: [Event!]
 }
 "User Notification Setting."
+"delete notification settings, store in local"
+@deprecated
 type NotificationSetting{
     allowedNotificationWhenNewEventsFromFriends: Boolean!
     allowedNotificationWhenEventsWillStartIn30Mins: Boolean!
@@ -53,7 +55,7 @@ type UserProfile implements ProfileNode{
     name: String
     gender: UserGender
     "only use year as unit not month"
-    age: Int
+    birthday: Timestamp
     email: Email
     location: Location
 }
@@ -85,8 +87,8 @@ type Event{
 }
 "Limitation of Events"
 type EventsLimits{
-    limitOfDog: Int
-    limitOfHuman: Int
+    limitOfPet: Int
+    limitOfUser: Int
 }
 type TimeRange{
     startTime: Timestamp
