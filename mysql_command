@@ -1,0 +1,2 @@
+CREATE TABLE user( id varchar(36), cooldown Timestamp, created_at Timestamp DEFAULT CURRENT_TIMESTAMP)
+
