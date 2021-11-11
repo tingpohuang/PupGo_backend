@@ -117,6 +117,10 @@ type Notification{
     title: String
     description: String
     time: Timestamp
+    eventid: ID
+    userid: ID
+    type: enum
+
 }
 type UserNotification{
     notificationList: [Notification!]
