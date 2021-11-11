@@ -120,7 +120,6 @@ type Notification{
     eventid: ID
     userid: ID
     type: enum
-
 }
 type UserNotification{
     notificationList: [Notification!]
