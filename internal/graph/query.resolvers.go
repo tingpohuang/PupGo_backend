@@ -24,7 +24,20 @@ func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGet
 }
 
 func (r *queryResolver) FriendsListGet(ctx context.Context, friendsListGetInput model1.FriendsListGetInput) (*model1.FriendsListGetPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// panic(fmt.Errorf("not implemented"))
+	newPet := &model1.Pet{
+		ID : "ab11dc1cc1",
+		Owner : nil,
+		PetProfile : nil,
+		PetRelationShip : nil,
+	}
+	s:= "10011111212"
+	newPayload := &model1.FriendsListGetPayload{
+		Error : nil,
+		Result: []*model1.Pet{newPet},
+		Timestamp : &s,
+	}
+	return newPayload,nil
 }
 
 func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGetInput model1.PetProfileListGetInput) (*model1.PetProfileListGetPayload, error) {
