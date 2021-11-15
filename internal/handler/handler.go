@@ -6,7 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tingpo/pupgobackend/internal/graph"
 	"github.com/tingpo/pupgobackend/internal/graph/generated"
+	"net/http"
 )
+
+func RootHandler() gin.HandlerFunc{
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
+	}
+}
+
 
 func PlaygroundHandler() gin.HandlerFunc {
 	h:= playground.Handler("GraphQL playground", "/query")

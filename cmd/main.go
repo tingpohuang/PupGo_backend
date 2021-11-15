@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/tingpo/pupgobackend/internal/handler"
-	"net/http"
 )
 
 func init() {
@@ -21,10 +20,7 @@ func init() {
 func main() {
 	server := gin.Default()
 
-	server.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "hello world"})
-	})
-
+	server.GET("/", handler.RootHandler())
 	server.GET("/playground", handler.PlaygroundHandler())
 	server.POST("/query", handler.GraphQLHandler())
 
