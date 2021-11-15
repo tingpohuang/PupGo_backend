@@ -20,13 +20,23 @@ device_id varbinary[16] [pk]
 
 Ref: user_device.user_id > U.id
 
-Table petowner {
+Table user_location {
+user_id varbinary[16] [pk]
+position point
+country varchar[50]
+state varchar[50]
+city varchar[50]
+}
+
+Ref: user_location.user_id > U.id
+
+Table pet_owner {
 user_id varbinary[16] [pk] // FK
 pet_id varbinary[16] [pk]  // FK
 }
 
-Ref: U.id < petowner.user_id
-Ref: pet.id < petowner.pet_id
+Ref: U.id < pet_owner.user_id
+Ref: pet.id < pet_owner.pet_id
 
 Table pet {
 id varbinary[16] [pk]
@@ -57,6 +67,7 @@ score double
 status int
 }
 
+Ref: pet_recommend.id1 > pet.id
 Ref: pet_recommend.id2 > pet.id
 
 
@@ -73,6 +84,15 @@ description varchar[300]
 
 Ref: event.holder_id > U.id
 
+Table event_location {
+event_id varbinary[16] [pk]
+position point
+country varchar[50]
+state varchar[50]
+city varchar[50]
+}
+
+Ref: event_location.event_id > event.id
 
 Table event_participant{
 event_id varbinary[16] [pk]
