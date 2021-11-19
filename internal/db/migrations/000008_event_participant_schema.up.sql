@@ -1,6 +1,8 @@
 create table event_participant(
-		event_id1 varbinary(16) NOT NULL PRIMARY KEY,
+		event_id varbinary(16) NOT NULL PRIMARY KEY,
 		participant_id varbinary(16) NOT NULL,
-		pet_id varbinary(16)
+		pet_id varbinary(16),
+		FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE,
+		FOREIGN KEY (participant_id) REFERENCES users (id) ON DELETE CASCADE,
+		FOREIGN KEY (pet_id) REFERENCES pet (id) ON DELETE CASCADE
 );
--- CREATE INDEX "event_participant" ("participant_id");
