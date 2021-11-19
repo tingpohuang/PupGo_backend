@@ -3,5 +3,5 @@ create table pet_connection(
 		id2 VARCHAR(36) NOT NULL,
 		FOREIGN KEY(id1) REFERENCES pet(id) ON DELETE CASCADE,
 		FOREIGN KEY(id2) REFERENCES pet(id)	ON DELETE CASCADE,
-		CONSTRAINT PK PRIMARY KEY (id1, id2)
+		CONSTRAINT PK_pet_connection PRIMARY KEY (id1, id2)
 );

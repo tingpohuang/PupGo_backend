@@ -5,5 +5,5 @@ create table pet_recommend(
 		status int,
 		FOREIGN KEY(id1) REFERENCES pet(id) ON DELETE CASCADE,
 		FOREIGN KEY(id2) REFERENCES pet(id)	ON DELETE CASCADE,
-		CONSTRAINT PK PRIMARY KEY (id1, id2)
+		CONSTRAINT PK_pet_recommend PRIMARY KEY (id1, id2)
 	);

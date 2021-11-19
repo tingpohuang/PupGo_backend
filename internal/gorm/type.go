@@ -7,12 +7,12 @@ import (
 )
 
 type User struct {
-	Id         string `gorm:"column:id",gorm:"type:VARCHAR(36);primaryKey;"`
+	Id         string `gorm:"column:id",gorm:"type:VARCHAR(36);primaryKey"`
 	Name       string
 	Cooldown   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 	Created_at time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 	gender     int
-	birthday   time.Time
+	birthday   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 }
 
 func (u *User) BeforeCreate(db *gorm.DB) error {
@@ -24,37 +24,37 @@ func (u *User) BeforeCreate(db *gorm.DB) error {
 }
 
 type User_device struct {
-	user_id   string `gorm:"primaryKey"`
-	device_id string
+	User_id   string `gorm:"primaryKey"`
+	Device_id string
 }
 type Pet_connection struct {
-	id1 string `gorm:"primaryKey"`
-	id2 string
+	id1 string `gorm:"type:VARCHAR(36);column:id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
+	id2 string `gorm:"type:VARCHAR(36);column:id2;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
 }
 type Pet_owner struct {
-	User_id string `gorm:"column:user_id", gorm:"primaryKey", gorm:"constraint:OnDelete:CASCADE"`
-	Pet_id  string `gorm:"column:pet_id"`
+	User_id string `gorm:"type:VARCHAR(36);column:user_id;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
+	Pet_id  string `gorm:"type:VARCHAR(36);column:pet_id;not null;default:null", gorm:"primaryKey"`
 }
-type pet_recommend struct {
-	id1    string `gorm:"primaryKey"`
-	id2    string
+type Pet_recommend struct {
+	id1    string `gorm:"type:VARCHAR(36);column:id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
+	id2    string `gorm:"type:VARCHAR(36);column:id2;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
 	score  float64
 	status int
 }
 
 type Event struct {
-	Id              string `gorm:"primaryKey"`
-	Holder_Id       string
-	Start_date      time.Time
-	End_date        time.Time
-	Image           string
-	Limits_user_num int
-	Limits_pet_num  int
-	Description     string
+	Id             string `gorm:"type:VARCHAR(36);primaryKey"`
+	Holder_Id      string
+	Start_date     time.Time
+	End_date       time.Time
+	Image          string
+	Limit_user_num int
+	Limit_pet_num  int
+	Description    string
 }
 
 type Pet struct {
-	Id           string `gorm:"primaryKey",gorm:"column:id"`
+	Id           string `gorm:"type:VARCHAR(36);primaryKey",gorm:"column:id"`
 	Name         string
 	Image        string
 	Gender       int
@@ -71,8 +71,8 @@ type Pet struct {
 // }
 
 type Event_participant struct {
-	event_id       string `gorm:"primaryKey"`
-	participant_id string
-	pet_id         string
+	event_id       string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	participant_id string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	pet_id         string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
 	status         int
 }
