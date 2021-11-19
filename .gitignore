@@ -6,6 +6,8 @@
 *.dylib
 .idea
 .DS_Store
+*/*.env
+*.env
 
 # Test binary, built with `go test -c`
 *.test
