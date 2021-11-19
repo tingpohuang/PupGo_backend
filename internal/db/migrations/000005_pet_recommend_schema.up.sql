@@ -3,5 +3,6 @@ create table pet_recommend(
 		id2 varbinary(16) NOT NULL,
 		score float(20),
 		status int,
-		FOREIGN KEY(id2) REFERENCES pet(id)
+		FOREIGN KEY(id1) REFERENCES pet(id) ON DELETE CASCADE,
+		FOREIGN KEY(id2) REFERENCES pet(id)	ON DELETE CASCADE
 	);
