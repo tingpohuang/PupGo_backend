@@ -6,9 +6,15 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
 	generated1 "github.com/tingpo/pupgobackend/internal/graph/generated"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
+)
+
+var (
+	TIMEOUT int = 30
 )
 
 func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput model1.EventsListGetInput) (*model1.EventsListGetPayload, error) {
@@ -25,7 +31,20 @@ func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGet
 }
 
 func (r *queryResolver) FriendsListGet(ctx context.Context, friendsListGetInput model1.FriendsListGetInput) (*model1.FriendsListGetPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// var Errors []Error
+	newPet := &model1.Pet{
+		ID:              uuid.NewString(),
+		Owner:           nil,
+		PetProfile:      nil,
+		PetRelationShip: nil,
+	}
+	s := time.Now().String()
+	newPayload := &model1.FriendsListGetPayload{
+		Error:     nil,
+		Result:    []*model1.Pet{newPet},
+		Timestamp: &s,
+	}
+	return newPayload, nil
 }
 
 func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGetInput model1.PetProfileListGetInput) (*model1.PetProfileListGetPayload, error) {
