@@ -12,6 +12,7 @@ import (
 )
 
 func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput model1.EventsListGetInput) (*model1.EventsListGetPayload, error) {
+
 	panic(fmt.Errorf("not implemented"))
 }
 
