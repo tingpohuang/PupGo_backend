@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,16 +17,33 @@ var (
 )
 
 func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput model1.EventsListGetInput) (*model1.EventsListGetPayload, error) {
-
-	panic(fmt.Errorf("not implemented"))
+	timestamp := time.Now().String()
+	newPayload := &model1.EventsListGetPayload{
+		Error:     nil,
+		Result:    []*model1.Event{},
+		Timestamp: &timestamp,
+	}
+	return newPayload, nil
 }
 
 func (r *queryResolver) NotifiactionsGet(ctx context.Context, notifiactionsGetInput model1.NotifiactionsGetInput) (*model1.NotifiactionsGetPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	timestamp := time.Now().String()
+	newPayload := &model1.NotifiactionsGetPayload{
+		Error:     nil,
+		Result:    []*model1.Notification{},
+		Timestamp: &timestamp,
+	}
+	return newPayload, nil
 }
 
 func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGetInput model1.RecommendationGetInput) (*model1.RecommendationGetPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	timestamp := time.Now().String()
+	newPayload := &model1.RecommendationGetPayload{
+		Error:     nil,
+		Result:    []*model1.Recommendation{},
+		Timestamp: &timestamp,
+	}
+	return newPayload, nil
 }
 
 func (r *queryResolver) FriendsListGet(ctx context.Context, friendsListGetInput model1.FriendsListGetInput) (*model1.FriendsListGetPayload, error) {
@@ -38,25 +54,43 @@ func (r *queryResolver) FriendsListGet(ctx context.Context, friendsListGetInput 
 		PetProfile:      nil,
 		PetRelationShip: nil,
 	}
-	s := time.Now().String()
+	timestamp := time.Now().String()
 	newPayload := &model1.FriendsListGetPayload{
 		Error:     nil,
 		Result:    []*model1.Pet{newPet},
-		Timestamp: &s,
+		Timestamp: &timestamp,
 	}
 	return newPayload, nil
 }
 
 func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGetInput model1.PetProfileListGetInput) (*model1.PetProfileListGetPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	timestamp := time.Now().String()
+	newPayload := &model1.PetProfileListGetPayload{
+		Error:     nil,
+		Result:    []*model1.PetProfile{},
+		Timestamp: &timestamp,
+	}
+	return newPayload, nil
 }
 
 func (r *queryResolver) UserProfileListGet(ctx context.Context, userProfileListGetInput model1.UserProfileListGetInput) (*model1.UserProfileListGetPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	timestamp := time.Now().String()
+	newPayload := &model1.UserProfileListGetPayload{
+		Error:     nil,
+		Result:    []*model1.UserProfile{},
+		Timestamp: &timestamp,
+	}
+	return newPayload, nil
 }
 
 func (r *queryResolver) ProfileListGet(ctx context.Context, profileListGetInput model1.ProfileListGetInput) (*model1.ProfileListGetPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	timestamp := time.Now().String()
+	newPayload := &model1.ProfileListGetPayload{
+		Error:     nil,
+		Result:    []*model1.UserProfile{},
+		Timestamp: &timestamp,
+	}
+	return newPayload, nil
 }
 
 // Query returns generated1.QueryResolver implementation.
