@@ -24,27 +24,27 @@ func (u *User) BeforeCreate(db *gorm.DB) error {
 }
 
 type User_device struct {
-	user_id   []byte `gorm:"primaryKey"`
-	device_id []byte
+	user_id   string `gorm:"primaryKey"`
+	device_id string
 }
 type Pet_connection struct {
-	id1 []byte `gorm:"primaryKey"`
-	id2 []byte
+	id1 string `gorm:"primaryKey"`
+	id2 string
 }
 type Pet_owner struct {
 	User_id string `gorm:"column:user_id", gorm:"primaryKey", gorm:"constraint:OnDelete:CASCADE"`
 	Pet_id  string `gorm:"column:pet_id"`
 }
 type pet_recommend struct {
-	id1    []byte `gorm:"primaryKey"`
-	id2    []byte
+	id1    string `gorm:"primaryKey"`
+	id2    string
 	score  float64
 	status int
 }
 
 type Event struct {
-	Id              []byte `gorm:"primaryKey"`
-	Holder_Id       []byte
+	Id              string `gorm:"primaryKey"`
+	Holder_Id       string
 	Start_date      time.Time
 	End_date        time.Time
 	Image           string
@@ -71,8 +71,8 @@ type Pet struct {
 // }
 
 type Event_participant struct {
-	event_id       []byte `gorm:"primaryKey"`
-	participant_id []byte
-	pet_id         []byte
+	event_id       string `gorm:"primaryKey"`
+	participant_id string
+	pet_id         string
 	status         int
 }
