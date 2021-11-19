@@ -7,4 +7,3 @@ create table event_location(
 		FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE
 
 );
--- CREATE INDEX "event_participant" ("participant_id");

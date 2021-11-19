@@ -6,4 +6,3 @@ create table event_participant(
 		FOREIGN KEY (participant_id) REFERENCES users (id) ON DELETE CASCADE,
 		FOREIGN KEY (pet_id) REFERENCES pet (id) ON DELETE CASCADE
 );
--- CREATE INDEX "event_participant" ("participant_id");
