@@ -1,5 +1,5 @@
 create table event_location(
-		event_id varbinary(16) NOT NULL PRIMARY KEY,
+		event_id VARCHAR(36) NOT NULL PRIMARY KEY,
 		position point,
 		country varchar(50),
 		state varchar(50),

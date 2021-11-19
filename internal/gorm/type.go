@@ -1,12 +1,26 @@
 package gorm
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type User struct {
-	Id        []byte `gorm:"primaryKey"`
-	Name      string
-	Cooldown  timestamp
-	Create_at timestamp
-	gender    int
-	birthday  timestamp
+	Id         string `gorm:"column:id",gorm:"type:VARCHAR(36);primaryKey;"`
+	Name       string
+	Cooldown   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
+	Created_at time.Time `gorm:"type:timestamp; default: NOW(); not null"`
+	gender     int
+	birthday   time.Time
+}
+
+func (u *User) BeforeCreate(db *gorm.DB) error {
+
+	// uuid, err := uuid.New().MarshalBinary()
+	// u.Id = uuid
+	u.Created_at = time.Now()
+	return nil
 }
 
 type User_device struct {
@@ -18,8 +32,8 @@ type Pet_connection struct {
 	id2 []byte
 }
 type Pet_owner struct {
-	user_id []byte `gorm:"primaryKey"`
-	pet_id  []byte
+	User_id string `gorm:"column:user_id", gorm:"primaryKey", gorm:"constraint:OnDelete:CASCADE"`
+	Pet_id  string `gorm:"column:pet_id"`
 }
 type pet_recommend struct {
 	id1    []byte `gorm:"primaryKey"`
@@ -31,8 +45,8 @@ type pet_recommend struct {
 type Event struct {
 	Id              []byte `gorm:"primaryKey"`
 	Holder_Id       []byte
-	Start_date      timestamp
-	End_date        timestamp
+	Start_date      time.Time
+	End_date        time.Time
 	Image           string
 	Limits_user_num int
 	Limits_pet_num  int
@@ -40,21 +54,25 @@ type Event struct {
 }
 
 type Pet struct {
-	id           []byte `gorm:"primaryKey"`
-	name         string
-	image        string
-	gender       int
-	breed        string
-	isCastration bool
-	birthday     timestamp
+	Id           string `gorm:"primaryKey",gorm:"column:id"`
+	Name         string
+	Image        string
+	Gender       int
+	Breed        string
+	IsCastration bool      `gorm:"column:isCastration"`
+	Birthday     time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 }
+
+// func (p *Pet) BeforeCreate(db *gorm.DB) error {
+
+// 	uuid, err := uuid.New().MarshalBinary()
+// 	// p.Id = uuid
+// 	return err
+// }
+
 type Event_participant struct {
 	event_id       []byte `gorm:"primaryKey"`
 	participant_id []byte
 	pet_id         []byte
 	status         int
-}
-
-//not exist time stamp
-type timestamp struct {
 }

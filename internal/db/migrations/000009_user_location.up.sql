@@ -1,5 +1,5 @@
 create table user_location(
-		user_id varbinary(16) NOT NULL PRIMARY KEY,
+		user_id VARCHAR(36) NOT NULL PRIMARY KEY,
 		position point,
 		country varchar(50),
 		state varchar(50),

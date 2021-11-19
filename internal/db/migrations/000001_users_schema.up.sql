@@ -1,5 +1,5 @@
 create table users(
-		id varbinary(16) NOT NULL PRIMARY KEY,
+		id VARCHAR(36) NOT NULL PRIMARY KEY,
 		cooldown timestamp,
 		email VARCHAR(100),
 		created_at timestamp NOT NULL,
