@@ -1,9 +1,10 @@
 package gorm
 
 import (
-	"github.com/google/uuid"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -43,6 +44,9 @@ var (
 	}
 	p3 = Pet{
 		Id: p3id,
+	}
+	p4 = Pet{
+		Id: p4id,
 	}
 	po1 = Pet_owner{
 		User_id: u1id,
@@ -137,11 +141,11 @@ func TestInputValueToDatabse(t *testing.T) {
 
 func InputUser(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Create(&u1) // pass pointer of data to Create
+	result := g.gdb.Table("users").Create(&u1) // pass pointer of data to Create
 	assert.Nil(result.Error)
-	result = g.gdb.Create(&u2) // pass pointer of data to Create
+	result = g.gdb.Table("users").Create(&u2) // pass pointer of data to Create
 	assert.Nil(result.Error)
-	result = g.gdb.Create(&u3) // pass pointer of data to Create
+	result = g.gdb.Table("users").Create(&u3) // pass pointer of data to Create
 	assert.Nil(result.Error)
 }
 
@@ -152,6 +156,8 @@ func InputPet(t *testing.T, g *gormTestor) {
 	result = g.gdb.Table("pet").Create(&p2) // pass pointer of data to Create
 	assert.Nil(result.Error)
 	result = g.gdb.Table("pet").Create(&p3) // pass pointer of data to Create
+	assert.Nil(result.Error)
+	result = g.gdb.Table("pet").Create(&p4) // pass pointer of data to Create
 	assert.Nil(result.Error)
 }
 
