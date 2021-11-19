@@ -28,13 +28,13 @@ func (s *SQLCnter) findPetByOwner(ctx context.Context, uid uuid.UUID) (pets []Pe
 	return pets
 }
 
-func (s *SQLCnter) findUsersByEvents(ctx context.Context) (user uuid.UUID) {
+// func (s *SQLCnter) findUsersByEvents(ctx context.Context) (user uuid.UUID) {
 
-}
+// }
 
-func (s *SQLCnter) findPetsByEvents(ctx context.Context) (pets []uuid.UUID) {
+// func (s *SQLCnter) findPetsByEvents(ctx context.Context) (pets []uuid.UUID) {
 
-}
+// }
 
 func (s *SQLCnter) findEventsByUser(ctx context.Context) {
 
