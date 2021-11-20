@@ -84,7 +84,7 @@ var (
 	}
 	e1 = Event{
 		Id:             e1id,
-		Holder_Id:      u1id,
+		Holder_Id:      p1id,
 		Start_date:     time.Now(),
 		End_date:       time.Now(),
 		Image:          "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/holiday-logo-202111?wid=71&hei=87&fmt=jpeg&qlt=95&.v=1636070054000",

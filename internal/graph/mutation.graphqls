@@ -85,7 +85,8 @@ input NotificationRemoveInput{
     notificationID:ID!
 }
 input RecommendationResponseInput{
-    rid:ID!
+    pid:ID!
+    recommendID:ID!
     result:Boolean!
 }
 

@@ -341,8 +341,9 @@ type RecommendationGetPayload struct {
 func (RecommendationGetPayload) IsPayload() {}
 
 type RecommendationResponseInput struct {
-	Rid    string `json:"rid"`
-	Result bool   `json:"result"`
+	Pid         string `json:"pid"`
+	RecommendID string `json:"recommendID"`
+	Result      bool   `json:"result"`
 }
 
 type RecommendationResponsePayload struct {

@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	gorm "github.com/tingpo/pupgobackend/internal/gorm"
+	"github.com/tingpo/pupgobackend/internal/gorm"
 	generated1 "github.com/tingpo/pupgobackend/internal/graph/generated"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 )
 
 func (r *mutationResolver) UserCreateByID(ctx context.Context, userCreateByIDInput model1.UserCreateByIDInput) (*model1.UserCreateByIDPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	panic(fmt.Errorf("this function havs closed"))
 }
 
 func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput model1.EventsCreateInput) (*model1.EventsCreatePayload, error) {
@@ -36,7 +36,6 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 		errmsg += "time range cannot be empty value"
 	}
 	if lmt == nil {
-		// dftv := 5
 		lmt = &model1.EventsLimitsInput{
 			LimitOfDog:   &defaultEventLimitPet,
 			LimitOfHuman: &defaultEventLimitHuman,
@@ -70,34 +69,70 @@ func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationR
 }
 
 func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommendationResponseInput model1.RecommendationResponseInput) (*model1.RecommendationResponsePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// panic(fmt.Errorf("not implemented"))
+	payload := &model1.RecommendationResponsePayload{
+		Timestamp: GetNowTimestamp(),
+	}
+	petId := recommendationResponseInput.Pid
+	recommendId := recommendationResponseInput.RecommendID
+	result := recommendationResponseInput.Result
+	res, err := sqlCnter.FindPetRecommendByID(ctx, petId, recommendId)
+	if err != nil {
+		return nil, errors.New("pet recommend not exist")
+	}
+	if !result {
+		res.Status = -1
+		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
+		return payload, err
+	}
+	if res.Status == 1 && petId > recommendId {
+		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
+		if err != nil {
+			return nil, err
+		}
+		res.Status = -1
+		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	} else if res.Status == 2 && petId < recommendId {
+		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
+		if err != nil {
+			return nil, err
+		}
+		res.Status = -1
+		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	} else if petId < recommendId {
+		res.Status = 1
+		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	} else if petId > recommendId {
+		res.Status = 2
+		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	}
+	payload.Result = &model1.PetProfile{}
+	return payload, nil
 }
 
 func (r *mutationResolver) FriendRemove(ctx context.Context, friendRemoveInput model1.FriendRemoveInput) (*model1.FriendRemovePayload, error) {
 	pid := friendRemoveInput.PetID
 	friendId := friendRemoveInput.FriendID
-	err := removeFriend(ctx, pid, friendId)
+	err := RemoveFriend(ctx, pid, friendId)
 	if err != nil {
 		return nil, err
 	} else {
 		return &model1.FriendRemovePayload{
-			Timestamp: getNowTimestamp(),
+			Timestamp: GetNowTimestamp(),
 		}, nil
 	}
-}
-func getUidbyPid(pid string) (string, error) {
-	return "", nil
-}
-func getNowTimestamp() *string {
-	tstmp := time.Now().String()
-	return &tstmp
-}
-func removeFriend(ctx context.Context, id1 string, id2 string) error {
-	if id1 > id2 {
-		id1, id2 = id2, id1
-	}
-	err := sqlCnter.DeleteFriend(ctx, id1, id2)
-	return err
 }
 
 func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpdatesInput model1.PetProfileUpdatesInput) (*model1.PetProfileUpdatesPayload, error) {
@@ -132,7 +167,7 @@ func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpda
 	if err != nil {
 		return nil, err
 	}
-	gender := petGenderIntToString(petProfile.Gender)
+	gender := PetGenderIntToString(petProfile.Gender)
 	pgender := model1.PetGender(*gender)
 	tstmp := time.Now().String()
 	m := &model1.PetProfileUpdatesPayload{
@@ -178,7 +213,6 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 	if uid == "" {
 		errmsg += "user should not be empty."
 	}
-
 	if errmsg != "" {
 		return nil, errors.New(errmsg)
 	}
@@ -229,40 +263,3 @@ func (r *mutationResolver) UpdatesNotificationSettings(ctx context.Context, upda
 func (r *Resolver) Mutation() generated1.MutationResolver { return &mutationResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-var (
-	defaultPetImageUrl     = "hahaha.jpg"
-	defaultEventLimitPet   = 5
-	defaultEventLimitHuman = 5
-)
-
-type EmptyValueError struct {
-}
-
-func (EmptyValueError) IsError() {}
-
-func petGenderIntToString(i int) *string {
-	var s string
-	if i == 1 {
-		s = "Male"
-	} else if i == 2 {
-		s = "Female"
-	} else {
-		s = "Unknown"
-	}
-	return &s
-}
-func petGenderStringToInt(s string) int {
-	if s == "Male" {
-		return 1
-	} else if s == "Female" {
-		return 2
-	}
-	return 0
-}
