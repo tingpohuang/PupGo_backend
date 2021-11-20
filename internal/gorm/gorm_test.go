@@ -132,7 +132,6 @@ func TestInputValueToDatabse(t *testing.T) {
 	InputPetRecommend(t, &g)
 	InputEvent(t, &g)
 	InputEventParticipant(t, &g)
-
 }
 
 func InputUser(t *testing.T, g *gormTestor) {
@@ -170,26 +169,18 @@ func InputPetOwner(t *testing.T, g *gormTestor) {
 }
 
 func InputPetConnect(t *testing.T, g *gormTestor) {
-	tmp := Pet{}
-	tmp2 := Pet{}
-	g.gdb.Table("pet").First(&tmp, "id = ?", pc1.id1)
-	g.gdb.Table("pet").First(&tmp2, "id = ?", pc1.id2)
-	println(tmp.Id)
-	println(tmp2.Id)
 	assert := assert.New(t)
-	println(pc1.id1)
-	println(pc1.id2)
-	result := g.gdb.Table("pet_connection").Create(&pc1)
+	result := g.gdb.Exec("INSERT INTO pet_connection VALUES (?, ?)", pc1.id1, pc1.id2)
 	assert.Nil(result.Error)
-	result = g.gdb.Table("pet_connection").Create(&pc2)
+	result = g.gdb.Exec("INSERT INTO pet_connection VALUES (?, ?)", pc2.id1, pc2.id2)
 	assert.Nil(result.Error)
 }
 
 func InputPetRecommend(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Table("pet_recommend").Create(&pr1)
+	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.id1, pr1.id2, pr1.score, pr1.status)
 	assert.Nil(result.Error)
-	result = g.gdb.Table("pet_recommend").Create(&pr2)
+	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.id1, pr2.id2, pr2.score, pr2.status)
 	assert.Nil(result.Error)
 }
 
@@ -201,10 +192,11 @@ func InputEvent(t *testing.T, g *gormTestor) {
 
 func InputEventParticipant(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Table("event_participant").Create(&ep1)
+	result := g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep1.event_id, ep1.participant_id, ep1.pet_id, ep1.status)
 	assert.Nil(result.Error)
-	result = g.gdb.Table("event_participant").Create(&ep2)
+	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep2.event_id, ep2.participant_id, ep2.pet_id, ep2.status)
 	assert.Nil(result.Error)
-	result = g.gdb.Table("event_participant").Create(&ep3)
+	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.event_id, ep3.participant_id, ep3.pet_id, ep3.status)
 	assert.Nil(result.Error)
+
 }
