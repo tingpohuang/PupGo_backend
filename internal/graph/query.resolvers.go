@@ -75,6 +75,8 @@ func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGet
 
 func (r *queryResolver) UserProfileListGet(ctx context.Context, userProfileListGetInput model1.UserProfileListGetInput) (*model1.UserProfileListGetPayload, error) {
 	timestamp := time.Now().String()
+	users := sqlCnter.FindUserByIdList(ctx, userProfileListGetInput.UID)
+
 	newPayload := &model1.UserProfileListGetPayload{
 		Error:     nil,
 		Result:    []*model1.UserProfile{},
@@ -86,8 +88,8 @@ func (r *queryResolver) UserProfileListGet(ctx context.Context, userProfileListG
 func (r *queryResolver) ProfileListGet(ctx context.Context, profileListGetInput model1.ProfileListGetInput) (*model1.ProfileListGetPayload, error) {
 	timestamp := time.Now().String()
 	newPayload := &model1.ProfileListGetPayload{
-		Error:     nil,
-		Result:    []*model1.UserProfile{},
+		Error: nil,
+		//Result:    []*model1.UserProfile{},
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil

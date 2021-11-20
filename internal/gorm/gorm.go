@@ -41,7 +41,7 @@ func (*SQLCnter) CreateUser() {
 
 }
 
-func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users User) {
+func (s *SQLCnter) FindUserByIdList(ctx context.Context, uid []string) (users []User) {
 	(*s.gdb).Where("id IN ? ", uid).Find(&users)
 	return users
 }
