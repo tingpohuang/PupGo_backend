@@ -1549,7 +1549,8 @@ input NotificationRemoveInput{
     notificationID:ID!
 }
 input RecommendationResponseInput{
-    rid:ID!
+    pid:ID!
+    recommendID:ID!
     result:Boolean!
 }
 
@@ -8786,11 +8787,19 @@ func (ec *executionContext) unmarshalInputRecommendationResponseInput(ctx contex
 
 	for k, v := range asMap {
 		switch k {
-		case "rid":
+		case "pid":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rid"))
-			it.Rid, err = ec.unmarshalNID2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "recommendID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("recommendID"))
+			it.RecommendID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

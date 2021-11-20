@@ -22,17 +22,17 @@ var (
 	u1   = User{
 		Id:     u1id,
 		Name:   "User_1",
-		gender: 1,
+		Gender: 1,
 	}
 	u2 = User{
 		Id:     u2id,
 		Name:   "User_2",
-		gender: 1,
+		Gender: 1,
 	}
 	u3 = User{
 		Id:     u3id,
 		Name:   "User_1",
-		gender: 0,
+		Gender: 0,
 	}
 	p1 = Pet{
 		Id: p1id,
@@ -71,16 +71,16 @@ var (
 		id2: p4id,
 	}
 	pr1 = Pet_recommend{
-		id1:    p2id,
-		id2:    p3id,
-		score:  0.03,
-		status: 0,
+		Id1:    p2id,
+		Id2:    p3id,
+		Score:  0.03,
+		Status: 0,
 	}
 	pr2 = Pet_recommend{
-		id1:    p2id,
-		id2:    p4id,
-		score:  0.05,
-		status: 0,
+		Id1:    p2id,
+		Id2:    p4id,
+		Score:  0.05,
+		Status: 0,
 	}
 	e1 = Event{
 		Id:             e1id,

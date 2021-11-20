@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"context"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -60,6 +61,23 @@ func (s *SQLCnter) FindPetRecommend(ctx context.Context, pid string) (petRecomme
 	return petRecommend
 
 }
+func (s *SQLCnter) FindPetRecommendByID(ctx context.Context, pid1 string, pid2 string) (petRecommend Pet_recommend, err error) {
+	if pid1 > pid2 {
+		pid1, pid2 = pid2, pid1
+	}
+	s.gdb.Table("pet_recommend").Find(&petRecommend, "id1 = ? AND id2 = ?", pid1, pid2)
+	return petRecommend, nil
+
+}
+func (s *SQLCnter) UpdatePetRecommendByID(ctx context.Context, p Pet_recommend) (err error) {
+
+	if p.Id1 > p.Id2 {
+		p.Id1, p.Id2 = p.Id2, p.Id1
+	}
+	s.gdb.Table("pet_recommend").Find(&p, "id1 = ? AND id2 = ?", p.Id1, p.Id2).Updates(&p)
+	return nil
+
+}
 
 func (s *SQLCnter) CreatePets(ctx context.Context, pet Pet) error {
 	result := s.gdb.Table("pet").Create(&pet)
@@ -77,8 +95,15 @@ func (s *SQLCnter) DeletePet(ctx context.Context, pid string) error {
 	return result.Error
 }
 
-func (s *SQLCnter) CreatePetConnection(pid1 string, pid2 string) error {
-	return nil
+func (s *SQLCnter) CreatePetConnection(ctx context.Context, pid1 string, pid2 string) error {
+	if pid1 > pid2 {
+		pid1, pid2 = pid2, pid1
+	}
+	result := s.gdb.Table("pet_connection").Create(&Pet_connection{
+		id1: pid1,
+		id2: pid2,
+	})
+	return result.Error
 }
 
 func (s *SQLCnter) FindPetById(ctx context.Context, pid string) (pets []Pet) {
