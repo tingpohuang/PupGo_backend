@@ -61,7 +61,8 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 }
 
 func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model1.EventsJoinInput) (*model1.EventsJoinPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// panic(fmt.Errorf("not implemented"))
+	return nil, nil
 }
 
 func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationRemoveInput model1.NotificationRemoveInput) (*model1.NotificationRemovePayload, error) {
@@ -83,7 +84,9 @@ func (r *mutationResolver) FriendRemove(ctx context.Context, friendRemoveInput m
 			Timestamp: getNowTimestamp(),
 		}, nil
 	}
-	// panic(fmt.Errorf("not implemented"))
+}
+func getUidbyPid(pid string) (string, error) {
+	return "", nil
 }
 func getNowTimestamp() *string {
 	tstmp := time.Now().String()
@@ -218,7 +221,8 @@ func (r *mutationResolver) PetDelete(ctx context.Context, petDeleteInput model1.
 }
 
 func (r *mutationResolver) UpdatesNotificationSettings(ctx context.Context, updatesNotificationSettingsInput model1.UpdatesNotificationSettingsInput) (*model1.UpdatesNotificationSettings, error) {
-	panic(fmt.Errorf("not implemented"))
+	// panic(fmt.Errorf("not implemented"))
+	return nil, nil
 }
 
 // Mutation returns generated1.MutationResolver implementation.

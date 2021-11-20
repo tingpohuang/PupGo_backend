@@ -84,6 +84,11 @@ func (s *SQLCnter) DeleteFriend(ctx context.Context, id1 string, id2 string) err
 	result := s.gdb.Table("pet_connection").Delete(&Pet_connection{id1: id1, id2: id2})
 	return result.Error
 }
+func (s *SQLCnter) GetUserIdbyPetId(ctx context.Context, pid string) (*string, error) {
+	p := Pet_owner{}
+	result := s.gdb.Table("pet_owner").First(&p, "Pet_id = ?", pid)
+	return &p.User_id, result.Error
+}
 
 /*
 func (s *SQLCnter) findUsersByEvents(ctx context.Context) (user uuid.UUID) {
