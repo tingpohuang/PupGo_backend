@@ -13,10 +13,6 @@ import (
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 )
 
-var (
-	TIMEOUT int = 30
-)
-
 func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput model1.EventsListGetInput) (*model1.EventsListGetPayload, error) {
 	timestamp := time.Now().String()
 	newPayload := &model1.EventsListGetPayload{
@@ -129,3 +125,13 @@ func (r *queryResolver) ProfileListGet(ctx context.Context, profileListGetInput 
 func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+var (
+	TIMEOUT int = 30
+)

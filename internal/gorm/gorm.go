@@ -56,6 +56,45 @@ func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) 
 	return pets
 }
 
+func (s *SQLCnter) CreatePets(ctx context.Context, pet Pet) error {
+	result := s.gdb.Table("pet").Create(&pet)
+	return result.Error
+}
+func (s *SQLCnter) CreateUserPetRelation(ctx context.Context, uid string, pid string) error {
+	result := s.gdb.Table("petowner").Create(&Pet_owner{
+		User_id: uid,
+		Pet_id:  pid,
+	})
+	return result.Error
+}
+func (s *SQLCnter) DeletePet(ctx context.Context, pid string) error {
+	result := s.gdb.Table("pet").Delete(&Pet{}, pid)
+	return result.Error
+}
+
+func (s *SQLCnter) CreatePetConnection(pid1 string, pid2 string) error {
+	return nil
+}
+
+func (s *SQLCnter) FindPetById(ctx context.Context, pid string) (pets []Pet) {
+	(*s.gdb).Table("pet").Where("id IN ? ", pid).Find(&pets)
+	return pets
+}
+
+func (s *SQLCnter) UpdatePet(ctx context.Context, pet Pet) error {
+	result := (*s.gdb).Table("pet").Model(&pet).Updates(&pet)
+	return result.Error
+}
+func (s *SQLCnter) DeleteFriend(ctx context.Context, id1 string, id2 string) error {
+	result := s.gdb.Table("pet_connection").Delete(&Pet_connection{id1: id1, id2: id2})
+	return result.Error
+}
+func (s *SQLCnter) GetUserIdbyPetId(ctx context.Context, pid string) (*string, error) {
+	p := Pet_owner{}
+	result := s.gdb.Table("pet_owner").First(&p, "Pet_id = ?", pid)
+	return &p.User_id, result.Error
+}
+
 /*
 func (s *SQLCnter) findUsersByEvents(ctx context.Context) (user uuid.UUID) {
 

@@ -87,8 +87,8 @@ func (EventsJoinPayload) IsPayload() {}
 
 // Limitation of Events
 type EventsLimits struct {
-	LimitOfDog   *int `json:"limitOfDog"`
-	LimitOfHuman *int `json:"limitOfHuman"`
+	LimitOfPet  *int `json:"limitOfPet"`
+	LimitOfUser *int `json:"limitOfUser"`
 }
 
 type EventsLimitsInput struct {
@@ -169,6 +169,9 @@ type Notification struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	Time        *string `json:"time"`
+	Eventid     *string `json:"eventid"`
+	Userid      *string `json:"userid"`
+	Type        *string `json:"type"`
 }
 
 type NotificationRemoveInput struct {
@@ -215,6 +218,8 @@ type PetCreateInput struct {
 	IsCastration bool           `json:"isCastration"`
 	Birthday     *string        `json:"birthday"`
 	Location     *LocationInput `json:"location"`
+	// tmp value, should also proof by JWT later
+	UID string `json:"uid"`
 }
 
 type PetCreatePayload struct {
@@ -408,7 +413,7 @@ type UserProfile struct {
 	Name   *string     `json:"name"`
 	Gender *UserGender `json:"gender"`
 	// only use year as unit not month
-	Age      *int      `json:"age"`
+	Birthday *string   `json:"birthday"`
 	Email    *string   `json:"email"`
 	Location *Location `json:"location"`
 }
