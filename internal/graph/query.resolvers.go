@@ -34,20 +34,10 @@ func (r *queryResolver) NotifiactionsGet(ctx context.Context, notifiactionsGetIn
 
 func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGetInput model1.RecommendationGetInput) (*model1.RecommendationGetPayload, error) {
 	timestamp := time.Now().String()
-	petConnections := sqlCnter.FindPetRecommend(ctx, recommendationGetInput.Pid)
-	recommendations := make([]*model1.Recommendation, len(petConnections))
-	for i := 0; i < len(petConnections); i++ {
-		//petConnection := petConnections[i]
-		//print(petConnection)
-		recommendations[i] = &model1.Recommendation{
-			ID:     "",
-			Pet:    nil,
-			Status: nil,
-		}
-	}
+	petConnections := payloadCreator.GetPetRecommendationById(ctx, recommendationGetInput.Pid)
 	newPayload := &model1.RecommendationGetPayload{
 		Error:     nil,
-		Result:    []*model1.Recommendation{},
+		Result:    petConnections,
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil

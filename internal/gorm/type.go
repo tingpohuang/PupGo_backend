@@ -28,8 +28,8 @@ type User_device struct {
 	Device_id string
 }
 type Pet_connection struct {
-	id1 string `gorm:"type:VARCHAR(36);column:id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
-	id2 string `gorm:"type:VARCHAR(36);column:id2;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
+	id1 string `gorm:"type:VARCHAR(36);column:Id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
+	id2 string `gorm:"type:VARCHAR(36);column:Id2;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
 }
 
 type Pet_owner struct {
@@ -37,10 +37,10 @@ type Pet_owner struct {
 	Pet_id  string `gorm:"type:VARCHAR(36);column:pet_id;not null;default:null", gorm:"primaryKey"`
 }
 type Pet_recommend struct {
-	id1    string `gorm:"type:VARCHAR(36);column:id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
-	id2    string `gorm:"type:VARCHAR(36);column:id2;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
-	score  float64
-	status int
+	Id1    string `gorm:"type:VARCHAR(36);column:id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
+	Id2    string `gorm:"type:VARCHAR(36);column:id2;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
+	Score  float64
+	Status int
 }
 
 type Event struct {

@@ -22,17 +22,17 @@ var (
 	u1   = User{
 		Id:     u1id,
 		Name:   "User_1",
-		gender: 1,
+		Gender: 1,
 	}
 	u2 = User{
 		Id:     u2id,
 		Name:   "User_2",
-		gender: 1,
+		Gender: 1,
 	}
 	u3 = User{
 		Id:     u3id,
 		Name:   "User_1",
-		gender: 0,
+		Gender: 0,
 	}
 	p1 = Pet{
 		Id: p1id,
@@ -71,16 +71,16 @@ var (
 		id2: p4id,
 	}
 	pr1 = Pet_recommend{
-		id1:    p2id,
-		id2:    p3id,
-		score:  0.03,
-		status: 0,
+		Id1:    p2id,
+		Id2:    p3id,
+		Score:  0.03,
+		Status: 0,
 	}
 	pr2 = Pet_recommend{
-		id1:    p2id,
-		id2:    p4id,
-		score:  0.05,
-		status: 0,
+		Id1:    p2id,
+		Id2:    p4id,
+		Score:  0.05,
+		Status: 0,
 	}
 	e1 = Event{
 		Id:             e1id,
@@ -178,9 +178,9 @@ func InputPetConnect(t *testing.T, g *gormTestor) {
 
 func InputPetRecommend(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.id1, pr1.id2, pr1.score, pr1.status)
+	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.Id1, pr1.Id2, pr1.Score, pr1.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.id1, pr2.id2, pr2.score, pr2.status)
+	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.Id1, pr2.Id2, pr2.Score, pr2.Status)
 	assert.Nil(result.Error)
 }
 

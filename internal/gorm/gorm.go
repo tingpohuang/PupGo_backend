@@ -19,9 +19,9 @@ type SQLCnter struct {
 func (*SQLCnter) CreateUser() {
 	id1 := uuid.NewString()
 	id2 := uuid.NewString()
-	// id1 := []byte("abcd")
-	// id1, _ := uuid.New().MarshalBinary()
-	// id2, _ := uuid.New().MarshalBinary()
+	// Id1 := []byte("abcd")
+	// Id1, _ := uuid.New().MarshalBinary()
+	// Id2, _ := uuid.New().MarshalBinary()
 	user := User{
 		Id:   id1,
 		Name: "test",
@@ -55,10 +55,9 @@ func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) 
 	return pets
 }
 
-func (s *SQLCnter) FindPetRecommend(ctx context.Context, pid string) (petRecommend []Pet_recommend) {
-	s.gdb.Table("pet_recommend").Where("id1 = ? OR id2 = ?", pid, pid).Find(&petRecommend)
+func (s *SQLCnter) findPetRecommend(ctx context.Context, pid string) (petRecommend []Pet_recommend) {
+	s.gdb.Table("pet_recommend").Where("Id1 = ? OR Id2 = ?", pid, pid).Find(&petRecommend)
 	return petRecommend
-
 }
 
 func (s *SQLCnter) CreatePets(ctx context.Context, pet Pet) error {

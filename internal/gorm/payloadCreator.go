@@ -53,3 +53,28 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 	}
 	return petsProfile
 }
+
+func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid string) (petRecommendations []*model1.Recommendation) {
+	petConnections := p.sql.findPetRecommend(ctx, pid)
+	recommendations := make([]*model1.Recommendation, len(petConnections))
+	for i := 0; i < len(petConnections); i++ {
+		petConnection := petConnections[i]
+		var friendId = petConnection.Id1
+		if pid == petConnection.Id1 {
+			friendId = petConnection.Id2
+		}
+
+		println(friendId)
+		status := model1.RecommendationStatus(strconv.Itoa(petConnection.Status))
+		petProfiles := p.GetPetProfileById(ctx, []string{friendId})
+
+		recommendations[i] = &model1.Recommendation{
+			ID:     friendId,
+			Pet:    petProfiles[0],
+			Status: &status,
+		}
+	}
+
+	return recommendations
+
+}
