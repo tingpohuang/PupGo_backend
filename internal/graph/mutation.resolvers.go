@@ -73,7 +73,28 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 }
 
 func (r *mutationResolver) FriendRemove(ctx context.Context, friendRemoveInput model1.FriendRemoveInput) (*model1.FriendRemovePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	pid := friendRemoveInput.PetID
+	friendId := friendRemoveInput.FriendID
+	err := removeFriend(ctx, pid, friendId)
+	if err != nil {
+		return nil, err
+	} else {
+		return &model1.FriendRemovePayload{
+			Timestamp: getNowTimestamp(),
+		}, nil
+	}
+	// panic(fmt.Errorf("not implemented"))
+}
+func getNowTimestamp() *string {
+	tstmp := time.Now().String()
+	return &tstmp
+}
+func removeFriend(ctx context.Context, id1 string, id2 string) error {
+	if id1 > id2 {
+		id1, id2 = id2, id1
+	}
+	err := sqlCnter.DeleteFriend(ctx, id1, id2)
+	return err
 }
 
 func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpdatesInput model1.PetProfileUpdatesInput) (*model1.PetProfileUpdatesPayload, error) {

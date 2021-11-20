@@ -80,6 +80,10 @@ func (s *SQLCnter) UpdatePet(ctx context.Context, pet Pet) error {
 	result := (*s.gdb).Table("pet").Model(&pet).Updates(&pet)
 	return result.Error
 }
+func (s *SQLCnter) DeleteFriend(ctx context.Context, id1 string, id2 string) error {
+	result := s.gdb.Table("pet_connection").Delete(&Pet_connection{id1: id1, id2: id2})
+	return result.Error
+}
 
 /*
 func (s *SQLCnter) findUsersByEvents(ctx context.Context) (user uuid.UUID) {
