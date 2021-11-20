@@ -1,6 +1,6 @@
 create table pet_recommend(
-		id1 VARCHAR(36) NOT NULL,
-		id2 VARCHAR(36) NOT NULL,
+		id1 VARCHAR(36) NOT NULL DEFAULT 'default',
+		id2 VARCHAR(36) NOT NULL DEFAULT 'default',
 		score float(20),
 		status int,
 		FOREIGN KEY(id1) REFERENCES pet(id) ON DELETE CASCADE,

@@ -1,7 +1,7 @@
 create table event_participant(
-		event_id VARCHAR(36) NOT NULL ,
-		participant_id VARCHAR(36) NOT NULL,
-		pet_id VARCHAR(36),
+		event_id VARCHAR(36) NOT NULL DEFAULT 'default',
+		participant_id VARCHAR(36) NOT NULL DEFAULT  'default',
+		pet_id VARCHAR(36) DEFAULT 'default',
 		FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE,
 		FOREIGN KEY (participant_id) REFERENCES users (id) ON DELETE CASCADE,
 		FOREIGN KEY (pet_id) REFERENCES pet (id) ON DELETE CASCADE,

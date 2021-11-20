@@ -31,6 +31,7 @@ type Pet_connection struct {
 	id1 string `gorm:"type:VARCHAR(36);column:id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
 	id2 string `gorm:"type:VARCHAR(36);column:id2;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
 }
+
 type Pet_owner struct {
 	User_id string `gorm:"type:VARCHAR(36);column:user_id;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
 	Pet_id  string `gorm:"type:VARCHAR(36);column:pet_id;not null;default:null", gorm:"primaryKey"`
@@ -54,7 +55,7 @@ type Event struct {
 }
 
 type Pet struct {
-	Id           string `gorm:"type:VARCHAR(36);primaryKey",gorm:"column:id"`
+	Id           string `gorm:"type:VARCHAR(36);column:id;primaryKey"`
 	Name         string
 	Image        string
 	Gender       int
@@ -62,13 +63,6 @@ type Pet struct {
 	IsCastration bool      `gorm:"column:isCastration"`
 	Birthday     time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 }
-
-// func (p *Pet) BeforeCreate(db *gorm.DB) error {
-
-// 	uuid, err := uuid.New().MarshalBinary()
-// 	// p.Id = uuid
-// 	return err
-// }
 
 type Event_participant struct {
 	event_id       string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`

@@ -124,6 +124,7 @@ func TestInputValueToDatabse(t *testing.T) {
 	g := gormTestor{gdb}
 	assert.Nil(err)
 	assert.NotNil(db)
+
 	InputUser(t, &g)
 	InputPet(t, &g)
 	InputPetOwner(t, &g)
@@ -131,6 +132,7 @@ func TestInputValueToDatabse(t *testing.T) {
 	InputPetRecommend(t, &g)
 	InputEvent(t, &g)
 	InputEventParticipant(t, &g)
+
 }
 
 func InputUser(t *testing.T, g *gormTestor) {
@@ -168,7 +170,15 @@ func InputPetOwner(t *testing.T, g *gormTestor) {
 }
 
 func InputPetConnect(t *testing.T, g *gormTestor) {
+	tmp := Pet{}
+	tmp2 := Pet{}
+	g.gdb.Table("pet").First(&tmp, "id = ?", pc1.id1)
+	g.gdb.Table("pet").First(&tmp2, "id = ?", pc1.id2)
+	println(tmp.Id)
+	println(tmp2.Id)
 	assert := assert.New(t)
+	println(pc1.id1)
+	println(pc1.id2)
 	result := g.gdb.Table("pet_connection").Create(&pc1)
 	assert.Nil(result.Error)
 	result = g.gdb.Table("pet_connection").Create(&pc2)
