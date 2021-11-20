@@ -84,7 +84,7 @@ var (
 	}
 	e1 = Event{
 		Id:             e1id,
-		Holder_Id:      u1id,
+		Holder_Id:      p1id,
 		Start_date:     time.Now(),
 		End_date:       time.Now(),
 		Image:          "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/holiday-logo-202111?wid=71&hei=87&fmt=jpeg&qlt=95&.v=1636070054000",
@@ -178,9 +178,9 @@ func InputPetConnect(t *testing.T, g *gormTestor) {
 
 func InputPetRecommend(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.id1, pr1.id2, pr1.score, pr1.status)
+	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.Id1, pr1.Id2, pr1.Score, pr1.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.id1, pr2.id2, pr2.score, pr2.status)
+	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.Id1, pr2.Id2, pr2.Score, pr2.Status)
 	assert.Nil(result.Error)
 }
 
