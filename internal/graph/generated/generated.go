@@ -82,8 +82,8 @@ type ComplexityRoot struct {
 	}
 
 	EventsLimits struct {
-		LimitOfDog   func(childComplexity int) int
-		LimitOfHuman func(childComplexity int) int
+		LimitOfPet  func(childComplexity int) int
+		LimitOfUser func(childComplexity int) int
 	}
 
 	EventsListGetPayload struct {
@@ -132,9 +132,12 @@ type ComplexityRoot struct {
 
 	Notification struct {
 		Description func(childComplexity int) int
+		Eventid     func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Time        func(childComplexity int) int
 		Title       func(childComplexity int) int
+		Type        func(childComplexity int) int
+		Userid      func(childComplexity int) int
 	}
 
 	NotificationRemovePayload struct {
@@ -278,7 +281,7 @@ type ComplexityRoot struct {
 	}
 
 	UserProfile struct {
-		Age      func(childComplexity int) int
+		Birthday func(childComplexity int) int
 		Email    func(childComplexity int) int
 		Gender   func(childComplexity int) int
 		ID       func(childComplexity int) int
@@ -484,19 +487,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.EventsJoinPayload.Timestamp(childComplexity), true
 
-	case "EventsLimits.limitOfDog":
-		if e.complexity.EventsLimits.LimitOfDog == nil {
+	case "EventsLimits.limitOfPet":
+		if e.complexity.EventsLimits.LimitOfPet == nil {
 			break
 		}
 
-		return e.complexity.EventsLimits.LimitOfDog(childComplexity), true
+		return e.complexity.EventsLimits.LimitOfPet(childComplexity), true
 
-	case "EventsLimits.limitOfHuman":
-		if e.complexity.EventsLimits.LimitOfHuman == nil {
+	case "EventsLimits.limitOfUser":
+		if e.complexity.EventsLimits.LimitOfUser == nil {
 			break
 		}
 
-		return e.complexity.EventsLimits.LimitOfHuman(childComplexity), true
+		return e.complexity.EventsLimits.LimitOfUser(childComplexity), true
 
 	case "EventsListGetPayload.error":
 		if e.complexity.EventsListGetPayload.Error == nil {
@@ -737,6 +740,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Notification.Description(childComplexity), true
 
+	case "Notification.eventid":
+		if e.complexity.Notification.Eventid == nil {
+			break
+		}
+
+		return e.complexity.Notification.Eventid(childComplexity), true
+
 	case "Notification.id":
 		if e.complexity.Notification.ID == nil {
 			break
@@ -757,6 +767,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Notification.Title(childComplexity), true
+
+	case "Notification.type":
+		if e.complexity.Notification.Type == nil {
+			break
+		}
+
+		return e.complexity.Notification.Type(childComplexity), true
+
+	case "Notification.userid":
+		if e.complexity.Notification.Userid == nil {
+			break
+		}
+
+		return e.complexity.Notification.Userid(childComplexity), true
 
 	case "NotificationRemovePayload.error":
 		if e.complexity.NotificationRemovePayload.Error == nil {
@@ -1311,12 +1335,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserNotification.NotificationList(childComplexity), true
 
-	case "UserProfile.age":
-		if e.complexity.UserProfile.Age == nil {
+	case "UserProfile.birthday":
+		if e.complexity.UserProfile.Birthday == nil {
 			break
 		}
 
-		return e.complexity.UserProfile.Age(childComplexity), true
+		return e.complexity.UserProfile.Birthday(childComplexity), true
 
 	case "UserProfile.email":
 		if e.complexity.UserProfile.Email == nil {
@@ -1564,6 +1588,8 @@ input PetCreateInput{
     isCastration: Boolean!
     birthday: Timestamp
     location: LocationInput
+    "tmp value, should also proof by JWT later"
+    uid: ID!
 }
 input PetDeleteInput{
     pid:ID!
@@ -1703,7 +1729,7 @@ type UserProfile implements ProfileNode{
     name: String
     gender: UserGender
     "only use year as unit not month"
-    age: Int
+    birthday: Timestamp
     email: Email
     location: Location
 }
@@ -1735,8 +1761,8 @@ type Event{
 }
 "Limitation of Events"
 type EventsLimits{
-    limitOfDog: Int
-    limitOfHuman: Int
+    limitOfPet: Int
+    limitOfUser: Int
 }
 type TimeRange{
     startTime: Timestamp
@@ -1765,6 +1791,9 @@ type Notification{
     title: String
     description: String
     time: Timestamp
+    eventid: ID
+    userid: ID
+    type: Numbers
 }
 type UserNotification{
     notificationList: [Notification!]
@@ -2880,7 +2909,7 @@ func (ec *executionContext) _EventsJoinPayload_result(ctx context.Context, field
 	return ec.marshalOEventRequest2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventRequest(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EventsLimits_limitOfDog(ctx context.Context, field graphql.CollectedField, obj *model.EventsLimits) (ret graphql.Marshaler) {
+func (ec *executionContext) _EventsLimits_limitOfPet(ctx context.Context, field graphql.CollectedField, obj *model.EventsLimits) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2898,7 +2927,7 @@ func (ec *executionContext) _EventsLimits_limitOfDog(ctx context.Context, field 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.LimitOfDog, nil
+		return obj.LimitOfPet, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2912,7 +2941,7 @@ func (ec *executionContext) _EventsLimits_limitOfDog(ctx context.Context, field 
 	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EventsLimits_limitOfHuman(ctx context.Context, field graphql.CollectedField, obj *model.EventsLimits) (ret graphql.Marshaler) {
+func (ec *executionContext) _EventsLimits_limitOfUser(ctx context.Context, field graphql.CollectedField, obj *model.EventsLimits) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2930,7 +2959,7 @@ func (ec *executionContext) _EventsLimits_limitOfHuman(ctx context.Context, fiel
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.LimitOfHuman, nil
+		return obj.LimitOfUser, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4029,6 +4058,102 @@ func (ec *executionContext) _Notification_time(ctx context.Context, field graphq
 	res := resTmp.(*string)
 	fc.Result = res
 	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_eventid(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Notification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Eventid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_userid(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Notification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Userid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Notification_type(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Notification",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalONumbers2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _NotificationRemovePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.NotificationRemovePayload) (ret graphql.Marshaler) {
@@ -6717,7 +6842,7 @@ func (ec *executionContext) _UserProfile_gender(ctx context.Context, field graph
 	return ec.marshalOUserGender2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserGender(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _UserProfile_age(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserProfile_birthday(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -6735,7 +6860,7 @@ func (ec *executionContext) _UserProfile_age(ctx context.Context, field graphql.
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Age, nil
+		return obj.Birthday, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6744,9 +6869,9 @@ func (ec *executionContext) _UserProfile_age(ctx context.Context, field graphql.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _UserProfile_email(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
@@ -8467,6 +8592,14 @@ func (ec *executionContext) unmarshalInputPetCreateInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
+		case "uid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
+			it.UID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -9159,10 +9292,10 @@ func (ec *executionContext) _EventsLimits(ctx context.Context, sel ast.Selection
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("EventsLimits")
-		case "limitOfDog":
-			out.Values[i] = ec._EventsLimits_limitOfDog(ctx, field, obj)
-		case "limitOfHuman":
-			out.Values[i] = ec._EventsLimits_limitOfHuman(ctx, field, obj)
+		case "limitOfPet":
+			out.Values[i] = ec._EventsLimits_limitOfPet(ctx, field, obj)
+		case "limitOfUser":
+			out.Values[i] = ec._EventsLimits_limitOfUser(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9438,6 +9571,12 @@ func (ec *executionContext) _Notification(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._Notification_description(ctx, field, obj)
 		case "time":
 			out.Values[i] = ec._Notification_time(ctx, field, obj)
+		case "eventid":
+			out.Values[i] = ec._Notification_eventid(ctx, field, obj)
+		case "userid":
+			out.Values[i] = ec._Notification_userid(ctx, field, obj)
+		case "type":
+			out.Values[i] = ec._Notification_type(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10271,8 +10410,8 @@ func (ec *executionContext) _UserProfile(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = ec._UserProfile_name(ctx, field, obj)
 		case "gender":
 			out.Values[i] = ec._UserProfile_gender(ctx, field, obj)
-		case "age":
-			out.Values[i] = ec._UserProfile_age(ctx, field, obj)
+		case "birthday":
+			out.Values[i] = ec._UserProfile_birthday(ctx, field, obj)
 		case "email":
 			out.Values[i] = ec._UserProfile_email(ctx, field, obj)
 		case "location":

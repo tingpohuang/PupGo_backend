@@ -124,6 +124,8 @@ input PetCreateInput{
     isCastration: Boolean!
     birthday: Timestamp
     location: LocationInput
+    "tmp value, should also proof by JWT later"
+    uid: ID!
 }
 input PetDeleteInput{
     pid:ID!

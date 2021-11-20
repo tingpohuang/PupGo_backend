@@ -41,14 +41,30 @@ func (*SQLCnter) CreateUser() {
 
 }
 
-func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users User) {
+func (s *SQLCnter) FindUserByIdList(ctx context.Context, uid []string) (users User) {
 	(*s.gdb).Where("id IN ? ", uid).Find(&users)
 	return users
 }
 
-func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) {
+func (s *SQLCnter) FindPetByOwner(ctx context.Context, uid string) (pets []Pet) {
 	s.gdb.Joins("Company", s.gdb.Where(&Pet_owner{User_id: uid})).Find(&pets)
 	return pets
+}
+
+func (s *SQLCnter) CreatePets(ctx context.Context, pet Pet) error {
+	result := s.gdb.Table("pet").Create(&pet)
+	return result.Error
+}
+func (s *SQLCnter) CreateUserPetRelation(uid string, pid string) error {
+	result := s.gdb.Table("petowner").Create(&Pet_owner{
+		User_id: uid,
+		Pet_id:  pid,
+	})
+	return result.Error
+}
+
+func (s *SQLCnter) CreatePetConnection(pid1 string, pid2 string) error {
+	return nil
 }
 
 /*
