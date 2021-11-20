@@ -42,8 +42,13 @@ func (*SQLCnter) CreateUser() {
 }
 
 func (s *SQLCnter) FindUserByIdList(ctx context.Context, uid []string) (users []User) {
-	(*s.gdb).Where("id IN ? ", uid).Find(&users)
+	(*s.gdb).Table("users").Where("id IN ? ", uid).Find(&users)
 	return users
+}
+
+func (s *SQLCnter) FindPetByIdList(ctx context.Context, pid []string) (pets []Pet) {
+	(*s.gdb).Table("pet").Where("id IN ? ", pid).Find(&pets)
+	return pets
 }
 
 func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) {

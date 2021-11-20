@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -65,9 +66,25 @@ func (r *queryResolver) FriendsListGet(ctx context.Context, friendsListGetInput 
 
 func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGetInput model1.PetProfileListGetInput) (*model1.PetProfileListGetPayload, error) {
 	timestamp := time.Now().String()
+	pets := sqlCnter.FindPetByIdList(ctx, petProfileListGetInput.Pid)
+	petsProfile := make([]*model1.PetProfile, len(pets))
+	for i := 0; i < len(pets); i++ {
+		pet := pets[i]
+		petGender := model1.PetGender(strconv.Itoa(pet.Gender))
+		petsProfile[i] = &model1.PetProfile{
+			ID:           &pet.Id,
+			Name:         &pet.Name,
+			Image:        &pet.Image,
+			Gender:       &petGender,
+			Breed:        &pet.Breed,
+			IsCastration: pet.IsCastration,
+			Birthday:     nil,
+			Location:     nil,
+		}
+	}
 	newPayload := &model1.PetProfileListGetPayload{
 		Error:     nil,
-		Result:    []*model1.PetProfile{},
+		Result:    petsProfile,
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
@@ -76,10 +93,23 @@ func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGet
 func (r *queryResolver) UserProfileListGet(ctx context.Context, userProfileListGetInput model1.UserProfileListGetInput) (*model1.UserProfileListGetPayload, error) {
 	timestamp := time.Now().String()
 	users := sqlCnter.FindUserByIdList(ctx, userProfileListGetInput.UID)
+	usersProfile := make([]*model1.UserProfile, len(users))
+	for i := 0; i < len(users); i++ {
+		user := users[i]
+		userGender := model1.UserGender(strconv.Itoa(user.Gender))
+		usersProfile[i] = &model1.UserProfile{
+			ID:       &user.Id,
+			Name:     &user.Name,
+			Gender:   &userGender,
+			Age:      nil,
+			Email:    nil,
+			Location: nil,
+		}
+	}
 
 	newPayload := &model1.UserProfileListGetPayload{
 		Error:     nil,
-		Result:    []*model1.UserProfile{},
+		Result:    usersProfile,
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil

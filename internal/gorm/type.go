@@ -11,8 +11,8 @@ type User struct {
 	Name       string
 	Cooldown   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 	Created_at time.Time `gorm:"type:timestamp; default: NOW(); not null"`
-	gender     int
-	birthday   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
+	Gender     int
+	Birthday   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 }
 
 func (u *User) BeforeCreate(db *gorm.DB) error {
