@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+	gorm "github.com/tingpo/pupgobackend/internal/gorm"
 	generated1 "github.com/tingpo/pupgobackend/internal/graph/generated"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 )
@@ -25,7 +27,7 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	tr := eventsCreateInput.TimeRange
 	lmt := eventsCreateInput.Limit
 	img := eventsCreateInput.Image
-	desc := eventsCreateInput.Description
+	// desc := eventsCreateInput.Description
 	errmsg := ""
 	if loc == nil {
 		errmsg += "location cannot be empty value."
@@ -44,12 +46,13 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 		dftvImg := "test.img"
 		img = &dftvImg
 	}
-	if desc == nil {
-		desc = new(String)
-	}
+	// if desc == nil {
+	// 	desc = new(String)
+	// }
 	if errmsg != "" {
 		return nil, errors.New(errmsg)
 	}
+
 	ret := new(model1.EventsCreatePayload)
 	tstmp := time.Now().String()
 	ret.Timestamp = &tstmp
@@ -86,15 +89,15 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 	birthday := petCreateInput.Birthday
 	uid := petCreateInput.UID
 	errmsg := ""
-
+	gender_num := 0
 	if name == nil || *name == "" {
 		errmsg += "name cannot be empty string."
 	}
 	if img == nil || *img == "" {
 		img = &defaultPetImageUrl
 	}
-	if gender == nil || *gender == "" {
-		*gender = "unknown"
+	if *gender == "Male" {
+		gender_num = 1
 	}
 	if breed == nil || *breed == "" {
 		*breed = "unknown"
@@ -109,10 +112,41 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 	if errmsg != "" {
 		return nil, errors.New(errmsg)
 	}
+	pid := uuid.NewString()
+	res := sqlCnter.CreatePets(ctx, gorm.Pet{
+		Id:           pid,
+		Name:         *name,
+		Image:        *img,
+		Gender:       gender_num,
+		Breed:        *breed,
+		IsCastration: isCastration,
+	})
+	if res != nil {
+		return nil, errors.New("internal error in SQL")
+	}
+	res = sqlCnter.CreateUserPetRelation(ctx, uid, pid)
+	if res != nil {
+		return nil, errors.New("internal error in SQL")
+	}
+	return &model1.PetCreatePayload{
+		Error: nil,
+		Result: &model1.PetProfile{
+			ID:           &pid,
+			Name:         name,
+			Image:        img,
+			Gender:       petCreateInput.Gender,
+			Breed:        petCreateInput.Breed,
+			IsCastration: petCreateInput.IsCastration,
+			// birthday,
+			// location,
+		}}, nil
 }
 
 func (r *mutationResolver) PetDelete(ctx context.Context, petDeleteInput model1.PetDeleteInput) (*model1.PetDeletePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// sqlCnter.deletePet()
+	return &model1.PetDeletePayload{
+		Error:  nil,
+		Result: true}, nil
 }
 
 func (r *mutationResolver) UpdatesNotificationSettings(ctx context.Context, updatesNotificationSettingsInput model1.UpdatesNotificationSettingsInput) (*model1.UpdatesNotificationSettings, error) {
