@@ -62,9 +62,23 @@ func (s *SQLCnter) CreateUserPetRelation(ctx context.Context, uid string, pid st
 	})
 	return result.Error
 }
+func (s *SQLCnter) DeletePet(ctx context.Context, pid string) error {
+	result := s.gdb.Table("pet").Delete(&Pet{}, pid)
+	return result.Error
+}
 
 func (s *SQLCnter) CreatePetConnection(pid1 string, pid2 string) error {
 	return nil
+}
+
+func (s *SQLCnter) FindPetById(ctx context.Context, pid string) (pets []Pet) {
+	(*s.gdb).Table("pet").Where("id IN ? ", pid).Find(&pets)
+	return pets
+}
+
+func (s *SQLCnter) UpdatePet(ctx context.Context, pet Pet) error {
+	result := (*s.gdb).Table("pet").Model(&pet).Updates(&pet)
+	return result.Error
 }
 
 /*

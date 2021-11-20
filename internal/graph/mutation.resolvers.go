@@ -77,7 +77,53 @@ func (r *mutationResolver) FriendRemove(ctx context.Context, friendRemoveInput m
 }
 
 func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpdatesInput model1.PetProfileUpdatesInput) (*model1.PetProfileUpdatesPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	id := petProfileUpdatesInput.ID
+	if id == "" {
+		return nil, errors.New("cannot updates null id")
+	}
+	petProfileList := sqlCnter.FindPetById(ctx, id)
+	if len(petProfileList) < 1 {
+		return nil, errors.New("pet id doesn't exist")
+	}
+	petProfile := petProfileList[0]
+	if petProfileUpdatesInput.Name != nil {
+		petProfile.Name = *petProfileUpdatesInput.Name
+	}
+	if petProfileUpdatesInput.Image != nil {
+		petProfile.Image = *petProfileUpdatesInput.Image
+	}
+	if petProfileUpdatesInput.Gender != nil {
+		if *petProfileUpdatesInput.Gender == "Male" {
+			petProfile.Gender = 1
+		}
+	}
+	if petProfileUpdatesInput.Image != nil {
+		petProfile.Breed = *petProfileUpdatesInput.Breed
+	}
+	if petProfileUpdatesInput.IsCastration {
+		petProfile.IsCastration = petProfileUpdatesInput.IsCastration
+	}
+	// TODO: location, birthday
+	err := sqlCnter.UpdatePet(ctx, petProfile)
+	if err != nil {
+		return nil, err
+	}
+	gender := petGenderIntToString(petProfile.Gender)
+	pgender := model1.PetGender(*gender)
+	tstmp := time.Now().String()
+	m := &model1.PetProfileUpdatesPayload{
+		Error:     nil,
+		Timestamp: &tstmp,
+		Result: &model1.PetProfile{
+			ID:           &petProfile.Id,
+			Name:         &petProfile.Name,
+			Image:        &petProfile.Image,
+			Gender:       &pgender,
+			Breed:        &petProfile.Breed,
+			IsCastration: petProfile.IsCastration,
+		},
+	}
+	return m, nil
 }
 
 func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.PetCreateInput) (*model1.PetCreatePayload, error) {
@@ -137,13 +183,14 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 			Gender:       petCreateInput.Gender,
 			Breed:        petCreateInput.Breed,
 			IsCastration: petCreateInput.IsCastration,
-			// birthday,
-			// location,
 		}}, nil
 }
 
 func (r *mutationResolver) PetDelete(ctx context.Context, petDeleteInput model1.PetDeleteInput) (*model1.PetDeletePayload, error) {
-	// sqlCnter.deletePet()
+	if petDeleteInput.Pid == "" {
+		return nil, errors.New("pid cannot be null")
+	}
+	sqlCnter.DeletePet(ctx, petDeleteInput.Pid)
 	return &model1.PetDeletePayload{
 		Error:  nil,
 		Result: true}, nil
@@ -174,3 +221,23 @@ type EmptyValueError struct {
 }
 
 func (EmptyValueError) IsError() {}
+
+func petGenderIntToString(i int) *string {
+	var s string
+	if i == 1 {
+		s = "Male"
+	} else if i == 2 {
+		s = "Female"
+	} else {
+		s = "Unknown"
+	}
+	return &s
+}
+func petGenderStringToInt(s string) int {
+	if s == "Male" {
+		return 1
+	} else if s == "Female" {
+		return 2
+	}
+	return 0
+}
