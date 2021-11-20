@@ -2,7 +2,6 @@ package gorm
 
 import (
 	"context"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -41,12 +40,12 @@ func (*SQLCnter) CreateUser() {
 
 }
 
-func (s *SQLCnter) FindUserByIdList(ctx context.Context, uid []string) (users []User) {
+func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {
 	(*s.gdb).Table("users").Where("id IN ? ", uid).Find(&users)
 	return users
 }
 
-func (s *SQLCnter) FindPetByIdList(ctx context.Context, pid []string) (pets []Pet) {
+func (s *SQLCnter) findPetByIdList(ctx context.Context, pid []string) (pets []Pet) {
 	(*s.gdb).Table("pet").Where("id IN ? ", pid).Find(&pets)
 	return pets
 }
@@ -54,6 +53,12 @@ func (s *SQLCnter) FindPetByIdList(ctx context.Context, pid []string) (pets []Pe
 func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) {
 	s.gdb.Joins("Company", s.gdb.Where(&Pet_owner{User_id: uid})).Find(&pets)
 	return pets
+}
+
+func (s *SQLCnter) FindPetRecommend(ctx context.Context, pid string) (petRecommend []Pet_recommend) {
+	s.gdb.Table("pet_recommend").Where("id1 = ? OR id2 = ?", pid, pid).Find(&petRecommend)
+	return petRecommend
+
 }
 
 func (s *SQLCnter) CreatePets(ctx context.Context, pet Pet) error {
