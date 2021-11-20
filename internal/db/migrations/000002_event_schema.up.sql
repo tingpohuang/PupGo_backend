@@ -1,6 +1,6 @@
 create table event(
-		id varbinary(16) NOT NULL PRIMARY KEY,
-		holder_id varbinary(16) NOT NULL,
+		id VARCHAR(36) NOT NULL PRIMARY KEY,
+		holder_id VARCHAR(36) NOT NULL,
 		start_date timestamp,
 		end_date timestamp,
 		image varchar(500),

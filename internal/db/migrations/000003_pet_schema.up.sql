@@ -1,5 +1,5 @@
 create table pet(
-		id varbinary(16) NOT NULL PRIMARY KEY,
+		id VARCHAR(36) NOT NULL PRIMARY KEY,
 		name varchar(50),
 		image varchar(500),
 		gender int,

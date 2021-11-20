@@ -1,7 +1,9 @@
 create table pet_recommend(
-		id1 varbinary(16) NOT NULL PRIMARY KEY,
-		id2 varbinary(16) NOT NULL,
+		id1 VARCHAR(36) NOT NULL DEFAULT 'default',
+		id2 VARCHAR(36) NOT NULL DEFAULT 'default',
 		score float(20),
 		status int,
-		FOREIGN KEY(id2) REFERENCES pet(id)
+		FOREIGN KEY(id1) REFERENCES pet(id) ON DELETE CASCADE,
+		FOREIGN KEY(id2) REFERENCES pet(id)	ON DELETE CASCADE,
+		CONSTRAINT PK_pet_recommend PRIMARY KEY (id1, id2)
 	);
