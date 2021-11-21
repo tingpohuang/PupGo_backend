@@ -62,9 +62,9 @@ type EventsAcceptInput struct {
 }
 
 type EventsAcceptPayload struct {
-	Error     []Error       `json:"error"`
-	Timestamp *string       `json:"timestamp"`
-	Result    *EventRequest `json:"result"`
+	Error     []Error `json:"error"`
+	Timestamp *string `json:"timestamp"`
+	Result    bool    `json:"result"`
 }
 
 func (EventsAcceptPayload) IsPayload() {}

@@ -28,7 +28,7 @@ type EventsCreatePayload implements Payload{
 type EventsJoinPayload implements Payload{
     error: [Error!]!
     timestamp: Timestamp
-    result: EventRequest
+    result: Boolean
 }
 type EventsAcceptPayload implements Payload{
     error: [Error!]!
