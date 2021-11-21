@@ -4,7 +4,7 @@ type Mutation{
     userCreateByID(userCreateByIDInput: UserCreateByIDInput!): UserCreateByIDPayload!
     eventsCreate(eventsCreateInput: EventsCreateInput!): EventsCreatePayload!
     eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
-    eventsJoin(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
+    eventsAccept(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
     notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
     recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
     friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!

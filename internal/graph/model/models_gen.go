@@ -55,6 +55,20 @@ type EventRequest struct {
 	Description []string    `json:"description"`
 }
 
+type EventsAcceptInput struct {
+	Pid     string `json:"pid"`
+	EventID string `json:"eventID"`
+	Accept  bool   `json:"accept"`
+}
+
+type EventsAcceptPayload struct {
+	Error     []Error       `json:"error"`
+	Timestamp *string       `json:"timestamp"`
+	Result    *EventRequest `json:"result"`
+}
+
+func (EventsAcceptPayload) IsPayload() {}
+
 type EventsCreateInput struct {
 	Pid         string             `json:"pid"`
 	Location    *LocationInput     `json:"location"`
@@ -73,8 +87,9 @@ type EventsCreatePayload struct {
 func (EventsCreatePayload) IsPayload() {}
 
 type EventsJoinInput struct {
-	Pid     string `json:"pid"`
-	EventID string `json:"eventID"`
+	Pid         string  `json:"pid"`
+	EventID     string  `json:"eventID"`
+	Description *string `json:"description"`
 }
 
 type EventsJoinPayload struct {

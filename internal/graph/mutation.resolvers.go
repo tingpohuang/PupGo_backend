@@ -111,6 +111,10 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 	return nil, nil
 }
 
+func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput model1.EventsAcceptInput) (*model1.EventsAcceptPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationRemoveInput model1.NotificationRemoveInput) (*model1.NotificationRemovePayload, error) {
 	panic(fmt.Errorf("this function no long support"))
 }

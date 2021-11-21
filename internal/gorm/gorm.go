@@ -133,8 +133,13 @@ func (s *SQLCnter) GetUserIdbyPetId(ctx context.Context, pid string) (*string, e
 	return &p.User_id, result.Error
 }
 func (s *SQLCnter) CreateParticipants(ctx context.Context, e Event_participant) error {
+	result := s.gdb.Table("event_participant").Create(e)
+	return result.Error
 }
 
+// func (s *SQLCnter) CreateParticipants(ctx context.Context, e Event_participant) error {
+
+// }
 /*
 func (s *SQLCnter) findUsersByEvents(ctx context.Context) (user uuid.UUID) {
 

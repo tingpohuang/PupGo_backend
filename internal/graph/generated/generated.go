@@ -69,6 +69,12 @@ type ComplexityRoot struct {
 		Requester   func(childComplexity int) int
 	}
 
+	EventsAcceptPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
 	EventsCreatePayload struct {
 		Error     func(childComplexity int) int
 		Result    func(childComplexity int) int
@@ -112,6 +118,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		EventsAccept                func(childComplexity int, eventsAcceptInput model.EventsAcceptInput) int
 		EventsCreate                func(childComplexity int, eventsCreateInput model.EventsCreateInput) int
 		EventsJoin                  func(childComplexity int, eventsJoinInput model.EventsJoinInput) int
 		FriendRemove                func(childComplexity int, friendRemoveInput model.FriendRemoveInput) int
@@ -300,6 +307,7 @@ type MutationResolver interface {
 	UserCreateByID(ctx context.Context, userCreateByIDInput model.UserCreateByIDInput) (*model.UserCreateByIDPayload, error)
 	EventsCreate(ctx context.Context, eventsCreateInput model.EventsCreateInput) (*model.EventsCreatePayload, error)
 	EventsJoin(ctx context.Context, eventsJoinInput model.EventsJoinInput) (*model.EventsJoinPayload, error)
+	EventsAccept(ctx context.Context, eventsAcceptInput model.EventsAcceptInput) (*model.EventsAcceptPayload, error)
 	NotificationRemove(ctx context.Context, notificationRemoveInput model.NotificationRemoveInput) (*model.NotificationRemovePayload, error)
 	RecommendationResponse(ctx context.Context, recommendationResponseInput model.RecommendationResponseInput) (*model.RecommendationResponsePayload, error)
 	FriendRemove(ctx context.Context, friendRemoveInput model.FriendRemoveInput) (*model.FriendRemovePayload, error)
@@ -444,6 +452,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.EventRequest.Requester(childComplexity), true
+
+	case "EventsAcceptPayload.error":
+		if e.complexity.EventsAcceptPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.EventsAcceptPayload.Error(childComplexity), true
+
+	case "EventsAcceptPayload.result":
+		if e.complexity.EventsAcceptPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.EventsAcceptPayload.Result(childComplexity), true
+
+	case "EventsAcceptPayload.timestamp":
+		if e.complexity.EventsAcceptPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.EventsAcceptPayload.Timestamp(childComplexity), true
 
 	case "EventsCreatePayload.error":
 		if e.complexity.EventsCreatePayload.Error == nil {
@@ -591,6 +620,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Location.Country(childComplexity), true
+
+	case "Mutation.eventsAccept":
+		if e.complexity.Mutation.EventsAccept == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_eventsAccept_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EventsAccept(childComplexity, args["eventsAcceptInput"].(model.EventsAcceptInput)), true
 
 	case "Mutation.eventsCreate":
 		if e.complexity.Mutation.EventsCreate == nil {
@@ -1468,6 +1509,7 @@ type Mutation{
     userCreateByID(userCreateByIDInput: UserCreateByIDInput!): UserCreateByIDPayload!
     eventsCreate(eventsCreateInput: EventsCreateInput!): EventsCreatePayload!
     eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
+    eventsAccept(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
     notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
     recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
     friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!
@@ -1489,6 +1531,11 @@ type EventsCreatePayload implements Payload{
     result: Event
 }
 type EventsJoinPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: EventRequest
+}
+type EventsAcceptPayload implements Payload{
     error: [Error!]!
     timestamp: Timestamp
     result: EventRequest
@@ -1543,6 +1590,12 @@ input EventsCreateInput{
 input EventsJoinInput{
     pid:ID!
     eventID:ID!
+    description: String
+}
+input EventsAcceptInput{
+    pid:ID!
+    eventID:ID!
+    accept:Boolean!
 }
 input NotificationRemoveInput{
     pid:ID!
@@ -1870,6 +1923,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_eventsAccept_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EventsAcceptInput
+	if tmp, ok := rawArgs["eventsAcceptInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventsAcceptInput"))
+		arg0, err = ec.unmarshalNEventsAcceptInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsAcceptInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["eventsAcceptInput"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_eventsCreate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -2712,6 +2780,105 @@ func (ec *executionContext) _EventRequest_description(ctx context.Context, field
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _EventsAcceptPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.EventsAcceptPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsAcceptPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsAcceptPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.EventsAcceptPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsAcceptPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EventsAcceptPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.EventsAcceptPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EventsAcceptPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.EventRequest)
+	fc.Result = res
+	return ec.marshalOEventRequest2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventRequest(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _EventsCreatePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.EventsCreatePayload) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3532,6 +3699,48 @@ func (ec *executionContext) _Mutation_eventsJoin(ctx context.Context, field grap
 	res := resTmp.(*model.EventsJoinPayload)
 	fc.Result = res
 	return ec.marshalNEventsJoinPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsJoinPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_eventsAccept(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_eventsAccept_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EventsAccept(rctx, args["eventsAcceptInput"].(model.EventsAcceptInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.EventsAcceptPayload)
+	fc.Result = res
+	return ec.marshalNEventsAcceptPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsAcceptPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_notificationRemove(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -8202,6 +8411,45 @@ func (ec *executionContext) unmarshalInputCoordinateInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputEventsAcceptInput(ctx context.Context, obj interface{}) (model.EventsAcceptInput, error) {
+	var it model.EventsAcceptInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "pid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "eventID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventID"))
+			it.EventID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "accept":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accept"))
+			it.Accept, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputEventsCreateInput(ctx context.Context, obj interface{}) (model.EventsCreateInput, error) {
 	var it model.EventsCreateInput
 	asMap := map[string]interface{}{}
@@ -8287,6 +8535,14 @@ func (ec *executionContext) unmarshalInputEventsJoinInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventID"))
 			it.EventID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8979,6 +9235,13 @@ func (ec *executionContext) _Payload(ctx context.Context, sel ast.SelectionSet, 
 			return graphql.Null
 		}
 		return ec._EventsJoinPayload(ctx, sel, obj)
+	case model.EventsAcceptPayload:
+		return ec._EventsAcceptPayload(ctx, sel, &obj)
+	case *model.EventsAcceptPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._EventsAcceptPayload(ctx, sel, obj)
 	case model.NotificationRemovePayload:
 		return ec._NotificationRemovePayload(ctx, sel, &obj)
 	case *model.NotificationRemovePayload:
@@ -9217,6 +9480,37 @@ func (ec *executionContext) _EventRequest(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var eventsAcceptPayloadImplementors = []string{"EventsAcceptPayload", "Payload"}
+
+func (ec *executionContext) _EventsAcceptPayload(ctx context.Context, sel ast.SelectionSet, obj *model.EventsAcceptPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventsAcceptPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventsAcceptPayload")
+		case "error":
+			out.Values[i] = ec._EventsAcceptPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._EventsAcceptPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._EventsAcceptPayload_result(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9475,6 +9769,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "eventsJoin":
 			out.Values[i] = ec._Mutation_eventsJoin(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eventsAccept":
+			out.Values[i] = ec._Mutation_eventsAccept(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -10856,6 +11155,25 @@ func (ec *executionContext) marshalNEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobacken
 		return graphql.Null
 	}
 	return ec._Event(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNEventsAcceptInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsAcceptInput(ctx context.Context, v interface{}) (model.EventsAcceptInput, error) {
+	res, err := ec.unmarshalInputEventsAcceptInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNEventsAcceptPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsAcceptPayload(ctx context.Context, sel ast.SelectionSet, v model.EventsAcceptPayload) graphql.Marshaler {
+	return ec._EventsAcceptPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNEventsAcceptPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsAcceptPayload(ctx context.Context, sel ast.SelectionSet, v *model.EventsAcceptPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._EventsAcceptPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNEventsCreateInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsCreateInput(ctx context.Context, v interface{}) (model.EventsCreateInput, error) {
