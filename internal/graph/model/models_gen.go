@@ -62,9 +62,9 @@ type EventsAcceptInput struct {
 }
 
 type EventsAcceptPayload struct {
-	Error     []Error `json:"error"`
-	Timestamp *string `json:"timestamp"`
-	Result    bool    `json:"result"`
+	Error     []Error       `json:"error"`
+	Timestamp *string       `json:"timestamp"`
+	Result    *EventRequest `json:"result"`
 }
 
 func (EventsAcceptPayload) IsPayload() {}
@@ -93,9 +93,9 @@ type EventsJoinInput struct {
 }
 
 type EventsJoinPayload struct {
-	Error     []Error       `json:"error"`
-	Timestamp *string       `json:"timestamp"`
-	Result    *EventRequest `json:"result"`
+	Error     []Error `json:"error"`
+	Timestamp *string `json:"timestamp"`
+	Result    *bool   `json:"result"`
 }
 
 func (EventsJoinPayload) IsPayload() {}
@@ -151,6 +151,7 @@ func (FriendsListGetPayload) IsPayload() {}
 // location relation
 type Location struct {
 	Country *string     `json:"country"`
+	State   *string     `json:"state"`
 	City    *string     `json:"city"`
 	Address *string     `json:"address"`
 	Coor    *Coordinate `json:"coor"`

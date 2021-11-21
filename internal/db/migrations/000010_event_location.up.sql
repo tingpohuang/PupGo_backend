@@ -4,6 +4,7 @@ create table event_location(
 		country varchar(50),
 		state varchar(50),
 		city varchar(50),
+		address varchar(50),
 		FOREIGN KEY (event_id) REFERENCES event (id) ON DELETE CASCADE
 
 );

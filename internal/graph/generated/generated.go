@@ -115,6 +115,7 @@ type ComplexityRoot struct {
 		City    func(childComplexity int) int
 		Coor    func(childComplexity int) int
 		Country func(childComplexity int) int
+		State   func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -620,6 +621,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Location.Country(childComplexity), true
+
+	case "Location.state":
+		if e.complexity.Location.State == nil {
+			break
+		}
+
+		return e.complexity.Location.State(childComplexity), true
 
 	case "Mutation.eventsAccept":
 		if e.complexity.Mutation.EventsAccept == nil {
@@ -1533,7 +1541,7 @@ type EventsCreatePayload implements Payload{
 type EventsJoinPayload implements Payload{
     error: [Error!]!
     timestamp: Timestamp
-    result: EventRequest
+    result: Boolean
 }
 type EventsAcceptPayload implements Payload{
     error: [Error!]!
@@ -1727,7 +1735,13 @@ type ProfileListGetPayload implements Payload{
     error: [Error!]!
     timestamp: Timestamp
     result: [ProfileNode!]!
-}`, BuiltIn: false},
+}
+
+##base location recommend event
+## friend host event notification
+## friendship add query
+
+`, BuiltIn: false},
 	{Name: "internal/graph/schema.graphqls", Input: `"User total profile, if want to get other user data. Always use userprofile!"
 type User {
     id: ID!
@@ -1825,6 +1839,7 @@ type TimeRange{
 "location relation"
 type Location{
     country: String
+    state: String
     city: String
     address: String
     coor: Coordinate
@@ -3072,9 +3087,9 @@ func (ec *executionContext) _EventsJoinPayload_result(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.EventRequest)
+	res := resTmp.(*bool)
 	fc.Result = res
-	return ec.marshalOEventRequest2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventRequest(ctx, field.Selections, res)
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EventsLimits_limitOfPet(ctx context.Context, field graphql.CollectedField, obj *model.EventsLimits) (ret graphql.Marshaler) {
@@ -3466,6 +3481,38 @@ func (ec *executionContext) _Location_country(ctx context.Context, field graphql
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Location_state(ctx context.Context, field graphql.CollectedField, obj *model.Location) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Location",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9725,6 +9772,8 @@ func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = graphql.MarshalString("Location")
 		case "country":
 			out.Values[i] = ec._Location_country(ctx, field, obj)
+		case "state":
+			out.Values[i] = ec._Location_state(ctx, field, obj)
 		case "city":
 			out.Values[i] = ec._Location_city(ctx, field, obj)
 		case "address":
