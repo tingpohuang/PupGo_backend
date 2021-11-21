@@ -5,22 +5,63 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
+	"github.com/tingpo/pupgobackend/internal/gorm"
 	generated1 "github.com/tingpo/pupgobackend/internal/graph/generated"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 )
 
 func (r *mutationResolver) UserCreateByID(ctx context.Context, userCreateByIDInput model1.UserCreateByIDInput) (*model1.UserCreateByIDPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	panic(fmt.Errorf("this function havs closed"))
 }
 
 func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput model1.EventsCreateInput) (*model1.EventsCreatePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// if eci.ID != "" {
+	// 	p := new(EmptyValueError)
+	// }
+	loc := eventsCreateInput.Location
+	tr := eventsCreateInput.TimeRange
+	lmt := eventsCreateInput.Limit
+	img := eventsCreateInput.Image
+	// desc := eventsCreateInput.Description
+	errmsg := ""
+	if loc == nil {
+		errmsg += "location cannot be empty value."
+	}
+	if tr == nil {
+		errmsg += "time range cannot be empty value"
+	}
+	if lmt == nil {
+		lmt = &model1.EventsLimitsInput{
+			LimitOfDog:   &defaultEventLimitPet,
+			LimitOfHuman: &defaultEventLimitHuman,
+		}
+	}
+	if img == nil {
+		dftvImg := "test.img"
+		img = &dftvImg
+	}
+	// if desc == nil {
+	// 	desc = new(String)
+	// }
+	if errmsg != "" {
+		return nil, errors.New(errmsg)
+	}
+
+	ret := new(model1.EventsCreatePayload)
+	tstmp := time.Now().String()
+	ret.Timestamp = &tstmp
+
+	return ret, nil
 }
 
 func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model1.EventsJoinInput) (*model1.EventsJoinPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// panic(fmt.Errorf("not implemented"))
+	return nil, nil
 }
 
 func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationRemoveInput model1.NotificationRemoveInput) (*model1.NotificationRemovePayload, error) {
@@ -28,27 +69,194 @@ func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationR
 }
 
 func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommendationResponseInput model1.RecommendationResponseInput) (*model1.RecommendationResponsePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	// panic(fmt.Errorf("not implemented"))
+	payload := &model1.RecommendationResponsePayload{
+		Timestamp: GetNowTimestamp(),
+	}
+	petId := recommendationResponseInput.Pid
+	recommendId := recommendationResponseInput.RecommendID
+	result := recommendationResponseInput.Result
+	res, err := sqlCnter.FindPetRecommendByID(ctx, petId, recommendId)
+	if err != nil {
+		return nil, errors.New("pet recommend not exist")
+	}
+	if !result {
+		res.Status = -1
+		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
+		return payload, err
+	}
+	if res.Status == 1 && petId > recommendId {
+		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
+		if err != nil {
+			return nil, err
+		}
+		res.Status = -1
+		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	} else if res.Status == 2 && petId < recommendId {
+		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
+		if err != nil {
+			return nil, err
+		}
+		res.Status = -1
+		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	} else if petId < recommendId {
+		res.Status = 1
+		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	} else if petId > recommendId {
+		res.Status = 2
+		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
+		if err != nil {
+			return nil, err
+		}
+	}
+	payload.Result = &model1.PetProfile{}
+	return payload, nil
 }
 
 func (r *mutationResolver) FriendRemove(ctx context.Context, friendRemoveInput model1.FriendRemoveInput) (*model1.FriendRemovePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	pid := friendRemoveInput.PetID
+	friendId := friendRemoveInput.FriendID
+	err := RemoveFriend(ctx, pid, friendId)
+	if err != nil {
+		return nil, err
+	} else {
+		return &model1.FriendRemovePayload{
+			Timestamp: GetNowTimestamp(),
+		}, nil
+	}
 }
 
 func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpdatesInput model1.PetProfileUpdatesInput) (*model1.PetProfileUpdatesPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	id := petProfileUpdatesInput.ID
+	if id == "" {
+		return nil, errors.New("cannot updates null id")
+	}
+	petProfileList := sqlCnter.FindPetById(ctx, id)
+	if len(petProfileList) < 1 {
+		return nil, errors.New("pet id doesn't exist")
+	}
+	petProfile := petProfileList[0]
+	if petProfileUpdatesInput.Name != nil {
+		petProfile.Name = *petProfileUpdatesInput.Name
+	}
+	if petProfileUpdatesInput.Image != nil {
+		petProfile.Image = *petProfileUpdatesInput.Image
+	}
+	if petProfileUpdatesInput.Gender != nil {
+		if *petProfileUpdatesInput.Gender == "Male" {
+			petProfile.Gender = 1
+		}
+	}
+	if petProfileUpdatesInput.Image != nil {
+		petProfile.Breed = *petProfileUpdatesInput.Breed
+	}
+	if petProfileUpdatesInput.IsCastration {
+		petProfile.IsCastration = petProfileUpdatesInput.IsCastration
+	}
+	// TODO: location, birthday
+	err := sqlCnter.UpdatePet(ctx, petProfile)
+	if err != nil {
+		return nil, err
+	}
+	gender := PetGenderIntToString(petProfile.Gender)
+	pgender := model1.PetGender(*gender)
+	tstmp := time.Now().String()
+	m := &model1.PetProfileUpdatesPayload{
+		Error:     nil,
+		Timestamp: &tstmp,
+		Result: &model1.PetProfile{
+			ID:           &petProfile.Id,
+			Name:         &petProfile.Name,
+			Image:        &petProfile.Image,
+			Gender:       &pgender,
+			Breed:        &petProfile.Breed,
+			IsCastration: petProfile.IsCastration,
+		},
+	}
+	return m, nil
 }
 
 func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.PetCreateInput) (*model1.PetCreatePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	name := petCreateInput.Name
+	img := petCreateInput.Image
+	gender := petCreateInput.Gender
+	breed := petCreateInput.Breed
+	isCastration := petCreateInput.IsCastration
+	birthday := petCreateInput.Birthday
+	uid := petCreateInput.UID
+	errmsg := ""
+	gender_num := 0
+	if name == nil || *name == "" {
+		errmsg += "name cannot be empty string."
+	}
+	if img == nil || *img == "" {
+		img = &defaultPetImageUrl
+	}
+	if *gender == "Male" {
+		gender_num = 1
+	}
+	if breed == nil || *breed == "" {
+		*breed = "unknown"
+	}
+	if birthday == nil || *birthday == "" {
+		errmsg += "birthday cannot be empty string."
+	}
+	if uid == "" {
+		errmsg += "user should not be empty."
+	}
+	if errmsg != "" {
+		return nil, errors.New(errmsg)
+	}
+	pid := uuid.NewString()
+	res := sqlCnter.CreatePets(ctx, gorm.Pet{
+		Id:           pid,
+		Name:         *name,
+		Image:        *img,
+		Gender:       gender_num,
+		Breed:        *breed,
+		IsCastration: isCastration,
+	})
+	if res != nil {
+		return nil, errors.New("internal error in SQL")
+	}
+	res = sqlCnter.CreateUserPetRelation(ctx, uid, pid)
+	if res != nil {
+		return nil, errors.New("internal error in SQL")
+	}
+	return &model1.PetCreatePayload{
+		Error: nil,
+		Result: &model1.PetProfile{
+			ID:           &pid,
+			Name:         name,
+			Image:        img,
+			Gender:       petCreateInput.Gender,
+			Breed:        petCreateInput.Breed,
+			IsCastration: petCreateInput.IsCastration,
+		}}, nil
 }
 
 func (r *mutationResolver) PetDelete(ctx context.Context, petDeleteInput model1.PetDeleteInput) (*model1.PetDeletePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	if petDeleteInput.Pid == "" {
+		return nil, errors.New("pid cannot be null")
+	}
+	sqlCnter.DeletePet(ctx, petDeleteInput.Pid)
+	return &model1.PetDeletePayload{
+		Error:  nil,
+		Result: true}, nil
 }
 
 func (r *mutationResolver) UpdatesNotificationSettings(ctx context.Context, updatesNotificationSettingsInput model1.UpdatesNotificationSettingsInput) (*model1.UpdatesNotificationSettings, error) {
-	panic(fmt.Errorf("not implemented"))
+	// panic(fmt.Errorf("not implemented"))
+	return nil, nil
 }
 
 // Mutation returns generated1.MutationResolver implementation.

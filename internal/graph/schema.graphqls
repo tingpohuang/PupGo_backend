@@ -10,8 +10,6 @@ type User {
     eventList: [Event!]
 }
 "User Notification Setting."
-"delete notification settings, store in local"
-@deprecated
 type NotificationSetting{
     allowedNotificationWhenNewEventsFromFriends: Boolean!
     allowedNotificationWhenEventsWillStartIn30Mins: Boolean!
@@ -82,8 +80,8 @@ type Event{
     description: [String!]
     "holder shuold be pet"
     holder: PetProfile
-    participants: [PetProfile!]!
-    participantsHuman: [UserProfile!]!
+    pets: [PetProfile!]!
+    participants: [UserProfile!]!
 }
 "Limitation of Events"
 type EventsLimits{
@@ -119,7 +117,7 @@ type Notification{
     time: Timestamp
     eventid: ID
     userid: ID
-    type: enum
+    type: Numbers
 }
 type UserNotification{
     notificationList: [Notification!]

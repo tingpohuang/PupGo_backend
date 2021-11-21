@@ -43,9 +43,9 @@ type Event struct {
 	Image       *string       `json:"image"`
 	Description []string      `json:"description"`
 	// holder shuold be pet
-	Holder            *PetProfile    `json:"holder"`
-	Participants      []*PetProfile  `json:"participants"`
-	ParticipantsHuman []*UserProfile `json:"participantsHuman"`
+	Holder       *PetProfile    `json:"holder"`
+	Pets         []*PetProfile  `json:"pets"`
+	Participants []*UserProfile `json:"participants"`
 }
 
 type EventRequest struct {
@@ -87,8 +87,8 @@ func (EventsJoinPayload) IsPayload() {}
 
 // Limitation of Events
 type EventsLimits struct {
-	LimitOfDog   *int `json:"limitOfDog"`
-	LimitOfHuman *int `json:"limitOfHuman"`
+	LimitOfPet  *int `json:"limitOfPet"`
+	LimitOfUser *int `json:"limitOfUser"`
 }
 
 type EventsLimitsInput struct {
@@ -97,7 +97,7 @@ type EventsLimitsInput struct {
 }
 
 type EventsListGetInput struct {
-	Pid string `json:"pid"`
+	UID string `json:"uid"`
 }
 
 type EventsListGetPayload struct {
@@ -169,6 +169,9 @@ type Notification struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	Time        *string `json:"time"`
+	Eventid     *string `json:"eventid"`
+	Userid      *string `json:"userid"`
+	Type        *string `json:"type"`
 }
 
 type NotificationRemoveInput struct {
@@ -215,6 +218,8 @@ type PetCreateInput struct {
 	IsCastration bool           `json:"isCastration"`
 	Birthday     *string        `json:"birthday"`
 	Location     *LocationInput `json:"location"`
+	// tmp value, should also proof by JWT later
+	UID string `json:"uid"`
 }
 
 type PetCreatePayload struct {
@@ -336,8 +341,9 @@ type RecommendationGetPayload struct {
 func (RecommendationGetPayload) IsPayload() {}
 
 type RecommendationResponseInput struct {
-	Rid    string `json:"rid"`
-	Result bool   `json:"result"`
+	Pid         string `json:"pid"`
+	RecommendID string `json:"recommendID"`
+	Result      bool   `json:"result"`
 }
 
 type RecommendationResponsePayload struct {
@@ -408,7 +414,7 @@ type UserProfile struct {
 	Name   *string     `json:"name"`
 	Gender *UserGender `json:"gender"`
 	// only use year as unit not month
-	Age      *int      `json:"age"`
+	Birthday *string   `json:"birthday"`
 	Email    *string   `json:"email"`
 	Location *Location `json:"location"`
 }

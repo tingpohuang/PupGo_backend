@@ -22,17 +22,17 @@ var (
 	u1   = User{
 		Id:     u1id,
 		Name:   "User_1",
-		gender: 1,
+		Gender: 1,
 	}
 	u2 = User{
 		Id:     u2id,
 		Name:   "User_2",
-		gender: 1,
+		Gender: 1,
 	}
 	u3 = User{
 		Id:     u3id,
 		Name:   "User_1",
-		gender: 0,
+		Gender: 0,
 	}
 	p1 = Pet{
 		Id: p1id,
@@ -71,20 +71,20 @@ var (
 		id2: p4id,
 	}
 	pr1 = Pet_recommend{
-		id1:    p2id,
-		id2:    p3id,
-		score:  0.03,
-		status: 0,
+		Id1:    p2id,
+		Id2:    p3id,
+		Score:  0.03,
+		Status: 0,
 	}
 	pr2 = Pet_recommend{
-		id1:    p2id,
-		id2:    p4id,
-		score:  0.05,
-		status: 0,
+		Id1:    p2id,
+		Id2:    p4id,
+		Score:  0.05,
+		Status: 0,
 	}
 	e1 = Event{
 		Id:             e1id,
-		Holder_Id:      u1id,
+		Holder_Id:      p1id,
 		Start_date:     time.Now(),
 		End_date:       time.Now(),
 		Image:          "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/holiday-logo-202111?wid=71&hei=87&fmt=jpeg&qlt=95&.v=1636070054000",
@@ -93,22 +93,22 @@ var (
 		Description:    "",
 	}
 	ep1 = Event_participant{
-		event_id:       e1id,
-		participant_id: u1id,
-		pet_id:         p2id,
-		status:         1,
+		Event_id:       e1id,
+		Participant_id: u1id,
+		Pet_id:         p2id,
+		Status:         1,
 	}
 	ep2 = Event_participant{
-		event_id:       e1id,
-		participant_id: u2id,
-		pet_id:         p3id,
-		status:         1,
+		Event_id:       e1id,
+		Participant_id: u2id,
+		Pet_id:         p3id,
+		Status:         1,
 	}
 	ep3 = Event_participant{
-		event_id:       e1id,
-		participant_id: u2id,
-		pet_id:         p4id,
-		status:         1,
+		Event_id:       e1id,
+		Participant_id: u2id,
+		Pet_id:         p4id,
+		Status:         1,
 	}
 )
 
@@ -178,9 +178,9 @@ func InputPetConnect(t *testing.T, g *gormTestor) {
 
 func InputPetRecommend(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.id1, pr1.id2, pr1.score, pr1.status)
+	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.Id1, pr1.Id2, pr1.Score, pr1.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.id1, pr2.id2, pr2.score, pr2.status)
+	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.Id1, pr2.Id2, pr2.Score, pr2.Status)
 	assert.Nil(result.Error)
 }
 
@@ -192,11 +192,11 @@ func InputEvent(t *testing.T, g *gormTestor) {
 
 func InputEventParticipant(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep1.event_id, ep1.participant_id, ep1.pet_id, ep1.status)
+	result := g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep1.Event_id, ep1.Participant_id, ep1.Pet_id, ep1.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep2.event_id, ep2.participant_id, ep2.pet_id, ep2.status)
+	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep2.Event_id, ep2.Participant_id, ep2.Pet_id, ep2.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.event_id, ep3.participant_id, ep3.pet_id, ep3.status)
+	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.Event_id, ep3.Participant_id, ep3.Pet_id, ep3.Status)
 	assert.Nil(result.Error)
 
 }

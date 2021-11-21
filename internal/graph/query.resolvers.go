@@ -12,15 +12,12 @@ import (
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 )
 
-var (
-	TIMEOUT int = 30
-)
-
 func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput model1.EventsListGetInput) (*model1.EventsListGetPayload, error) {
 	timestamp := time.Now().String()
+	events := payloadCreator.GetEventsByUId(ctx, eventsListGetInput.UID)
 	newPayload := &model1.EventsListGetPayload{
 		Error:     nil,
-		Result:    []*model1.Event{},
+		Result:    events,
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
@@ -38,9 +35,10 @@ func (r *queryResolver) NotifiactionsGet(ctx context.Context, notifiactionsGetIn
 
 func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGetInput model1.RecommendationGetInput) (*model1.RecommendationGetPayload, error) {
 	timestamp := time.Now().String()
+	petConnections := payloadCreator.GetPetRecommendationById(ctx, recommendationGetInput.Pid)
 	newPayload := &model1.RecommendationGetPayload{
 		Error:     nil,
-		Result:    []*model1.Recommendation{},
+		Result:    petConnections,
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
@@ -65,9 +63,10 @@ func (r *queryResolver) FriendsListGet(ctx context.Context, friendsListGetInput 
 
 func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGetInput model1.PetProfileListGetInput) (*model1.PetProfileListGetPayload, error) {
 	timestamp := time.Now().String()
+	petsProfile := payloadCreator.GetPetProfileById(ctx, petProfileListGetInput.Pid)
 	newPayload := &model1.PetProfileListGetPayload{
 		Error:     nil,
-		Result:    []*model1.PetProfile{},
+		Result:    petsProfile,
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
@@ -75,9 +74,10 @@ func (r *queryResolver) PetProfileListGet(ctx context.Context, petProfileListGet
 
 func (r *queryResolver) UserProfileListGet(ctx context.Context, userProfileListGetInput model1.UserProfileListGetInput) (*model1.UserProfileListGetPayload, error) {
 	timestamp := time.Now().String()
+	usersProfile := payloadCreator.GetUserProfileById(ctx, userProfileListGetInput.UID)
 	newPayload := &model1.UserProfileListGetPayload{
 		Error:     nil,
-		Result:    []*model1.UserProfile{},
+		Result:    usersProfile,
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
@@ -86,8 +86,8 @@ func (r *queryResolver) UserProfileListGet(ctx context.Context, userProfileListG
 func (r *queryResolver) ProfileListGet(ctx context.Context, profileListGetInput model1.ProfileListGetInput) (*model1.ProfileListGetPayload, error) {
 	timestamp := time.Now().String()
 	newPayload := &model1.ProfileListGetPayload{
-		Error:     nil,
-		Result:    []*model1.UserProfile{},
+		Error: nil,
+		//Result:    []*model1.UserProfile{},
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
