@@ -69,3 +69,8 @@ type ProfileListGetPayload implements Payload{
     timestamp: Timestamp
     result: [ProfileNode!]!
 }
+
+##base location recommend event
+## friend host event notification
+## friendship add query
+
