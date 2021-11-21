@@ -123,6 +123,14 @@ func (s *SQLCnter) CreateUserPetRelation(ctx context.Context, uid string, pid st
 	})
 	return result.Error
 }
+func (s *SQLCnter) CreateEvents(ctx context.Context, e Event) error {
+	result := s.gdb.Table("event").Create(&e)
+	return result.Error
+}
+func (s *SQLCnter) FindEvents(ctx context.Context, pid string, eid string) (e *Event_participant, err error) {
+	result := s.gdb.Table("event_participant").Where("event_id = ? AND pet_id = ? ", eid, pid).Find(&e)
+	return e, result.Error
+}
 func (s *SQLCnter) DeletePet(ctx context.Context, pid string) error {
 	result := s.gdb.Table("pet").Delete(&Pet{}, pid)
 	return result.Error
@@ -157,7 +165,14 @@ func (s *SQLCnter) GetUserIdbyPetId(ctx context.Context, pid string) (*string, e
 	result := s.gdb.Table("pet_owner").First(&p, "Pet_id = ?", pid)
 	return &p.User_id, result.Error
 }
+func (s *SQLCnter) CreateParticipants(ctx context.Context, e Event_participant) error {
+	result := s.gdb.Table("event_participant").Create(e)
+	return result.Error
+}
 
+// func (s *SQLCnter) CreateParticipants(ctx context.Context, e Event_participant) error {
+
+// }
 /*
 func (s *SQLCnter) findUsersByEvents(ctx context.Context) (user uuid.UUID) {
 
