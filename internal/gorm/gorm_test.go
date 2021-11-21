@@ -110,6 +110,52 @@ var (
 		Pet_id:         p4id,
 		Status:         1,
 	}
+
+	uLoc1 = UserLocation{
+		User_id: u1id,
+		Position: Location{
+			Lat:  1.23,
+			Long: 4.56,
+		},
+		Country: "USA",
+		State:   "CA",
+		City:    "Los Angeles",
+		Address: "1878 Greenfield Avenue",
+	}
+	uLoc2 = UserLocation{
+		User_id: u2id,
+		Position: Location{
+			Lat:  1.23,
+			Long: 4.56,
+		},
+		Country: "USA",
+		State:   "CA",
+		City:    "Los Angeles",
+		Address: "1878 Greenfield Avenue",
+	}
+	uLoc3 = UserLocation{
+		User_id: u3id,
+		Position: Location{
+			Lat:  1.232,
+			Long: 4.56,
+		},
+		Country: "USA",
+		State:   "CA",
+		City:    "Los Angeles",
+		Address: "1878 Greenfield Avenue",
+	}
+
+	e1Loc = EventLocation{
+		Event_id: e1id,
+		Position: Location{
+			Lat:  13.33,
+			Long: 24.432,
+		},
+		Country: "USA",
+		State:   "CA",
+		City:    "Los Angeles",
+		Address: "fwfewfewfew",
+	}
 )
 
 type gormTestor struct {
@@ -126,12 +172,15 @@ func TestInputValueToDatabse(t *testing.T) {
 	assert.NotNil(db)
 
 	InputUser(t, &g)
+	InputUserLocation(t, &g)
 	InputPet(t, &g)
 	InputPetOwner(t, &g)
 	InputPetConnect(t, &g)
 	InputPetRecommend(t, &g)
 	InputEvent(t, &g)
 	InputEventParticipant(t, &g)
+	InputEventLocation(t, &g)
+
 }
 
 func InputUser(t *testing.T, g *gormTestor) {
@@ -199,4 +248,20 @@ func InputEventParticipant(t *testing.T, g *gormTestor) {
 	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.Event_id, ep3.Participant_id, ep3.Pet_id, ep3.Status)
 	assert.Nil(result.Error)
 
+}
+
+func InputUserLocation(t *testing.T, g *gormTestor) {
+	assert := assert.New(t)
+	result := g.gdb.Table("user_location").Create(&uLoc1)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("user_location").Create(&uLoc2)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("user_location").Create(&uLoc3)
+	assert.Nil(result.Error)
+}
+
+func InputEventLocation(t *testing.T, g *gormTestor) {
+	assert := assert.New(t)
+	result := g.gdb.Table("event_location").Create(&e1Loc)
+	assert.Nil(result.Error)
 }

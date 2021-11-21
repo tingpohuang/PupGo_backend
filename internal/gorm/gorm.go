@@ -75,7 +75,7 @@ func (s *SQLCnter) findEventParticipantById(ctx context.Context, id string) (pet
 	return pets, participants
 }
 
-//func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) users
+//func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations [])
 
 func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {
 	(*s.gdb).Table("users").Where("id IN ? ", uid).Find(&users)

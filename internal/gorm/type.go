@@ -1,6 +1,9 @@
 package gorm
 
 import (
+	"context"
+	"fmt"
+	"gorm.io/gorm/clause"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,10 +18,47 @@ type User struct {
 	Birthday   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 }
 
-func (u *User) BeforeCreate(db *gorm.DB) error {
+type Location struct {
+	Lat  float64
+	Long float64
+}
 
-	// uuid, err := uuid.New().MarshalBinary()
-	// u.Id = uuid
+func (loc Location) GormDataType() string {
+	return "geometry"
+}
+
+func (loc Location) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
+	return clause.Expr{
+		SQL:  "ST_PointFromText(?)",
+		Vars: []interface{}{fmt.Sprintf("POINT(%v %v)", loc.Lat, loc.Long)},
+	}
+}
+
+func (loc *Location) Scan(v interface{}) error {
+	// Scan a value into struct from database driver
+	fmt.Printf("Scan value %v", v)
+	return nil
+}
+
+type UserLocation struct {
+	User_id  string
+	Position Location
+	Country  string
+	State    string
+	City     string
+	Address  string
+}
+
+type EventLocation struct {
+	Event_id string
+	Position Location
+	Country  string
+	State    string
+	City     string
+	Address  string
+}
+
+func (u *User) BeforeCreate(db *gorm.DB) error {
 	u.Created_at = time.Now()
 	return nil
 }
