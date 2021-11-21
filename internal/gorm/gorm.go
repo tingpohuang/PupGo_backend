@@ -2,7 +2,6 @@ package gorm
 
 import (
 	"context"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -20,9 +19,9 @@ type SQLCnter struct {
 func (*SQLCnter) CreateUser() {
 	id1 := uuid.NewString()
 	id2 := uuid.NewString()
-	// id1 := []byte("abcd")
-	// id1, _ := uuid.New().MarshalBinary()
-	// id2, _ := uuid.New().MarshalBinary()
+	// Id1 := []byte("abcd")
+	// Id1, _ := uuid.New().MarshalBinary()
+	// Id2, _ := uuid.New().MarshalBinary()
 	user := User{
 		Id:   id1,
 		Name: "test",
@@ -41,6 +40,41 @@ func (*SQLCnter) CreateUser() {
 
 }
 
+func (s *SQLCnter) findEventByUId(ctx context.Context, uid string) (event []string) {
+	var eventParticipant []Event_participant
+	eventMap := make(map[string]bool)
+
+	s.gdb.Table("event_participant").Where("Participant_id = ?", uid).Find(&eventParticipant)
+	for i := 0; i < len(eventParticipant); i++ {
+		cur := eventParticipant[i]
+		_, ok := eventMap[cur.Event_id]
+		if !ok {
+			event = append(event, cur.Event_id)
+			eventMap[cur.Event_id] = true
+
+		}
+
+	}
+	return event
+}
+
+func (s *SQLCnter) findEventByIdList(ctx context.Context, id []string) (events []Event) {
+	(*s.gdb).Table("event").Where("id IN ? ", id).Find(&events)
+	return events
+}
+
+func (s *SQLCnter) findEventParticipantById(ctx context.Context, id string) (pets []string, participants []string) {
+	var eventParticipant []Event_participant
+	s.gdb.Table("event_participant").Where("Event_id = ?", id).Find(&eventParticipant)
+	for i := 0; i < len(eventParticipant); i++ {
+		cur := eventParticipant[i]
+		pets = append(pets, cur.Pet_id)
+		participants = append(participants, cur.Participant_id)
+	}
+
+	return pets, participants
+}
+
 func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {
 	(*s.gdb).Table("users").Where("id IN ? ", uid).Find(&users)
 	return users
@@ -56,10 +90,9 @@ func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) 
 	return pets
 }
 
-func (s *SQLCnter) FindPetRecommend(ctx context.Context, pid string) (petRecommend []Pet_recommend) {
-	s.gdb.Table("pet_recommend").Where("id1 = ? OR id2 = ?", pid, pid).Find(&petRecommend)
+func (s *SQLCnter) findPetRecommend(ctx context.Context, pid string) (petRecommend []Pet_recommend) {
+	s.gdb.Table("pet_recommend").Where("Id1 = ? OR Id2 = ?", pid, pid).Find(&petRecommend)
 	return petRecommend
-
 }
 func (s *SQLCnter) FindPetRecommendByID(ctx context.Context, pid1 string, pid2 string) (petRecommend Pet_recommend, err error) {
 	if pid1 > pid2 {

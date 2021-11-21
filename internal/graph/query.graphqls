@@ -9,7 +9,7 @@ type Query{
     profileListGet(profileListGetInput: ProfileListGetInput!): ProfileListGetPayload!
 }
 input EventsListGetInput{
-    pid: ID!
+    uid: ID!
 }
 
 type EventsListGetPayload implements Payload{
@@ -69,3 +69,8 @@ type ProfileListGetPayload implements Payload{
     timestamp: Timestamp
     result: [ProfileNode!]!
 }
+
+##base location recommend event
+## friend host event notification
+## friendship add query
+

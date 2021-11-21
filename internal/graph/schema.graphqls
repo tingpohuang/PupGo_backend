@@ -80,8 +80,8 @@ type Event{
     description: [String!]
     "holder shuold be pet"
     holder: PetProfile
-    participants: [PetProfile!]!
-    participantsHuman: [UserProfile!]!
+    pets: [PetProfile!]!
+    participants: [UserProfile!]!
 }
 "Limitation of Events"
 type EventsLimits{
