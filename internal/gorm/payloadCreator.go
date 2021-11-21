@@ -89,19 +89,19 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 			LimitOfUser: &event.Limit_user_num,
 		}
 		holderProfile := p.GetPetProfileById(ctx, []string{event.Holder_Id})
-		petParticipants, humanParticipants := p.sql.findEventParticipantById(ctx, event.Id)
-		petParticaipantsProfile := p.GetPetProfileById(ctx, petParticipants)
-		humanParticiapantsProfile := p.GetUserProfileById(ctx, humanParticipants)
+		pets, participants := p.sql.findEventParticipantById(ctx, event.Id)
+		petsProfile := p.GetPetProfileById(ctx, pets)
+		participantsProfile := p.GetUserProfileById(ctx, participants)
 		events[i] = &model1.Event{
-			ID:                event.Id,
-			Location:          nil,
-			TimeRange:         nil,
-			Limit:             &eventLimit,
-			Image:             &event.Image,
-			Description:       []string{event.Description},
-			Holder:            holderProfile[0],
-			Participants:      petParticaipantsProfile,
-			ParticipantsHuman: humanParticiapantsProfile,
+			ID:           event.Id,
+			Location:     nil,
+			TimeRange:    nil,
+			Limit:        &eventLimit,
+			Image:        &event.Image,
+			Description:  []string{event.Description},
+			Holder:       holderProfile[0],
+			Pets:         petsProfile,
+			Participants: participantsProfile,
 		}
 
 	}

@@ -43,9 +43,9 @@ type Event struct {
 	Image       *string       `json:"image"`
 	Description []string      `json:"description"`
 	// holder shuold be pet
-	Holder            *PetProfile    `json:"holder"`
-	Participants      []*PetProfile  `json:"participants"`
-	ParticipantsHuman []*UserProfile `json:"participantsHuman"`
+	Holder       *PetProfile    `json:"holder"`
+	Pets         []*PetProfile  `json:"pets"`
+	Participants []*UserProfile `json:"participants"`
 }
 
 type EventRequest struct {
