@@ -69,7 +69,7 @@ input UserCreateByIDInput{
     id: ID!
 }
 input EventsCreateInput{
-    id: ID!
+    pid: ID!
     location: LocationInput
     timeRange: TimeRangeInput
     limit: EventsLimitsInput

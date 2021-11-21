@@ -20,15 +20,15 @@ func (r *mutationResolver) UserCreateByID(ctx context.Context, userCreateByIDInp
 }
 
 func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput model1.EventsCreateInput) (*model1.EventsCreatePayload, error) {
-	// if eci.ID != "" {
-	// 	p := new(EmptyValueError)
-	// }
+	pid := eventsCreateInput.Pid
 	loc := eventsCreateInput.Location
 	tr := eventsCreateInput.TimeRange
 	lmt := eventsCreateInput.Limit
 	img := eventsCreateInput.Image
-	// desc := eventsCreateInput.Description
 	errmsg := ""
+	if eventsCreateInput.Pid != "" {
+		errmsg += "pid cannot be empty"
+	}
 	if loc == nil {
 		errmsg += "location cannot be empty value."
 	}
@@ -51,11 +51,26 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	if errmsg != "" {
 		return nil, errors.New(errmsg)
 	}
-
-	ret := new(model1.EventsCreatePayload)
+	// trStart := tr.StartTime.String()
+	// trEnd := tr.EndTime.String()
+	err := sqlCnter.CreateEvents(ctx, gorm.Event{
+		Id:        uuid.NewString(),
+		Holder_Id: pid,
+		// Start_date: &trStart,
+		Start_date:     time.Now(),
+		End_date:       time.Now(),
+		Image:          *img,
+		Limit_user_num: 5,
+		Limit_pet_num:  5,
+		Description:    "",
+	})
+	if err != nil {
+		return nil, err
+	}
 	tstmp := time.Now().String()
-	ret.Timestamp = &tstmp
-
+	ret := &model1.EventsCreatePayload{
+		Timestamp: &tstmp,
+	}
 	return ret, nil
 }
 
@@ -65,7 +80,7 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 }
 
 func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationRemoveInput model1.NotificationRemoveInput) (*model1.NotificationRemovePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	panic(fmt.Errorf("this function no long support"))
 }
 
 func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommendationResponseInput model1.RecommendationResponseInput) (*model1.RecommendationResponsePayload, error) {
@@ -255,8 +270,8 @@ func (r *mutationResolver) PetDelete(ctx context.Context, petDeleteInput model1.
 }
 
 func (r *mutationResolver) UpdatesNotificationSettings(ctx context.Context, updatesNotificationSettingsInput model1.UpdatesNotificationSettingsInput) (*model1.UpdatesNotificationSettings, error) {
-	// panic(fmt.Errorf("not implemented"))
-	return nil, nil
+	panic(fmt.Errorf("not implemented"))
+	// return nil, nil
 }
 
 // Mutation returns generated1.MutationResolver implementation.

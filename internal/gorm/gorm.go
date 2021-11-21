@@ -90,6 +90,10 @@ func (s *SQLCnter) CreateUserPetRelation(ctx context.Context, uid string, pid st
 	})
 	return result.Error
 }
+func (s *SQLCnter) CreateEvents(ctx context.Context, e Event) error {
+	result := s.gdb.Table("event").Create(&e)
+	return result.Error
+}
 func (s *SQLCnter) DeletePet(ctx context.Context, pid string) error {
 	result := s.gdb.Table("pet").Delete(&Pet{}, pid)
 	return result.Error

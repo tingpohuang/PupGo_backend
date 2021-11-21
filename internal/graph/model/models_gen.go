@@ -56,7 +56,7 @@ type EventRequest struct {
 }
 
 type EventsCreateInput struct {
-	ID          string             `json:"id"`
+	Pid         string             `json:"pid"`
 	Location    *LocationInput     `json:"location"`
 	TimeRange   *TimeRangeInput    `json:"timeRange"`
 	Limit       *EventsLimitsInput `json:"limit"`

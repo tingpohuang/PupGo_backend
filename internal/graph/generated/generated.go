@@ -1533,7 +1533,7 @@ input UserCreateByIDInput{
     id: ID!
 }
 input EventsCreateInput{
-    id: ID!
+    pid: ID!
     location: LocationInput
     timeRange: TimeRangeInput
     limit: EventsLimitsInput
@@ -8211,11 +8211,11 @@ func (ec *executionContext) unmarshalInputEventsCreateInput(ctx context.Context,
 
 	for k, v := range asMap {
 		switch k {
-		case "id":
+		case "pid":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
+			it.Pid, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
