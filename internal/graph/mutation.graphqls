@@ -4,6 +4,7 @@ type Mutation{
     userCreateByID(userCreateByIDInput: UserCreateByIDInput!): UserCreateByIDPayload!
     eventsCreate(eventsCreateInput: EventsCreateInput!): EventsCreatePayload!
     eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
+    eventsJoin(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
     notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
     recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
     friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!
@@ -25,6 +26,11 @@ type EventsCreatePayload implements Payload{
     result: Event
 }
 type EventsJoinPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: EventRequest
+}
+type EventsAcceptPayload implements Payload{
     error: [Error!]!
     timestamp: Timestamp
     result: EventRequest
@@ -79,6 +85,12 @@ input EventsCreateInput{
 input EventsJoinInput{
     pid:ID!
     eventID:ID!
+    description: String
+}
+input EventsAcceptInput{
+    pid:ID!
+    eventID:ID!
+    accept:Boolean!
 }
 input NotificationRemoveInput{
     pid:ID!

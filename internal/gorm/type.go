@@ -65,8 +65,8 @@ type Pet struct {
 }
 
 type Event_participant struct {
-	event_id       string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	participant_id string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	pet_id         string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	status         int
+	Event_id       string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Participant_id string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Pet_id         string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Status         int
 }

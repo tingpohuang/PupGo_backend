@@ -26,7 +26,7 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	lmt := eventsCreateInput.Limit
 	img := eventsCreateInput.Image
 	errmsg := ""
-	if eventsCreateInput.Pid != "" {
+	if eventsCreateInput.Pid == "" {
 		errmsg += "pid cannot be empty"
 	}
 	if loc == nil {
@@ -45,15 +45,12 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 		dftvImg := "test.img"
 		img = &dftvImg
 	}
-	// if desc == nil {
-	// 	desc = new(String)
-	// }
 	if errmsg != "" {
 		return nil, errors.New(errmsg)
 	}
 	// trStart := tr.StartTime.String()
 	// trEnd := tr.EndTime.String()
-	err := sqlCnter.CreateEvents(ctx, gorm.Event{
+	data := gorm.Event{
 		Id:        uuid.NewString(),
 		Holder_Id: pid,
 		// Start_date: &trStart,
@@ -63,19 +60,54 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 		Limit_user_num: 5,
 		Limit_pet_num:  5,
 		Description:    "",
-	})
+	}
+	err := sqlCnter.CreateEvents(ctx, data)
 	if err != nil {
 		return nil, err
 	}
 	tstmp := time.Now().String()
 	ret := &model1.EventsCreatePayload{
 		Timestamp: &tstmp,
+		Result: &model1.Event{
+			ID:                data.Id,
+			TimeRange:         &model1.TimeRange{},
+			Holder:            nil,
+			Participants:      nil,
+			ParticipantsHuman: nil,
+			Image:             &data.Image,
+		},
 	}
 	return ret, nil
 }
 
 func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model1.EventsJoinInput) (*model1.EventsJoinPayload, error) {
-	// panic(fmt.Errorf("not implemented"))
+	pid := eventsJoinInput.Pid
+	eid := eventsJoinInput.EventID
+	if pid == "" {
+		return nil, errors.New("pid should not be empty")
+	}
+	if eid == "" {
+		return nil, errors.New("event id should not be empty")
+	}
+	participants, _ := sqlCnter.FindEvents(ctx, pid, eid)
+	if participants != nil {
+		return nil, errors.New("already exists participant log")
+	} else {
+		uid, err := sqlCnter.GetUserIdbyPetId(ctx, pid)
+		if err != nil {
+			return nil, err
+		}
+		err = sqlCnter.CreateParticipants(ctx, gorm.Event_participant{
+			Event_id:       eid,
+			Participant_id: *uid,
+			Pet_id:         pid,
+			Status:         0,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return nil, nil
 }
 
