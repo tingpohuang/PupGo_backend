@@ -1615,7 +1615,7 @@ type Query{
     profileListGet(profileListGetInput: ProfileListGetInput!): ProfileListGetPayload!
 }
 input EventsListGetInput{
-    pid: ID!
+    uid: ID!
 }
 
 type EventsListGetPayload implements Payload{
@@ -8336,11 +8336,11 @@ func (ec *executionContext) unmarshalInputEventsListGetInput(ctx context.Context
 
 	for k, v := range asMap {
 		switch k {
-		case "pid":
+		case "uid":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pid"))
-			it.Pid, err = ec.unmarshalNID2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
+			it.UID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

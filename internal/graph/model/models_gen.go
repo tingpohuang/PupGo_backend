@@ -97,7 +97,7 @@ type EventsLimitsInput struct {
 }
 
 type EventsListGetInput struct {
-	Pid string `json:"pid"`
+	UID string `json:"uid"`
 }
 
 type EventsListGetPayload struct {

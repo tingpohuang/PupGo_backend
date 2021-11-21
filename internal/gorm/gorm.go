@@ -2,7 +2,6 @@ package gorm
 
 import (
 	"context"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -39,6 +38,41 @@ func (*SQLCnter) CreateUser() {
 	gdb.Table("pet").Create(&pet)
 	gdb.Table("petowner").Create(&petower)
 
+}
+
+func (s *SQLCnter) findEventByUId(ctx context.Context, uid string) (event []string) {
+	var eventParticipant []Event_participant
+	eventMap := make(map[string]bool)
+
+	s.gdb.Table("event_participant").Where("Participant_id = ?", uid).Find(&eventParticipant)
+	for i := 0; i < len(eventParticipant); i++ {
+		cur := eventParticipant[i]
+		_, ok := eventMap[cur.Event_id]
+		if !ok {
+			event = append(event, cur.Event_id)
+			eventMap[cur.Event_id] = true
+
+		}
+
+	}
+	return event
+}
+
+func (s *SQLCnter) findEventByIdList(ctx context.Context, id []string) (events []Event) {
+	(*s.gdb).Table("event").Where("id IN ? ", id).Find(&events)
+	return events
+}
+
+func (s *SQLCnter) findEventParticipantById(ctx context.Context, id string) (pets []string, participants []string) {
+	var eventParticipant []Event_participant
+	s.gdb.Table("event_participant").Where("Event_id = ?", id).Find(&eventParticipant)
+	for i := 0; i < len(eventParticipant); i++ {
+		cur := eventParticipant[i]
+		pets = append(pets, cur.Pet_id)
+		participants = append(participants, cur.Participant_id)
+	}
+
+	return pets, participants
 }
 
 func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {

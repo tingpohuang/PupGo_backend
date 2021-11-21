@@ -93,22 +93,22 @@ var (
 		Description:    "",
 	}
 	ep1 = Event_participant{
-		event_id:       e1id,
-		participant_id: u1id,
-		pet_id:         p2id,
-		status:         1,
+		Event_id:       e1id,
+		Participant_id: u1id,
+		Pet_id:         p2id,
+		Status:         1,
 	}
 	ep2 = Event_participant{
-		event_id:       e1id,
-		participant_id: u2id,
-		pet_id:         p3id,
-		status:         1,
+		Event_id:       e1id,
+		Participant_id: u2id,
+		Pet_id:         p3id,
+		Status:         1,
 	}
 	ep3 = Event_participant{
-		event_id:       e1id,
-		participant_id: u2id,
-		pet_id:         p4id,
-		status:         1,
+		Event_id:       e1id,
+		Participant_id: u2id,
+		Pet_id:         p4id,
+		Status:         1,
 	}
 )
 
@@ -192,11 +192,11 @@ func InputEvent(t *testing.T, g *gormTestor) {
 
 func InputEventParticipant(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep1.event_id, ep1.participant_id, ep1.pet_id, ep1.status)
+	result := g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep1.Event_id, ep1.Participant_id, ep1.Pet_id, ep1.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep2.event_id, ep2.participant_id, ep2.pet_id, ep2.status)
+	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep2.Event_id, ep2.Participant_id, ep2.Pet_id, ep2.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.event_id, ep3.participant_id, ep3.pet_id, ep3.status)
+	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.Event_id, ep3.Participant_id, ep3.Pet_id, ep3.Status)
 	assert.Nil(result.Error)
 
 }

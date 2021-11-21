@@ -9,7 +9,7 @@ type Query{
     profileListGet(profileListGetInput: ProfileListGetInput!): ProfileListGetPayload!
 }
 input EventsListGetInput{
-    pid: ID!
+    uid: ID!
 }
 
 type EventsListGetPayload implements Payload{

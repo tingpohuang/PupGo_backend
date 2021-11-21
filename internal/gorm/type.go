@@ -34,7 +34,7 @@ type Pet_connection struct {
 
 type Pet_owner struct {
 	User_id string `gorm:"type:VARCHAR(36);column:user_id;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
-	Pet_id  string `gorm:"type:VARCHAR(36);column:pet_id;not null;default:null", gorm:"primaryKey"`
+	Pet_id  string `gorm:"type:VARCHAR(36);column:Pet_id;not null;default:null", gorm:"primaryKey"`
 }
 type Pet_recommend struct {
 	Id1    string `gorm:"type:VARCHAR(36);column:id1;not null;default:null", gorm:"constraint:OnDelete:CASCADE"`
@@ -65,8 +65,8 @@ type Pet struct {
 }
 
 type Event_participant struct {
-	event_id       string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	participant_id string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	pet_id         string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	status         int
+	Event_id       string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Participant_id string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Pet_id         string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Status         int
 }

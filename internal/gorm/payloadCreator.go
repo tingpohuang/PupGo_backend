@@ -64,7 +64,6 @@ func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid strin
 			friendId = petConnection.Id2
 		}
 
-		println(friendId)
 		status := model1.RecommendationStatus(strconv.Itoa(petConnection.Status))
 		petProfiles := p.GetPetProfileById(ctx, []string{friendId})
 
@@ -77,4 +76,34 @@ func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid strin
 
 	return recommendations
 
+}
+
+func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events []*model1.Event) {
+	eventId := p.sql.findEventByUId(ctx, uid)
+	eventsRaw := p.sql.findEventByIdList(ctx, eventId)
+	events = make([]*model1.Event, len(eventsRaw))
+	for i := 0; i < len(eventsRaw); i++ {
+		event := eventsRaw[i]
+		eventLimit := model1.EventsLimits{
+			LimitOfPet:  &event.Limit_pet_num,
+			LimitOfUser: &event.Limit_user_num,
+		}
+		holderProfile := p.GetPetProfileById(ctx, []string{event.Holder_Id})
+		petParticipants, humanParticipants := p.sql.findEventParticipantById(ctx, event.Id)
+		petParticaipantsProfile := p.GetPetProfileById(ctx, petParticipants)
+		humanParticiapantsProfile := p.GetUserProfileById(ctx, humanParticipants)
+		events[i] = &model1.Event{
+			ID:                event.Id,
+			Location:          nil,
+			TimeRange:         nil,
+			Limit:             &eventLimit,
+			Image:             &event.Image,
+			Description:       []string{event.Description},
+			Holder:            holderProfile[0],
+			Participants:      petParticaipantsProfile,
+			ParticipantsHuman: humanParticiapantsProfile,
+		}
+
+	}
+	return events
 }
