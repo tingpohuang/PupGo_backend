@@ -112,7 +112,11 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 }
 
 func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput model1.EventsAcceptInput) (*model1.EventsAcceptPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	if eventsAcceptInput.Accept == false {
+		return nil, nil
+	}
+	return nil, nil
+	// panic(fmt.Errorf("not implemented"))
 }
 
 func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationRemoveInput model1.NotificationRemoveInput) (*model1.NotificationRemovePayload, error) {
