@@ -7,6 +7,7 @@ type Query{
     petProfileListGet(petProfileListGetInput: PetProfileListGetInput!) : PetProfileListGetPayload!
     userProfileListGet(userProfileListGetInput:UserProfileListGetInput!): UserProfileListGetPayload!
     profileListGet(profileListGetInput: ProfileListGetInput!): ProfileListGetPayload!
+    petsListGet(petsListGetInput: PetsListGetInput!): PetsListGetPayload!
 }
 input EventsListGetInput{
     uid: ID!
@@ -48,6 +49,16 @@ input PetProfileListGetInput{
     pid:[ID!]
 }
 type PetProfileListGetPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: [PetProfile!]!
+}
+
+input PetsListGetInput{
+    uid:[ID!]!
+}
+
+type PetsListGetPayload implements Payload{
     error: [Error!]!
     timestamp: Timestamp
     result: [PetProfile!]!

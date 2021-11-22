@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -91,6 +92,10 @@ func (r *queryResolver) ProfileListGet(ctx context.Context, profileListGetInput 
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
+}
+
+func (r *queryResolver) PetsListGet(ctx context.Context, petsListGetInput model1.PetsListGetInput) (*model1.PetsListGetPayload, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Query returns generated1.QueryResolver implementation.

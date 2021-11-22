@@ -326,6 +326,18 @@ type PetRelationship struct {
 	Recommend  *PetRecommned  `json:"recommend"`
 }
 
+type PetsListGetInput struct {
+	UID []string `json:"uid"`
+}
+
+type PetsListGetPayload struct {
+	Error     []Error       `json:"error"`
+	Timestamp *string       `json:"timestamp"`
+	Result    []*PetProfile `json:"result"`
+}
+
+func (PetsListGetPayload) IsPayload() {}
+
 type ProfileListGetInput struct {
 	ID []string `json:"id"`
 }
