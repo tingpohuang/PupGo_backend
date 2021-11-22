@@ -93,27 +93,6 @@ func (s *SQLCnter) findPetsByUId(ctx context.Context, uid string) (pets []string
 	return pets
 }
 
-func (s *SQLCnter) FindOwnerByPIdList(ctx context.Context, pid []string) (users []User, locations []UserLocation) {
-	var pet_owners []Pet_owner
-	var userId []string
-	println(len(pid))
-	s.gdb.Table("petowner").Where("pet_id IN ?", pid).Find(&pet_owners)
-
-	println("##################")
-	println(len(pet_owners))
-	for i := 0; i < len(pet_owners); i++ {
-		cur := pet_owners[i]
-		userId = append(userId, cur.User_id)
-	}
-
-	users = s.findUserByIdList(ctx, userId)
-	locations, _ = s.findUserLocationByIdList(ctx, userId)
-	println("tellme")
-	println(len(users))
-	println(len(locations))
-	return users, locations
-}
-
 func (s *SQLCnter) findUserLocationByPetsIdList(ctx context.Context, pid []string) (userLocations []UserLocation) {
 	err := (*s.gdb).Table("petowner").Select("user_location.user_id as user_id,user_location.position as position, user_location.country as country, user_location.state as state, user_location.address as address,user_location.city as city").Joins("left join user_location on user_location.user_id = petowner.user_id where pet_id in ?", pid).Scan(&userLocations)
 
@@ -126,9 +105,9 @@ func (s *SQLCnter) findUserLocationByPetsIdList(ctx context.Context, pid []strin
 }
 
 func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations []UserLocation, err error) {
-	return nil, nil
-	// 	(*s.gdb).Table("user_location").Where("user_id IN ? ", uid).Find(&userLocations)
-	// 	return userLocations
+
+	(*s.gdb).Table("user_location").Where("user_id IN ? ", uid).Find(&userLocations)
+	return userLocations, nil
 }
 
 func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {

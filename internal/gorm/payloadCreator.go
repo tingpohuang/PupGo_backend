@@ -41,7 +41,6 @@ func (p *PayloadCreator) GetUserProfileById(ctx context.Context, uid []string) (
 func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (petProfiles []*model1.PetProfile) {
 	pets := p.sql.findPetByIdList(ctx, pid)
 	petsProfile := make([]*model1.PetProfile, len(pets))
-	//_, c := p.sql.FindOwnerByPIdList(ctx, pid)
 	usersLocations := p.sql.findUserLocationByPetsIdList(ctx, pid)
 	for i := 0; i < len(pets); i++ {
 		pet := pets[i]
@@ -191,7 +190,6 @@ func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []strin
 
 func (p *PayloadCreator) GetPetListByUId(ctx context.Context, uid string) (petProfiles []*model1.PetProfile) {
 	pets := p.sql.findPetsByUId(ctx, uid)
-	println(len(pets))
 	petsProfile := p.GetPetProfileById(ctx, pets)
 	return petsProfile
 }
