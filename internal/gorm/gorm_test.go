@@ -20,19 +20,22 @@ var (
 	p4id = uuid.NewString()
 	e1id = uuid.NewString()
 	u1   = User{
-		Id:     u1id,
-		Name:   "User_1",
-		Gender: 1,
+		Id:       u1id,
+		Name:     "User_1",
+		Gender:   1,
+		Birthday: time.Now(),
 	}
 	u2 = User{
-		Id:     u2id,
-		Name:   "User_2",
-		Gender: 1,
+		Id:       u2id,
+		Name:     "User_2",
+		Gender:   1,
+		Birthday: time.Now(),
 	}
 	u3 = User{
-		Id:     u3id,
-		Name:   "User_1",
-		Gender: 0,
+		Id:       u3id,
+		Name:     "User_1",
+		Gender:   0,
+		Birthday: time.Now(),
 	}
 	p1 = Pet{
 		Id: p1id,

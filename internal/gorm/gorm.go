@@ -58,7 +58,7 @@ func (s *SQLCnter) findEventByUId(ctx context.Context, uid string) (event []stri
 	return event
 }
 
-func (s *SQLCnter) FindEventLocationByIdList(ctx context.Context, id []string) (eventLocations []EventLocation) {
+func (s *SQLCnter) findEventLocationByIdList(ctx context.Context, id []string) (eventLocations []EventLocation) {
 	(*s.gdb).Table("event_location").Where("event_id IN ? ", id).Find(&eventLocations)
 	return eventLocations
 }

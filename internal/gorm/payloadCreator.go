@@ -24,11 +24,12 @@ func (p *PayloadCreator) GetUserProfileById(ctx context.Context, uid []string) (
 	for i := 0; i < len(users); i++ {
 		user := users[i]
 		userGender := model1.UserGender(strconv.Itoa(user.Gender))
+		birthday := user.Birthday.String()
 		usersProfile[i] = &model1.UserProfile{
 			ID:       &user.Id,
 			Name:     &user.Name,
 			Gender:   &userGender,
-			Birthday: nil,
+			Birthday: &birthday,
 			Email:    nil,
 			Location: &usersLocation[i],
 		}
@@ -42,6 +43,7 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 	for i := 0; i < len(pets); i++ {
 		pet := pets[i]
 		petGender := model1.PetGender(strconv.Itoa(pet.Gender))
+		birthday := pet.Birthday.String()
 		petsProfile[i] = &model1.PetProfile{
 			ID:           &pet.Id,
 			Name:         &pet.Name,
@@ -49,7 +51,7 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 			Gender:       &petGender,
 			Breed:        &pet.Breed,
 			IsCastration: pet.IsCastration,
-			Birthday:     nil,
+			Birthday:     &birthday,
 			Location:     nil,
 		}
 	}
@@ -96,10 +98,16 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 		pets, participants := p.sql.findEventParticipantById(ctx, event.Id)
 		petsProfile := p.GetPetProfileById(ctx, pets)
 		participantsProfile := p.GetUserProfileById(ctx, participants)
+		startTime := event.Start_date.String()
+		endTime := event.End_date.String()
+		timeRange := model1.TimeRange{
+			StartTime: &startTime,
+			EndTime:   &endTime,
+		}
 		events[i] = &model1.Event{
 			ID:           event.Id,
 			Location:     &eventLocation,
-			TimeRange:    nil,
+			TimeRange:    &timeRange,
 			Limit:        &eventLimit,
 			Image:        &event.Image,
 			Description:  []string{event.Description},
@@ -136,7 +144,7 @@ func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []strin
 }
 
 func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []string) (eventLocations []model1.Location) {
-	locations := p.sql.FindEventLocationByIdList(ctx, id)
+	locations := p.sql.findEventLocationByIdList(ctx, id)
 	eventLocations = make([]model1.Location, len(locations))
 	for i := 0; i < len(locations); i++ {
 		eventLocation := locations[i]
