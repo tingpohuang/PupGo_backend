@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"context"
+	"fmt"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 	"strconv"
 )
@@ -18,6 +19,7 @@ func NewPayloadCreator(sqlCnter *SQLCnter) *PayloadCreator {
 
 func (p *PayloadCreator) GetUserProfileById(ctx context.Context, uid []string) (userProfiles []*model1.UserProfile) {
 	users := p.sql.findUserByIdList(ctx, uid)
+	usersLocation := p.createUserLocationById(ctx, uid)
 	usersProfile := make([]*model1.UserProfile, len(users))
 	for i := 0; i < len(users); i++ {
 		user := users[i]
@@ -28,7 +30,7 @@ func (p *PayloadCreator) GetUserProfileById(ctx context.Context, uid []string) (
 			Gender:   &userGender,
 			Birthday: nil,
 			Email:    nil,
-			Location: nil,
+			Location: &usersLocation[i],
 		}
 	}
 	return usersProfile
@@ -81,9 +83,11 @@ func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid strin
 func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events []*model1.Event) {
 	eventId := p.sql.findEventByUId(ctx, uid)
 	eventsRaw := p.sql.findEventByIdList(ctx, eventId)
+	eventLocations := p.createEventLocationById(ctx, eventId)
 	events = make([]*model1.Event, len(eventsRaw))
 	for i := 0; i < len(eventsRaw); i++ {
 		event := eventsRaw[i]
+		eventLocation := eventLocations[i]
 		eventLimit := model1.EventsLimits{
 			LimitOfPet:  &event.Limit_pet_num,
 			LimitOfUser: &event.Limit_user_num,
@@ -94,7 +98,7 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 		participantsProfile := p.GetUserProfileById(ctx, participants)
 		events[i] = &model1.Event{
 			ID:           event.Id,
-			Location:     nil,
+			Location:     &eventLocation,
 			TimeRange:    nil,
 			Limit:        &eventLimit,
 			Image:        &event.Image,
@@ -106,4 +110,50 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 
 	}
 	return events
+}
+
+func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []string) (userLocations []model1.Location) {
+	locations := p.sql.findUserLocationByIdList(ctx, uid)
+	userLocations = make([]model1.Location, len(locations))
+	for i := 0; i < len(locations); i++ {
+		userLocation := locations[i]
+		lat := fmt.Sprintf("%f", userLocation.Position.Lat)
+		long := fmt.Sprintf("%f", userLocation.Position.Long)
+		userLocations[i] = model1.Location{
+			Country: &userLocation.Country,
+			State:   &userLocation.State,
+			City:    &userLocation.City,
+			Address: &userLocation.Address,
+			Coor: &model1.Coordinate{
+				IsBlur:    false,
+				Latitude:  &lat,
+				Longitude: &long,
+			},
+		}
+	}
+
+	return userLocations
+}
+
+func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []string) (eventLocations []model1.Location) {
+	locations := p.sql.FindEventLocationByIdList(ctx, id)
+	eventLocations = make([]model1.Location, len(locations))
+	for i := 0; i < len(locations); i++ {
+		eventLocation := locations[i]
+		lat := fmt.Sprintf("%f", eventLocation.Position.Lat)
+		long := fmt.Sprintf("%f", eventLocation.Position.Long)
+		eventLocations[i] = model1.Location{
+			Country: &eventLocation.Country,
+			State:   &eventLocation.State,
+			City:    &eventLocation.City,
+			Address: &eventLocation.Address,
+			Coor: &model1.Coordinate{
+				IsBlur:    false,
+				Latitude:  &lat,
+				Longitude: &long,
+			},
+		}
+	}
+
+	return eventLocations
 }
