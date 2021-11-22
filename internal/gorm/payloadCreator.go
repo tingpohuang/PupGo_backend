@@ -3,8 +3,9 @@ package gorm
 import (
 	"context"
 	"fmt"
-	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 	"strconv"
+
+	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 )
 
 type PayloadCreator struct {
@@ -124,7 +125,7 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 }
 
 func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []string) (userLocations []model1.Location) {
-	locations := p.sql.findUserLocationByIdList(ctx, uid)
+	locations, _ := p.sql.findUserLocationByIdList(ctx, uid)
 	userLocations = make([]model1.Location, len(locations))
 	for i := 0; i < len(locations); i++ {
 		userLocation := locations[i]

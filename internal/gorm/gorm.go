@@ -3,6 +3,7 @@ package gorm
 import (
 	"context"
 	"fmt"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -106,7 +107,7 @@ func (s *SQLCnter) FindOwnerByPIdList(ctx context.Context, pid []string) (users 
 	}
 
 	users = s.findUserByIdList(ctx, userId)
-	locations = s.findUserLocationByIdList(ctx, userId)
+	locations, _ = s.findUserLocationByIdList(ctx, userId)
 	println("tellme")
 	println(len(users))
 	println(len(locations))
@@ -114,16 +115,20 @@ func (s *SQLCnter) FindOwnerByPIdList(ctx context.Context, pid []string) (users 
 }
 
 func (s *SQLCnter) findUserLocationByPetsIdList(ctx context.Context, pid []string) (userLocations []UserLocation) {
-	err := (*s.gdb).Table("petowner").Select("user_location.user_id as user_id,user_location.position as position, user_location.country as country, user_location.state as state, user_location.address as address,user_location.city as city").Where("pet_id in ?", pid).Joins("left join user_location on user_location.user_id = petowner.user_id")
+	err := (*s.gdb).Table("petowner").Select("user_location.user_id as user_id,user_location.position as position, user_location.country as country, user_location.state as state, user_location.address as address,user_location.city as city").Joins("left join user_location on user_location.user_id = petowner.user_id where pet_id in ?", pid).Scan(&userLocations)
+
 	if err.Error != nil {
 		fmt.Println(err.Error)
 	}
-	err.Scan(userLocations)
+	// err
 	return userLocations
+	// Where("pet_id in ?", pid)
 }
-func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations []UserLocation) {
-	(*s.gdb).Table("user_location").Where("user_id IN ? ", uid).Find(&userLocations)
-	return userLocations
+
+func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations []UserLocation, err error) {
+	return nil, nil
+	// 	(*s.gdb).Table("user_location").Where("user_id IN ? ", uid).Find(&userLocations)
+	// 	return userLocations
 }
 
 func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {
