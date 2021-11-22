@@ -36,7 +36,7 @@ func (loc Location) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
 
 func (loc *Location) Scan(v interface{}) error {
 	// Scan a value into struct from database driver
-	fmt.Printf("Scan value %v", v)
+	//fmt.Printf("Scan value %v", v)
 	return nil
 }
 

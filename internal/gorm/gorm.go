@@ -58,6 +58,11 @@ func (s *SQLCnter) findEventByUId(ctx context.Context, uid string) (event []stri
 	return event
 }
 
+func (s *SQLCnter) FindEventLocationByIdList(ctx context.Context, id []string) (eventLocations []EventLocation) {
+	(*s.gdb).Table("event_location").Where("event_id IN ? ", id).Find(&eventLocations)
+	return eventLocations
+}
+
 func (s *SQLCnter) findEventByIdList(ctx context.Context, id []string) (events []Event) {
 	(*s.gdb).Table("event").Where("id IN ? ", id).Find(&events)
 	return events
@@ -75,7 +80,10 @@ func (s *SQLCnter) findEventParticipantById(ctx context.Context, id string) (pet
 	return pets, participants
 }
 
-//func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations [])
+func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations []UserLocation) {
+	(*s.gdb).Table("user_location").Where("user_id IN ? ", uid).Find(&userLocations)
+	return userLocations
+}
 
 func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {
 	(*s.gdb).Table("users").Where("id IN ? ", uid).Find(&users)
