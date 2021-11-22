@@ -40,9 +40,12 @@ func (p *PayloadCreator) GetUserProfileById(ctx context.Context, uid []string) (
 func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (petProfiles []*model1.PetProfile) {
 	pets := p.sql.findPetByIdList(ctx, pid)
 	petsProfile := make([]*model1.PetProfile, len(pets))
+	//_, c := p.sql.FindOwnerByPIdList(ctx, pid)
+	usersLocations := p.sql.findUserLocationByPetsIdList(ctx, pid)
 	for i := 0; i < len(pets); i++ {
 		pet := pets[i]
 		petGender := model1.PetGender(strconv.Itoa(pet.Gender))
+		petLocation := p.createPetLocation(ctx, usersLocations[i])
 		birthday := pet.Birthday.String()
 		petsProfile[i] = &model1.PetProfile{
 			ID:           &pet.Id,
@@ -52,7 +55,7 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 			Breed:        &pet.Breed,
 			IsCastration: pet.IsCastration,
 			Birthday:     &birthday,
-			Location:     nil,
+			Location:     &petLocation,
 		}
 	}
 	return petsProfile
@@ -143,6 +146,25 @@ func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []strin
 	return userLocations
 }
 
+func (p *PayloadCreator) createPetLocation(ctx context.Context, userLocation UserLocation) (petLocation model1.Location) {
+
+	lat := fmt.Sprintf("%f", userLocation.Position.Lat)
+	long := fmt.Sprintf("%f", userLocation.Position.Long)
+	petLocation = model1.Location{
+		Country: &userLocation.Country,
+		State:   &userLocation.State,
+		City:    &userLocation.City,
+		Address: &userLocation.Address,
+		Coor: &model1.Coordinate{
+			IsBlur:    false,
+			Latitude:  &lat,
+			Longitude: &long,
+		},
+	}
+
+	return petLocation
+}
+
 func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []string) (eventLocations []model1.Location) {
 	locations := p.sql.findEventLocationByIdList(ctx, id)
 	eventLocations = make([]model1.Location, len(locations))
@@ -168,6 +190,7 @@ func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []strin
 
 func (p *PayloadCreator) GetPetListByUId(ctx context.Context, uid string) (petProfiles []*model1.PetProfile) {
 	pets := p.sql.findPetsByUId(ctx, uid)
+	println(len(pets))
 	petsProfile := p.GetPetProfileById(ctx, pets)
 	return petsProfile
 }

@@ -25,9 +25,14 @@ func init() {
 	sqlCnter = gorm.NewSQLCnter(db)
 	payloadCreator = gorm.NewPayloadCreator(sqlCnter)
 
-	//a := []string{"44856105-ba65-4494-8c01-8e5fdd2d3b31"}
-	// a := "64c2d025-61d0-484f-ad0f-8df773d41a82"
-	//b := sqlCnter.findUserByIdList(nil, a)
+	a := []string{"64c2d025-61d0-484f-ad0f-8df773d41a82"}
+	//a := "170ed548-ebe4-46f1-8800-7f153e50e69f"
+	payloadCreator.GetPetListByUId(nil, a[0])
+	//b, c := sqlCnter.FindOwnerByPIdList(nil, a)
+	//println(len(b))
+	//println(len(c))
+	//	println(b[0].Id)
+	//	println(c[0].Address)
 	//println(b[0].Name)
 	// println(b[0].Birthday.String())
 
