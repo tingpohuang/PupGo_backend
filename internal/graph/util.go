@@ -26,8 +26,9 @@ func init() {
 	payloadCreator = gorm.NewPayloadCreator(sqlCnter)
 
 	//a := []string{"2907c4fc-2fb8-47a6-8096-1285797929d2"}
-	//b := sqlCnter.FindUserLocationByIdList(nil, a)
-	//println(b[0].Address)
+	// a := "64c2d025-61d0-484f-ad0f-8df773d41a82"
+	//b := sqlCnter.FindPetsByUId(nil, a)
+	//println(b[0])
 	//println(b[1].Id)
 
 }

@@ -327,7 +327,7 @@ type PetRelationship struct {
 }
 
 type PetsListGetInput struct {
-	UID []string `json:"uid"`
+	UID string `json:"uid"`
 }
 
 type PetsListGetPayload struct {

@@ -80,6 +80,17 @@ func (s *SQLCnter) findEventParticipantById(ctx context.Context, id string) (pet
 	return pets, participants
 }
 
+func (s *SQLCnter) findPetsByUId(ctx context.Context, uid string) (pets []string) {
+	var pet_owners []Pet_owner
+
+	s.gdb.Table("petowner").Where("user_id = ?", uid).Find(&pet_owners)
+	for i := 0; i < len(pet_owners); i++ {
+		cur := pet_owners[i]
+		pets = append(pets, cur.Pet_id)
+	}
+	return pets
+}
+
 func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations []UserLocation) {
 	(*s.gdb).Table("user_location").Where("user_id IN ? ", uid).Find(&userLocations)
 	return userLocations

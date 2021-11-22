@@ -55,7 +55,7 @@ type PetProfileListGetPayload implements Payload{
 }
 
 input PetsListGetInput{
-    uid:[ID!]!
+    uid:ID!
 }
 
 type PetsListGetPayload implements Payload{

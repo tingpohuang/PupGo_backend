@@ -157,3 +157,9 @@ func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []strin
 
 	return eventLocations
 }
+
+func (p *PayloadCreator) GetPetListByUId(ctx context.Context, uid string) (petProfiles []*model1.PetProfile) {
+	pets := p.sql.findPetsByUId(ctx, uid)
+	petsProfile := p.GetPetProfileById(ctx, pets)
+	return petsProfile
+}

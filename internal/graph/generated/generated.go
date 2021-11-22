@@ -1763,7 +1763,7 @@ type PetProfileListGetPayload implements Payload{
 }
 
 input PetsListGetInput{
-    uid:[ID!]!
+    uid:ID!
 }
 
 type PetsListGetPayload implements Payload{
@@ -9259,7 +9259,7 @@ func (ec *executionContext) unmarshalInputPetsListGetInput(ctx context.Context, 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
-			it.UID, err = ec.unmarshalNID2ᚕstringᚄ(ctx, v)
+			it.UID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
