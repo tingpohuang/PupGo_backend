@@ -95,6 +95,7 @@ type TimeRange{
 "location relation"
 type Location{
     country: String
+    state: String
     city: String
     address: String
     coor: Coordinate
