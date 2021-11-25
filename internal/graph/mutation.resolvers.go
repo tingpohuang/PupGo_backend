@@ -89,7 +89,7 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 	if eid == "" {
 		return nil, errors.New("event id should not be empty")
 	}
-	participants, _ := sqlCnter.FindEvents(ctx, pid, eid)
+	participants, _ := sqlCnter.FindEventsParticipantByPetID(ctx, pid, eid)
 	if participants != nil {
 		return nil, errors.New("already exists participant log")
 	} else {
@@ -103,6 +103,9 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 			Pet_id:         pid,
 			Status:         0,
 		})
+		n := notification.Notification{}
+		// bug over here
+		go n.SendNewParticipantsMessage(context.Background(), pid, pid, sqlCnter)
 		if err != nil {
 			return nil, err
 		}
@@ -131,7 +134,7 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	} else {
 		status = EventStatusAccept
 	}
-	participants, err := sqlCnter.FindEvents(ctx, pid, eid)
+	participants, err := sqlCnter.FindEventsParticipantByPetID(ctx, pid, eid)
 	if err != nil {
 		return nil, err
 	}

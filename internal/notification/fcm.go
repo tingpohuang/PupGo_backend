@@ -12,7 +12,7 @@ type Notification struct {
 }
 
 func (n *Notification) SendFriendsInviteMessage(ctx context.Context, petId string, recommendId string, s *gorm.SQLCnter) {
-	tokens, err := PetIDToTokens(ctx, petId, s)
+	tokens, err := s.FindDeviceByPetID(ctx, petId)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -30,7 +30,7 @@ func (n *Notification) SendFriendsInviteMessage(ctx context.Context, petId strin
 	}
 }
 func (n *Notification) SendNewFriendMessage(ctx context.Context, petId string, recommendId string, s *gorm.SQLCnter) {
-	tokens, err := PetIDToTokens(ctx, petId, s)
+	tokens, err := s.FindDeviceByPetID(ctx, petId)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -47,13 +47,13 @@ func (n *Notification) SendNewFriendMessage(ctx context.Context, petId string, r
 		return
 	}
 }
-func (n *Notification) SendNewParticipantsMessage(ctx context.Context, petId string, recommendId string, s *gorm.SQLCnter) {
-	tokens, err := PetIDToTokens(ctx, petId, s)
+func (n *Notification) SendNewParticipantsMessage(ctx context.Context, petId string, applicantId string, s *gorm.SQLCnter) {
+	tokens, err := s.FindDeviceByPetID(ctx, petId)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	msg, err := n.generateNewParticipantsMessage(ctx, petId, recommendId, tokens)
+	msg, err := n.generateNewParticipantsMessage(ctx, petId, applicantId, tokens)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -66,7 +66,7 @@ func (n *Notification) SendNewParticipantsMessage(ctx context.Context, petId str
 	}
 }
 func (n *Notification) SendEventJoinedMessage(ctx context.Context, eventId string, petId string, s *gorm.SQLCnter) {
-	tokens, err := PetIDToTokens(ctx, petId, s)
+	tokens, err := s.FindDeviceByPetID(ctx, petId)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -85,7 +85,7 @@ func (n *Notification) SendEventJoinedMessage(ctx context.Context, eventId strin
 }
 
 func (n *Notification) SendEventContentUpdateMessage(ctx context.Context, eventId string, s *gorm.SQLCnter) {
-	tokens, err := EventIDToTokens(ctx, eventId, s)
+	tokens, err := s.FindDeviceByAllParticipant(ctx, eventId)
 	if err != nil {
 		log.Fatal(err)
 		return
