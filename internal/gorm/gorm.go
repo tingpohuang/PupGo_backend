@@ -175,9 +175,21 @@ func (s *SQLCnter) UpdateParticipants(ctx context.Context, e Event_participant, 
 	return result.Error
 }
 
-func (s *SQLCnter) FindUserDeviceID(ctx context.Context, uid string) (devices []User_device, err error) {
+func (s *SQLCnter) FindDeviceByUserID(ctx context.Context, uid string) (devices []User_device, err error) {
 	result := s.gdb.Table("user_device").Find(&devices, "user_id = ?", uid)
 	return devices, result.Error
+}
+func (s *SQLCnter) FindDeviceByPetID(ctx context.Context, pid string) (devices []User_device, err error) {
+	// s.gdb.Model(&devices).Scan(&devices)
+	// result := s.gdb.Table("user_device").Find(&devices, "user_id = ?", uid)
+	// return devices, result.Error
+	return nil, nil
+
+}
+func (s *SQLCnter) FindDeviceByAllParticipant(ctx context.Context, eid string) (devices []User_device, err error) {
+	// result := s.gdb.Table("user_device").Find(&devices, "user_id = ?", uid)
+	// return devices, result.Error
+	return nil, nil
 }
 
 func (s *SQLCnter) CreateUserDeviceID(ctx context.Context, uid string, device_id string) (err error) {

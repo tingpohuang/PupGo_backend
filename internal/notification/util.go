@@ -18,15 +18,16 @@ func UserDeviceToTokens(ctx context.Context, devices []gorm.User_device) ([]stri
 }
 
 func PetIDToTokens(ctx context.Context, pid string, s *gorm.SQLCnter) ([]string, error) {
-	devices, err := s.FindUserDeviceID(ctx, pid)
-	if err != nil {
-		return nil, err
-	}
-	tokens, err := UserDeviceToTokens(ctx, devices)
-	if err != nil {
-		return nil, err
-	}
-	return tokens, nil
+	panic("not yet ready")
+	// devices, err := s.FindUserDeviceID(ctx, pid)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// tokens, err := UserDeviceToTokens(ctx, devices)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return tokens, nil
 }
 
 func EventIDToTokens(ctx context.Context, eventId string, s *gorm.SQLCnter) ([]string, error) {
