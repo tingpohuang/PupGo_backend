@@ -7,12 +7,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/tingpo/pupgobackend/internal/firebase"
 	"github.com/tingpo/pupgobackend/internal/gorm"
 	generated1 "github.com/tingpo/pupgobackend/internal/graph/generated"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
+	"github.com/tingpo/pupgobackend/internal/notification"
 )
 
 func (r *mutationResolver) UserCreateByID(ctx context.Context, userCreateByIDInput model1.UserCreateByIDInput) (*model1.UserCreateByIDPayload, error) {
@@ -139,37 +142,58 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		return payload, err
 	}
-	if res.Status == 1 && petId > recommendId {
+	if res.Status == 1 && petId > recommendId { // first pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
 			return nil, err
 		}
-		res.Status = -1
+		res.Status = 3 // means all agree
 		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
 		}
-	} else if res.Status == 2 && petId < recommendId {
+	} else if res.Status == 2 && petId < recommendId { // second pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
 			return nil, err
 		}
-		res.Status = -1
+		res.Status = 3 // means all agree
 		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
 		}
-	} else if petId < recommendId {
+	} else if res.Status == 0 && petId < recommendId { // no pet agree
 		res.Status = 1
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
 		}
-	} else if petId > recommendId {
+		n := notification.Notification{}
+		msg, err := n.GenerateFriendsInvite(ctx, sqlCnter, petId, recommendId)
+		if err != nil {
+			log.Fatal(err)
+		}
+		app := firebase.GetApp()
+		err = app.SendNotificationMultiDevices(ctx, msg)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	} else if res.Status == 0 && petId > recommendId { // no pet agree
 		res.Status = 2
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
+		}
+		n := notification.Notification{}
+		msg, err := n.GenerateFriendsInvite(ctx, sqlCnter, petId, recommendId)
+		if err != nil {
+			log.Fatal(err)
+		}
+		app := firebase.GetApp()
+		err = app.SendNotificationMultiDevices(ctx, msg)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 	payload.Result = &model1.PetProfile{}

@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"context"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -167,6 +168,20 @@ func (s *SQLCnter) GetUserIdbyPetId(ctx context.Context, pid string) (*string, e
 }
 func (s *SQLCnter) CreateParticipants(ctx context.Context, e Event_participant) error {
 	result := s.gdb.Table("event_participant").Create(e)
+	return result.Error
+}
+
+func (s *SQLCnter) FindUserDeviceID(ctx context.Context, uid string) (devices []User_device, err error) {
+	result := s.gdb.Table("user_device").Find(&devices, "user_id = ?", uid)
+	return devices, result.Error
+}
+
+func (s *SQLCnter) CreateUserDeviceID(ctx context.Context, uid string, device_id string) (err error) {
+	value := &User_device{
+		User_id:   uid,
+		Device_id: device_id,
+	}
+	result := s.gdb.Table("user_device").Create(&value)
 	return result.Error
 }
 
