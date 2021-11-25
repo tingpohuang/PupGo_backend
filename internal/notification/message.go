@@ -16,8 +16,9 @@ func (n *Notification) generateFriendsInviteMessage(ctx context.Context, pet_id 
 	}
 	m = &messaging.MulticastMessage{
 		Data: map[string]string{
-			"recommend_id": recommend_id,
-			"pet_id":       pet_id,
+			"recommend_id":      recommend_id,
+			"pet_id":            pet_id,
+			"notification_type": "FriendsInvite",
 		},
 		Notification: &messaging.Notification{
 			Title: "New Friends Invitation",
@@ -36,6 +37,9 @@ func (n *Notification) generateNewFriendMessage(ctx context.Context, pet_id stri
 		return nil, errors.New("tokens should not be empty")
 	}
 	m = &messaging.MulticastMessage{
+		Data: map[string]string{
+			"notification_type": "NewFriend",
+		},
 		Notification: &messaging.Notification{
 			Title: "New Friends!",
 			Body:  "You get a new friends!\n Click to open PetProfile!\n",
@@ -44,7 +48,7 @@ func (n *Notification) generateNewFriendMessage(ctx context.Context, pet_id stri
 	}
 	return m, err
 }
-func (n *Notification) generateNewParticipantsMessage(ctx context.Context, pet_id string, applicantId string, tokens []string) (m *messaging.MulticastMessage, err error) {
+func (n *Notification) generateNewParticipantsMessage(ctx context.Context, eventId string, applicantId string, tokens []string) (m *messaging.MulticastMessage, err error) {
 	if applicantId == "" {
 		return nil, errors.New("applier is empty")
 	}
@@ -52,6 +56,11 @@ func (n *Notification) generateNewParticipantsMessage(ctx context.Context, pet_i
 		return nil, errors.New("tokens should not be empty")
 	}
 	m = &messaging.MulticastMessage{
+		Data: map[string]string{
+			"event_id":          eventId,
+			"applicant_id":      applicantId,
+			"notification_type": "NewParticipants",
+		},
 		Notification: &messaging.Notification{
 			Title: "New applicant request!",
 			Body:  "A new applicant want to joined the event you hold\n",
@@ -69,6 +78,10 @@ func (n *Notification) generateEventJoinedMessage(ctx context.Context, event_id 
 		return nil, errors.New("tokens should not be empty")
 	}
 	m = &messaging.MulticastMessage{
+		Data: map[string]string{
+			"event_id":          event_id,
+			"notification_type": "EventJoined",
+		},
 		Notification: &messaging.Notification{
 			Title: "You joined a event!",
 			Body:  "Holder accept your event applicant! congratulations!\n",
@@ -85,6 +98,10 @@ func (n *Notification) generateEventContentUpdateMessage(ctx context.Context, ev
 		return nil, errors.New("tokens should not be empty")
 	}
 	m = &messaging.MulticastMessage{
+		Data: map[string]string{
+			"event_id":          event_id,
+			"notification_type": "EventContentUpdate",
+		},
 		Notification: &messaging.Notification{
 			Title: "A Event Content Updates",
 			Body:  "Check the app for the event content update\n",
