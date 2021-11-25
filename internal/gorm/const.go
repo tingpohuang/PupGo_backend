@@ -10,3 +10,39 @@ const (
 	Pet_4_id   = "0ede6c06-18b7-44c1-b5fe-4c01de57c770"
 	Event_1_id = "eba52c68-15a7-4883-9ad4-a3ecc09b0fe7"
 )
+
+var (
+	UserLocation1 = UserLocation{
+		User_id: User_1_id,
+		Position: Location{
+			Lat:  1.23,
+			Long: 4.56,
+		},
+		Country: "USA",
+		State:   "CA",
+		City:    "Los Angeles",
+		Address: "1878 Greenfield Avenue",
+	}
+	UserLocation2 = UserLocation{
+		User_id: User_2_id,
+		Position: Location{
+			Lat:  1.23,
+			Long: 4.56,
+		},
+		Country: "USA",
+		State:   "CA",
+		City:    "Los Angeles",
+		Address: "1878 Greenfield Avenue",
+	}
+	UserLocation3 = UserLocation{
+		User_id: User_3_id,
+		Position: Location{
+			Lat:  1.232,
+			Long: 4.56,
+		},
+		Country: "USA",
+		State:   "CA",
+		City:    "Los Angeles",
+		Address: "1878 Greenfield Avenue",
+	}
+)

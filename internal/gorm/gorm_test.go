@@ -104,40 +104,6 @@ var (
 	// 	Status:         1,
 	// }
 
-	uLoc1 = UserLocation{
-		User_id: User_1_id,
-		Position: Location{
-			Lat:  1.23,
-			Long: 4.56,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "1878 Greenfield Avenue",
-	}
-	uLoc2 = UserLocation{
-		User_id: User_2_id,
-		Position: Location{
-			Lat:  1.23,
-			Long: 4.56,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "1878 Greenfield Avenue",
-	}
-	uLoc3 = UserLocation{
-		User_id: User_3_id,
-		Position: Location{
-			Lat:  1.232,
-			Long: 4.56,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "1878 Greenfield Avenue",
-	}
-
 	e1Loc = EventLocation{
 		Event_id: Event_1_id,
 		Position: Location{
@@ -246,11 +212,11 @@ func InputEventParticipant(t *testing.T, g *gormTestor) {
 
 func InputUserLocation(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	result := g.gdb.Table("user_location").Create(&uLoc1)
+	result := g.gdb.Table("user_location").Create(&UserLocation1)
 	assert.Nil(result.Error)
-	result = g.gdb.Table("user_location").Create(&uLoc2)
+	result = g.gdb.Table("user_location").Create(&UserLocation2)
 	assert.Nil(result.Error)
-	result = g.gdb.Table("user_location").Create(&uLoc3)
+	result = g.gdb.Table("user_location").Create(&UserLocation3)
 	assert.Nil(result.Error)
 }
 

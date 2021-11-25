@@ -2,6 +2,7 @@ package graph_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/machinebox/graphql"
@@ -40,7 +41,25 @@ func TestMutationResolver_EventsCreate(t *testing.T) {
 	assert := assert.New(t)
 	client := graphql.NewClient(graphql_endpoint)
 	assert.NotNil(client)
-
+	lat, long := fmt.Sprintf("%f", gorm.UserLocation1.Position.Lat), fmt.Sprintf("%f", gorm.UserLocation1.Position.Long)
+	stime, etime := "123", "321"
+	MutationResolver_EventsCreate(t, client, assert, &model.EventsCreateInput{
+		Pid: gorm.Pet_2_id,
+		Location: &model.LocationInput{
+			Country: &gorm.UserLocation1.Country,
+			City:    &gorm.UserLocation1.City,
+			Address: &gorm.UserLocation1.Address,
+			Coordinate: &model.CoordinateInput{
+				Latitude:  &lat,
+				Longitude: &long,
+			},
+		},
+		TimeRange: &model.TimeRangeInput{
+			StartTime: &stime,
+			EndTime:   &etime,
+		},
+		Image: nil,
+	})
 }
 
 func MutationResolver_EventsJoin(t *testing.T, c *graphql.Client, assert *assert.Assertions) {
@@ -91,5 +110,25 @@ func MutationResolver_EventsAccept(t *testing.T, c *graphql.Client, assert *asse
 }
 
 func MutationResolver_EventsCreate(t *testing.T, c *graphql.Client, assert *assert.Assertions, m *model.EventsCreateInput) {
-
+	ctx := context.Background()
+	req := graphql.NewRequest(`
+    mutation($input:EventsCreateInput!){
+		eventsCreate(eventsCreateInput:$input){
+		  timestamp,
+		  result{
+			id
+			image
+			holder{
+				id
+			  name
+			}
+		  }
+		},
+	  },
+`)
+	req.Var("input", m)
+	var respData model.EventsAcceptPayload
+	if err := c.Run(ctx, req, &respData); err != nil {
+		assert.Nil(err)
+	}
 }
