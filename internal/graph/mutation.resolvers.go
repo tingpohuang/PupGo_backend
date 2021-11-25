@@ -125,17 +125,17 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	if eid == "" {
 		return nil, errors.New("event id should not be empty")
 	}
-	status := 0
+	var status EventStatus = EventStatusNoAnswer
 	if !eventsAcceptInput.Accept {
-		status = -1
+		status = EventStatusDecline
 	} else {
-		status = 1
+		status = EventStatusAccept
 	}
 	participants, err := sqlCnter.FindEvents(ctx, pid, eid)
 	if err != nil {
 		return nil, err
 	}
-	err = sqlCnter.UpdateParticipants(ctx, *participants, status)
+	err = sqlCnter.UpdateParticipants(ctx, *participants, int(status))
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,6 @@ func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationR
 }
 
 func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommendationResponseInput model1.RecommendationResponseInput) (*model1.RecommendationResponsePayload, error) {
-	// panic(fmt.Errorf("not implemented"))
 	payload := &model1.RecommendationResponsePayload{
 		Timestamp: GetNowTimestamp(),
 	}
@@ -159,36 +158,36 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 		return nil, errors.New("pet recommend not exist")
 	}
 	if !result {
-		res.Status = -1
+		res.Status = int(RecommendationStatusDecline)
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		return payload, err
 	}
-	if res.Status == 1 && petId > recommendId { // first pet agree
+	if res.Status == int(RecommendationStatusLowAgree) && petId > recommendId { // first pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
 			return nil, err
 		}
-		res.Status = 3 // means all agree
+		res.Status = int(RecommendationStatusBothAgree) // means all agree
 		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
 		}
 		n := notification.Notification{}
 		go n.SendNewFriendMessage(context.Background(), petId, recommendId, sqlCnter)
-	} else if res.Status == 2 && petId < recommendId { // second pet agree
+	} else if res.Status == int(RecommendationStatusHighAgree) && petId < recommendId { // second pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
 			return nil, err
 		}
-		res.Status = 3 // means all agree
+		res.Status = int(RecommendationStatusBothAgree) // means all agree
 		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
 		}
 		n := notification.Notification{}
 		go n.SendNewFriendMessage(context.Background(), petId, recommendId, sqlCnter)
-	} else if res.Status == 0 && petId < recommendId { // no pet agree
-		res.Status = 1
+	} else if res.Status == int(RecommendationStatusNoAnswer) && petId < recommendId { // no pet agree
+		res.Status = int(RecommendationStatusLowAgree)
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
@@ -196,8 +195,8 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 		n := notification.Notification{}
 		//check for go
 		go n.SendFriendsInviteMessage(context.Background(), petId, recommendId, sqlCnter)
-	} else if res.Status == 0 && petId > recommendId { // no pet agree
-		res.Status = 2
+	} else if res.Status == int(RecommendationStatusNoAnswer) && petId > recommendId { // no pet agree
+		res.Status = int(RecommendationStatusHighAgree)
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
 			return nil, err
@@ -241,7 +240,9 @@ func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpda
 	}
 	if petProfileUpdatesInput.Gender != nil {
 		if *petProfileUpdatesInput.Gender == "Male" {
-			petProfile.Gender = 1
+			petProfile.Gender = int(PetGenderMale)
+		} else if *petProfileUpdatesInput.Gender == "Female" {
+			petProfile.Gender = int(PetGenderFemale)
 		}
 	}
 	if petProfileUpdatesInput.Image != nil {
@@ -282,7 +283,7 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 	birthday := petCreateInput.Birthday
 	uid := petCreateInput.UID
 	errmsg := ""
-	gender_num := 0
+	gender_num := PetGenderMale
 	if name == nil || *name == "" {
 		errmsg += "name cannot be empty string."
 	}
@@ -290,7 +291,7 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 		img = &defaultPetImageUrl
 	}
 	if *gender == "Male" {
-		gender_num = 1
+		gender_num = PetGenderFemale
 	}
 	if breed == nil || *breed == "" {
 		*breed = "unknown"
@@ -309,7 +310,7 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 		Id:           pid,
 		Name:         *name,
 		Image:        *img,
-		Gender:       gender_num,
+		Gender:       int(gender_num),
 		Breed:        *breed,
 		IsCastration: isCastration,
 	})
@@ -344,7 +345,6 @@ func (r *mutationResolver) PetDelete(ctx context.Context, petDeleteInput model1.
 
 func (r *mutationResolver) UpdatesNotificationSettings(ctx context.Context, updatesNotificationSettingsInput model1.UpdatesNotificationSettingsInput) (*model1.UpdatesNotificationSettings, error) {
 	panic(fmt.Errorf("not implemented"))
-	// return nil, nil
 }
 
 // Mutation returns generated1.MutationResolver implementation.
