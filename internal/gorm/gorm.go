@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -59,6 +60,11 @@ func (s *SQLCnter) findEventByUId(ctx context.Context, uid string) (event []stri
 	return event
 }
 
+func (s *SQLCnter) findEventLocationByIdList(ctx context.Context, id []string) (eventLocations []EventLocation) {
+	(*s.gdb).Table("event_location").Where("event_id IN ? ", id).Find(&eventLocations)
+	return eventLocations
+}
+
 func (s *SQLCnter) findEventByIdList(ctx context.Context, id []string) (events []Event) {
 	(*s.gdb).Table("event").Where("id IN ? ", id).Find(&events)
 	return events
@@ -74,6 +80,34 @@ func (s *SQLCnter) findEventParticipantById(ctx context.Context, id string) (pet
 	}
 
 	return pets, participants
+}
+
+func (s *SQLCnter) findPetsByUId(ctx context.Context, uid string) (pets []string) {
+	var pet_owners []Pet_owner
+
+	s.gdb.Table("petowner").Where("user_id = ?", uid).Find(&pet_owners)
+	for i := 0; i < len(pet_owners); i++ {
+		cur := pet_owners[i]
+		pets = append(pets, cur.Pet_id)
+	}
+	return pets
+}
+
+func (s *SQLCnter) findUserLocationByPetsIdList(ctx context.Context, pid []string) (userLocations []UserLocation) {
+	err := (*s.gdb).Table("petowner").Select("user_location.user_id as user_id,user_location.position as position, user_location.country as country, user_location.state as state, user_location.address as address,user_location.city as city").Joins("left join user_location on user_location.user_id = petowner.user_id where pet_id in ?", pid).Scan(&userLocations)
+
+	if err.Error != nil {
+		fmt.Println(err.Error)
+	}
+	// err
+	return userLocations
+	// Where("pet_id in ?", pid)
+}
+
+func (s *SQLCnter) findUserLocationByIdList(ctx context.Context, uid []string) (userLocations []UserLocation, err error) {
+
+	(*s.gdb).Table("user_location").Where("user_id IN ? ", uid).Find(&userLocations)
+	return userLocations, nil
 }
 
 func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []User) {

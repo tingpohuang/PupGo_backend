@@ -93,6 +93,17 @@ func (r *queryResolver) ProfileListGet(ctx context.Context, profileListGetInput 
 	return newPayload, nil
 }
 
+func (r *queryResolver) PetsListGet(ctx context.Context, petsListGetInput model1.PetsListGetInput) (*model1.PetsListGetPayload, error) {
+	timestamp := time.Now().String()
+	petsList := payloadCreator.GetPetListByUId(ctx, petsListGetInput.UID)
+	newPayload := &model1.PetsListGetPayload{
+		Error:     nil,
+		Timestamp: &timestamp,
+		Result:    petsList,
+	}
+	return newPayload, nil
+}
+
 // Query returns generated1.QueryResolver implementation.
 func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
 

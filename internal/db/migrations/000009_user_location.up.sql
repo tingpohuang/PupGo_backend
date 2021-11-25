@@ -4,5 +4,6 @@ create table user_location(
 		country varchar(50),
 		state varchar(50),
 		city varchar(50),
+		address varchar (50),
 		FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );

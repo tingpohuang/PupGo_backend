@@ -115,7 +115,7 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	res := &model1.EventsAcceptPayload{
 		Error:     nil,
 		Timestamp: GetNowTimestamp(),
-		Result:    true,
+		Result:    nil,
 	}
 	pid := eventsAcceptInput.Pid
 	eid := eventsAcceptInput.EventID
