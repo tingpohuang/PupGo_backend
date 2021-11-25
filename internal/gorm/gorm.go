@@ -170,6 +170,10 @@ func (s *SQLCnter) CreateParticipants(ctx context.Context, e Event_participant) 
 	result := s.gdb.Table("event_participant").Create(e)
 	return result.Error
 }
+func (s *SQLCnter) UpdateParticipants(ctx context.Context, e Event_participant, status int) error {
+	result := s.gdb.Table("event_participant").Model(&e).Update("status", status)
+	return result.Error
+}
 
 func (s *SQLCnter) FindUserDeviceID(ctx context.Context, uid string) (devices []User_device, err error) {
 	result := s.gdb.Table("user_device").Find(&devices, "user_id = ?", uid)

@@ -44,3 +44,52 @@ func (n *Notification) generateNewFriendMessage(ctx context.Context, pet_id stri
 	}
 	return m, err
 }
+func (n *Notification) generateNewParticipantsMessage(ctx context.Context, pet_id string, applicantId string, tokens []string) (m *messaging.MulticastMessage, err error) {
+	if applicantId == "" {
+		return nil, errors.New("applier is empty")
+	}
+	if tokens == nil {
+		return nil, errors.New("tokens should not be empty")
+	}
+	m = &messaging.MulticastMessage{
+		Notification: &messaging.Notification{
+			Title: "New applicant request!",
+			Body:  "A new applicant want to joined the event you hold\n",
+		},
+		Tokens: tokens,
+	}
+	return m, err
+}
+
+func (n *Notification) generateEventJoinedMessage(ctx context.Context, event_id string, applicantId string, tokens []string) (m *messaging.MulticastMessage, err error) {
+	if applicantId == "" {
+		return nil, errors.New("applier is empty")
+	}
+	if tokens == nil {
+		return nil, errors.New("tokens should not be empty")
+	}
+	m = &messaging.MulticastMessage{
+		Notification: &messaging.Notification{
+			Title: "You joined a event!",
+			Body:  "Holder accept your event applicant! congratulations!\n",
+		},
+		Tokens: tokens,
+	}
+	return m, err
+}
+func (n *Notification) generateEventContentUpdateMessage(ctx context.Context, event_id string, tokens []string) (m *messaging.MulticastMessage, err error) {
+	if event_id == "" {
+		return nil, errors.New("event_id is empty")
+	}
+	if tokens == nil {
+		return nil, errors.New("tokens should not be empty")
+	}
+	m = &messaging.MulticastMessage{
+		Notification: &messaging.Notification{
+			Title: "A Event Content Updates",
+			Body:  "Check the app for the event content update\n",
+		},
+		Tokens: tokens,
+	}
+	return m, err
+}

@@ -112,10 +112,34 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 }
 
 func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput model1.EventsAcceptInput) (*model1.EventsAcceptPayload, error) {
-	if eventsAcceptInput.Accept == false {
-		return nil, nil
+	res := &model1.EventsAcceptPayload{
+		Error:     nil,
+		Timestamp: GetNowTimestamp(),
+		Result:    true,
 	}
-	return nil, nil
+	pid := eventsAcceptInput.Pid
+	eid := eventsAcceptInput.EventID
+	if pid == "" {
+		return nil, errors.New("pid should not be empty")
+	}
+	if eid == "" {
+		return nil, errors.New("event id should not be empty")
+	}
+	status := 0
+	if !eventsAcceptInput.Accept {
+		status = -1
+	} else {
+		status = 1
+	}
+	participants, err := sqlCnter.FindEvents(ctx, pid, eid)
+	if err != nil {
+		return nil, err
+	}
+	err = sqlCnter.UpdateParticipants(ctx, *participants, status)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationRemoveInput model1.NotificationRemoveInput) (*model1.NotificationRemovePayload, error) {
