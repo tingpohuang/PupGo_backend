@@ -18,6 +18,8 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/machinebox/graphql v0.2.2 // indirect
+	github.com/mrdulin/gqlgen-cnode v0.0.0-20200904054759-5c9d85b9cd6e // indirect
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/vektah/gqlparser/v2 v2.2.0

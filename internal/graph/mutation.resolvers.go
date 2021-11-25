@@ -14,6 +14,7 @@ import (
 	generated1 "github.com/tingpo/pupgobackend/internal/graph/generated"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 	"github.com/tingpo/pupgobackend/internal/notification"
+	gormio "gorm.io/gorm"
 )
 
 func (r *mutationResolver) UserCreateByID(ctx context.Context, userCreateByIDInput model1.UserCreateByIDInput) (*model1.UserCreateByIDPayload, error) {
@@ -89,8 +90,8 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 	if eid == "" {
 		return nil, errors.New("event id should not be empty")
 	}
-	participants, _ := sqlCnter.FindEventsParticipantByPetID(ctx, pid, eid)
-	if participants != nil {
+	_, err := sqlCnter.FindEventsParticipantByPetID(ctx, pid, eid)
+	if !errors.Is(err, gormio.ErrRecordNotFound) {
 		return nil, errors.New("already exists participant log")
 	} else {
 		uid, err := sqlCnter.GetUserIdbyPetId(ctx, pid)
@@ -122,12 +123,12 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	}
 	pid := eventsAcceptInput.Pid
 	eid := eventsAcceptInput.EventID
-	if pid == "" {
-		return nil, errors.New("pid should not be empty")
-	}
-	if eid == "" {
-		return nil, errors.New("event id should not be empty")
-	}
+	// if pid == "" {
+	// 	return nil, errors.New("pid should not be empty")
+	// }
+	// if eid == "" {
+	// 	return nil, errors.New("event id should not be empty")
+	// }
 	var status EventStatus = EventStatusNoAnswer
 	if !eventsAcceptInput.Accept {
 		status = EventStatusDecline
@@ -138,7 +139,8 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	if err != nil {
 		return nil, err
 	}
-	err = sqlCnter.UpdateParticipants(ctx, *participants, int(status))
+	participants.Status = int(status)
+	err = sqlCnter.UpdateParticipants(ctx, *participants)
 	if err != nil {
 		return nil, err
 	}

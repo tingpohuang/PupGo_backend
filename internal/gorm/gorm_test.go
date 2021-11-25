@@ -4,90 +4,80 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
 
 var (
-	u1id = uuid.NewString()
-	u2id = uuid.NewString()
-	u3id = uuid.NewString()
-	p1id = uuid.NewString()
-	p2id = uuid.NewString()
-	p3id = uuid.NewString()
-	p4id = uuid.NewString()
-	e1id = uuid.NewString()
-	u1   = User{
-		Id:       u1id,
+	u1 = User{
+		Id:       User_1_id,
 		Name:     "User_1",
 		Gender:   1,
 		Birthday: time.Now(),
 	}
 	u2 = User{
-		Id:       u2id,
+		Id:       User_2_id,
 		Name:     "User_2",
 		Gender:   1,
 		Birthday: time.Now(),
 	}
 	u3 = User{
-		Id:       u3id,
-		Name:     "User_1",
+		Id:       User_3_id,
+		Name:     "User_3",
 		Gender:   0,
 		Birthday: time.Now(),
 	}
 	p1 = Pet{
-		Id: p1id,
+		Id: Pet_1_id,
 	}
 	p2 = Pet{
-		Id: p2id,
+		Id: Pet_2_id,
 	}
 	p3 = Pet{
-		Id: p3id,
+		Id: Pet_3_id,
 	}
 	p4 = Pet{
-		Id: p4id,
+		Id: Pet_4_id,
 	}
 	po1 = Pet_owner{
-		User_id: u1id,
-		Pet_id:  p1id,
+		User_id: User_1_id,
+		Pet_id:  Pet_1_id,
 	}
 	po2 = Pet_owner{
-		User_id: u1id,
-		Pet_id:  p2id,
+		User_id: User_1_id,
+		Pet_id:  Pet_2_id,
 	}
 	po3 = Pet_owner{
-		User_id: u2id,
-		Pet_id:  p3id,
+		User_id: User_2_id,
+		Pet_id:  Pet_3_id,
 	}
 	po4 = Pet_owner{
-		User_id: u2id,
-		Pet_id:  p4id,
+		User_id: User_2_id,
+		Pet_id:  Pet_4_id,
 	}
 	pc1 = Pet_connection{
-		id1: p1id,
-		id2: p3id,
+		id1: Pet_1_id,
+		id2: Pet_3_id,
 	}
 	pc2 = Pet_connection{
-		id1: p1id,
-		id2: p4id,
+		id1: Pet_1_id,
+		id2: Pet_4_id,
 	}
 	pr1 = Pet_recommend{
-		Id1:    p2id,
-		Id2:    p3id,
+		Id1:    Pet_2_id,
+		Id2:    Pet_3_id,
 		Score:  0.03,
 		Status: 0,
 	}
 	pr2 = Pet_recommend{
-		Id1:    p2id,
-		Id2:    p4id,
+		Id1:    Pet_2_id,
+		Id2:    Pet_4_id,
 		Score:  0.05,
 		Status: 0,
 	}
 	e1 = Event{
-		Id:             e1id,
-		Holder_Id:      p1id,
+		Id:             Event_1_id,
+		Holder_Id:      Pet_1_id,
 		Start_date:     time.Now(),
 		End_date:       time.Now(),
 		Image:          "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/holiday-logo-202111?wid=71&hei=87&fmt=jpeg&qlt=95&.v=1636070054000",
@@ -96,26 +86,26 @@ var (
 		Description:    "",
 	}
 	ep1 = Event_participant{
-		Event_id:       e1id,
-		Participant_id: u1id,
-		Pet_id:         p2id,
+		Event_id:       Event_1_id,
+		Participant_id: User_1_id,
+		Pet_id:         Pet_2_id,
 		Status:         1,
 	}
 	ep2 = Event_participant{
-		Event_id:       e1id,
-		Participant_id: u2id,
-		Pet_id:         p3id,
+		Event_id:       Event_1_id,
+		Participant_id: User_2_id,
+		Pet_id:         Pet_3_id,
 		Status:         1,
 	}
-	ep3 = Event_participant{
-		Event_id:       e1id,
-		Participant_id: u2id,
-		Pet_id:         p4id,
-		Status:         1,
-	}
+	// ep3 = Event_participant{
+	// 	Event_id:       Event_1_id,
+	// 	Participant_id: User_2_id,
+	// 	Pet_id:         Pet_4_id,
+	// 	Status:         1,
+	// }
 
 	uLoc1 = UserLocation{
-		User_id: u1id,
+		User_id: User_1_id,
 		Position: Location{
 			Lat:  1.23,
 			Long: 4.56,
@@ -126,7 +116,7 @@ var (
 		Address: "1878 Greenfield Avenue",
 	}
 	uLoc2 = UserLocation{
-		User_id: u2id,
+		User_id: User_2_id,
 		Position: Location{
 			Lat:  1.23,
 			Long: 4.56,
@@ -137,7 +127,7 @@ var (
 		Address: "1878 Greenfield Avenue",
 	}
 	uLoc3 = UserLocation{
-		User_id: u3id,
+		User_id: User_3_id,
 		Position: Location{
 			Lat:  1.232,
 			Long: 4.56,
@@ -149,7 +139,7 @@ var (
 	}
 
 	e1Loc = EventLocation{
-		Event_id: e1id,
+		Event_id: Event_1_id,
 		Position: Location{
 			Lat:  13.33,
 			Long: 24.432,
@@ -166,7 +156,8 @@ type gormTestor struct {
 }
 
 func TestInputValueToDatabse(t *testing.T) {
-	// timestamp := time.Now()
+	// command: "go test -timeout 60s -run ^TestInputValueToDatabse$ github.com/tingpo/pupgobackend/internal/gorm"
+	// please no add in db connection lol.
 	connector, err := GetConnectorFactory("mySQL")
 	db := connector.NewDBConnection()
 	assert := assert.New(t)
@@ -248,8 +239,8 @@ func InputEventParticipant(t *testing.T, g *gormTestor) {
 	assert.Nil(result.Error)
 	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep2.Event_id, ep2.Participant_id, ep2.Pet_id, ep2.Status)
 	assert.Nil(result.Error)
-	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.Event_id, ep3.Participant_id, ep3.Pet_id, ep3.Status)
-	assert.Nil(result.Error)
+	// result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.Event_id, ep3.Participant_id, ep3.Pet_id, ep3.Status)
+	// assert.Nil(result.Error)
 
 }
 
