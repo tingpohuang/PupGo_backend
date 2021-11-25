@@ -19,6 +19,7 @@ func (n *Notification) generateFriendsInviteMessage(ctx context.Context, pet_id 
 			"recommend_id":      recommend_id,
 			"pet_id":            pet_id,
 			"notification_type": "FriendsInvite",
+			"click_action":      "FLUTTER_NOTIFICATION_CLICK",
 		},
 		Notification: &messaging.Notification{
 			Title: "New Friends Invitation",
