@@ -2,6 +2,7 @@ package firebase
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"sync"
 
@@ -23,7 +24,9 @@ type firebase_controller struct {
 func GetApp() *firebase_controller {
 	once.Do(func() {
 		var err error
-		opt := option.WithCredentialsFile("./pupgo-e03ef-firebase-adminsdk-sy8tp-b8e7eff967.json")
+		settingJson, _ := json.Marshal(setting)
+		opt := option.WithCredentialsJSON(settingJson)
+
 		config := &firebase.Config{
 			ProjectID: "pupgo-e03ef",
 			// ServiceAccountID: "",
