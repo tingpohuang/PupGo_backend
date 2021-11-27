@@ -15,10 +15,11 @@ import (
 )
 
 type SingInPayload struct {
-	Token   string `json:"token"`
-	Email   string `json:"email"`
-	Account string `json:"account"`
-	Type    string `json:"type"`
+	Token    string `json:"token"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Account  string `json:"account"`
+	Type     string `json:"type"`
 }
 
 type SingUpPayload struct {
@@ -71,7 +72,7 @@ func verifyFBToken(idToken string) error {
 
 func CreateJWT(account string, email string) (token string, err error) {
 	now := time.Now()
-	jwtId := account + strconv.FormatInt(now.Unix(), 10)
+	jwtId := email + strconv.FormatInt(now.Unix(), 10)
 	// set claims and sign
 	claims := Claims{
 		Account: account,

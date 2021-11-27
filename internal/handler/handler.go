@@ -88,9 +88,9 @@ func SignInHandler() gin.HandlerFunc {
 }
 func SignUpHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var signinPayload SingInPayload
+		var signupPayload SingUpPayload
 		// Deserialize payload
-		err := c.ShouldBindJSON(&signinPayload)
+		err := c.ShouldBindJSON(&signupPayload)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
@@ -98,29 +98,18 @@ func SignUpHandler() gin.HandlerFunc {
 			return
 		}
 
-		// verify google Id token
-		switch signinPayload.Type {
-		case "google":
-			_, err = verifyGoogleToken(signinPayload.Token)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-		case "facebook":
-			err = verifyFBToken(signinPayload.Token)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-		}
-
 		// create or signin
-		tmpUser, err := sqlCnter.FindUserByEmail(signinPayload.Email)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			tmpUser = sqlCnter.CreateUser(signinPayload.Account, signinPayload.Email)
+		tmpUser, err := sqlCnter.FindUserByEmail(signupPayload.Email)
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Account already existed. Please sign in.",
+			})
+			return
 		}
 
-		accessToken, err := CreateJWT(signinPayload.Account, signinPayload.Email)
+		tmpUser = sqlCnter.CreateUser("", signupPayload.Email)
+
+		accessToken, err := CreateJWT("", signupPayload.Email)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			return
