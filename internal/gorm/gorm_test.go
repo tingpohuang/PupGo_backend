@@ -187,6 +187,12 @@ func InputPetConnect(t *testing.T, g *gormTestor) {
 
 func InputPetRecommend(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
+	if pr1.Id1 > pr1.Id2 {
+		pr1.Id1, pr1.Id2 = pr1.Id2, pr1.Id1
+	}
+	if pr2.Id1 > pr2.Id2 {
+		pr2.Id1, pr2.Id2 = pr2.Id2, pr2.Id1
+	}
 	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.Id1, pr1.Id2, pr1.Score, pr1.Status)
 	assert.Nil(result.Error)
 	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.Id1, pr2.Id2, pr2.Score, pr2.Status)

@@ -139,9 +139,8 @@ func (s *SQLCnter) UpdatePetRecommendByID(ctx context.Context, p Pet_recommend) 
 	if p.Id1 > p.Id2 {
 		p.Id1, p.Id2 = p.Id2, p.Id1
 	}
-	s.gdb.Table("pet_recommend").Find(&p, "id1 = ? AND id2 = ?", p.Id1, p.Id2).Updates(&p)
-	return nil
-
+	res := s.gdb.Table("pet_recommend").Where("id1 = ? AND id2 = ?", p.Id1, p.Id2).Update("status", p.Status)
+	return res.Error
 }
 
 func (s *SQLCnter) CreatePets(ctx context.Context, pet Pet) error {
@@ -160,7 +159,7 @@ func (s *SQLCnter) CreateEvents(ctx context.Context, e Event) error {
 	return result.Error
 }
 func (s *SQLCnter) FindEventsParticipantByPetID(ctx context.Context, pid string, eid string) (e *Event_participant, err error) {
-	result := s.gdb.Table("event_participant").Where("event_id = ? AND pet_id = ? ", eid, pid).First(&e)
+	result := s.gdb.Table("event_participant").Where("event_id = ? AND pet_id = ?", eid, pid).First(&e)
 	return e, result.Error
 }
 func (s *SQLCnter) DeletePet(ctx context.Context, pid string) error {
@@ -172,10 +171,12 @@ func (s *SQLCnter) CreatePetConnection(ctx context.Context, pid1 string, pid2 st
 	if pid1 > pid2 {
 		pid1, pid2 = pid2, pid1
 	}
-	result := s.gdb.Table("pet_connection").Create(&Pet_connection{
-		id1: pid1,
-		id2: pid2,
-	})
+	p :=
+		Pet_connection{
+			id1: pid1,
+			id2: pid2,
+		}
+	result := s.gdb.Table("pet_connection").Create(&p)
 	return result.Error
 }
 
@@ -216,12 +217,16 @@ func (s *SQLCnter) FindDeviceByUserIDs(ctx context.Context, uids []string) (devi
 }
 
 func (s *SQLCnter) FindDeviceByPetID(ctx context.Context, pid string) (devices []string, err error) {
-	result := s.gdb.Table("user_device").Select("device_id").Joins("left join petowner on user_deivce.user_id = petowner.user_id where petowner.pet_id = ?", pid).Scan(&devices)
+	result := s.gdb.Table("user_device").Select("device_id").Joins("left join petowner on user_device.user_id = petowner.user_id where petowner.pet_id = ?", pid).Scan(&devices)
 	return devices, result.Error
 }
 func (s *SQLCnter) FindDeviceByAllParticipant(ctx context.Context, eid string) (devices []string, err error) {
 	result := s.gdb.Table("user_device").Select("device_id").Joins("left join event_participant on user_device.user_id = event_participant.user_id wherer event_participant.event_id = ?", eid).Scan(&devices)
 	return devices, result.Error
+}
+func (s *SQLCnter) FindPetProfileByPetID(ctx context.Context, pid string) (pet *Pet, err error) {
+	result := s.gdb.Table("pet").Where("id = ?", pid).First(pet)
+	return pet, result.Error
 }
 
 func (s *SQLCnter) CreateUserDeviceID(ctx context.Context, uid string, device_id string) (err error) {

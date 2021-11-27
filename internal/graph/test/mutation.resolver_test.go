@@ -37,6 +37,7 @@ func TestMutationResolver_EventsAccept(t *testing.T) {
 	MutationResolver_EventsAccept(t, client, assert, true)
 	MutationResolver_EventsAccept(t, client, assert, false)
 }
+
 func TestMutationResolver_EventsCreate(t *testing.T) {
 	assert := assert.New(t)
 	client := graphql.NewClient(graphql_endpoint)
@@ -60,6 +61,43 @@ func TestMutationResolver_EventsCreate(t *testing.T) {
 		},
 		Image: nil,
 	})
+}
+func TestMutationResolver_RecommendationResponse(t *testing.T) {
+	// "go test -timeout 30s -run ^TestMutationResolver_RecommendationResponse$ github.com/tingpo/pupgobackend/internal/graph/test"
+	assert := assert.New(t)
+	client := graphql.NewClient(graphql_endpoint)
+	ctx := context.Background()
+	mysqlConnector, err := gorm.GetConnectorFactory("mySQL")
+	assert.Nil(err)
+	db := mysqlConnector.NewDBConnection()
+	sqlCnter := gorm.NewSQLCnter(db)
+	assert.NotNil(sqlCnter)
+	assert.NotNil(client)
+	MutationResolver_RecommendationResponse(t, client, assert, &model.RecommendationResponseInput{
+		Pid:         gorm.Pet_2_id,
+		RecommendID: gorm.Pet_3_id,
+		Result:      true,
+	})
+	res, err := sqlCnter.FindPetRecommendByID(ctx, gorm.Pet_2_id, gorm.Pet_3_id)
+	assert.Nil(err)
+	assert.Equal(res.Status, 1)
+
+	MutationResolver_RecommendationResponse(t, client, assert, &model.RecommendationResponseInput{
+		Pid:         gorm.Pet_3_id,
+		RecommendID: gorm.Pet_2_id,
+		Result:      true,
+	})
+	res, err = sqlCnter.FindPetRecommendByID(ctx, gorm.Pet_3_id, gorm.Pet_2_id)
+	assert.Nil(err)
+	assert.Equal(res.Status, 3)
+	MutationResolver_RecommendationResponse(t, client, assert, &model.RecommendationResponseInput{
+		Pid:         gorm.Pet_2_id,
+		RecommendID: gorm.Pet_4_id,
+		Result:      false,
+	})
+	res, err = sqlCnter.FindPetRecommendByID(ctx, gorm.Pet_3_id, gorm.Pet_2_id)
+	assert.Nil(err)
+	assert.Equal(res.Status, -1)
 }
 
 func MutationResolver_EventsJoin(t *testing.T, c *graphql.Client, assert *assert.Assertions) {
@@ -130,5 +168,35 @@ func MutationResolver_EventsCreate(t *testing.T, c *graphql.Client, assert *asse
 	var respData model.EventsAcceptPayload
 	if err := c.Run(ctx, req, &respData); err != nil {
 		assert.Nil(err)
+	}
+}
+
+func MutationResolver_RecommendationResponse(t *testing.T, c *graphql.Client, assert *assert.Assertions, m *model.RecommendationResponseInput) {
+	ctx := context.Background()
+	req := graphql.NewRequest(`
+    mutation($input: RecommendationResponseInput!){
+		recommendationResponse(recommendationResponseInput:$input){
+		  result{
+			  id
+			  image
+			  gender
+			}
+		}
+	  }
+`)
+	req.Var("input", m)
+	respData := model.RecommendationResponsePayload{
+		Result: &model.PetProfile{},
+	}
+	if err := c.Run(ctx, req, &respData); err != nil {
+		assert.Nil(err)
+	}
+	if m.Result {
+		assert.NotNil(&respData)
+		assert.NotNil(respData.Result)
+		assert.NotNil(respData.Result.ID)
+		assert.Equal(respData.Result.ID, m.RecommendID)
+	} else {
+		assert.Nil(respData)
 	}
 }
