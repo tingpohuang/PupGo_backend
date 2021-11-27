@@ -3,6 +3,7 @@ package gorm
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -18,28 +19,48 @@ type SQLCnter struct {
 	gdb *gorm.DB
 }
 
-func (*SQLCnter) CreateUser() {
+func (*SQLCnter) CreateUser(name string, email string) (user User) {
 	id1 := uuid.NewString()
-	id2 := uuid.NewString()
-	// Id1 := []byte("abcd")
-	// Id1, _ := uuid.New().MarshalBinary()
-	// Id2, _ := uuid.New().MarshalBinary()
-	user := User{
-		Id:   id1,
-		Name: "test",
-	}
-	pet := Pet{
-		Id: id2,
-	}
-	petower := Pet_owner{
-		User_id: id1,
-		Pet_id:  id2,
+	user = User{
+		Id:         id1,
+		Name:       name,
+		Cooldown:   time.Time{},
+		Created_at: time.Time{},
+		Gender:     0,
+		Birthday:   time.Time{},
+		Email:      email,
 	}
 
 	gdb.Table("users").Create(&user)
-	gdb.Table("pet").Create(&pet)
-	gdb.Table("petowner").Create(&petower)
+	return user
+}
 
+func (*SQLCnter) CreateUserToken(uid string, token string) (err error) {
+	userToken := UserToken{
+		User_id: uid,
+		Token:   token,
+	}
+
+	result := gdb.Table("user_token").Create(&userToken)
+	return result.Error
+}
+
+func (s *SQLCnter) FindTokenByID(uid string) (userToken UserToken, err error) {
+
+	err = s.gdb.Table("user_token").Where("user_id = ?", uid).First(&userToken).Error
+	return userToken, err
+
+}
+func (s *SQLCnter) UpdateTokenByID(uid string, userToken UserToken) (err error) {
+
+	result := s.gdb.Table("user_token").Find(&userToken, "user_id = ?", uid).Updates(&userToken)
+	return result.Error
+
+}
+
+func (s *SQLCnter) FindUserByEmail(email string) (user User, err error) {
+	err = (*s.gdb).Table("users").Where("email = ? ", email).First(&user).Error
+	return user, err
 }
 
 func (s *SQLCnter) findEventByUId(ctx context.Context, uid string) (event []string) {

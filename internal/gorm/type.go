@@ -16,6 +16,12 @@ type User struct {
 	Created_at time.Time `gorm:"type:timestamp; default: NOW(); not null"`
 	Gender     int
 	Birthday   time.Time `gorm:"type:timestamp; default: NOW(); not null"`
+	Email      string
+}
+
+type UserToken struct {
+	User_id string `json:"user_id"`
+	Token   string `json:"token"`
 }
 
 type Location struct {
