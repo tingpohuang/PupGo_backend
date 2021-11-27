@@ -111,3 +111,13 @@ type Event_participant struct {
 	Pet_id         string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
 	Status         int
 }
+
+type Notification struct {
+	Notification_id   string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Notification_type int    `gorm:"type:int"`
+	User_id           string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Pet_id            string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Event_id          string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
+	Created_at        string `gorm:"type:timestamp; default: NOW(); not null"`
+	Payload           string `gorm:"type:VARCHAR(1024)"`
+}

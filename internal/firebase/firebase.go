@@ -28,8 +28,11 @@ func GetApp() *firebase_controller {
 			ProjectID: "pupgo-e03ef",
 			// ServiceAccountID: "",
 		}
+
 		fapp, err := firebase.NewApp(context.Background(), config, opt)
-		instance.FApp = fapp
+		instance = &firebase_controller{
+			FApp: fapp,
+		}
 		if err != nil {
 			log.Fatalf("error initializing app: %v\n", err)
 		}

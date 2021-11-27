@@ -27,6 +27,12 @@ var (
 		Gender:   0,
 		Birthday: time.Now(),
 	}
+	u4 = User{
+		Id:       User_4_id,
+		Name:     "User_4",
+		Gender:   0,
+		Birthday: time.Now(),
+	}
 	p1 = Pet{
 		Id: Pet_1_id,
 	}
@@ -97,12 +103,6 @@ var (
 		Pet_id:         Pet_3_id,
 		Status:         1,
 	}
-	// ep3 = Event_participant{
-	// 	Event_id:       Event_1_id,
-	// 	Participant_id: User_2_id,
-	// 	Pet_id:         Pet_4_id,
-	// 	Status:         1,
-	// }
 
 	e1Loc = EventLocation{
 		Event_id: Event_1_id,
@@ -151,6 +151,8 @@ func InputUser(t *testing.T, g *gormTestor) {
 	assert.Nil(result.Error)
 	result = g.gdb.Table("users").Create(&u3) // pass pointer of data to Create
 	assert.Nil(result.Error)
+	result = g.gdb.Table("users").Create(&u4) // pass pointer of data to Create
+	assert.Nil(result.Error)
 }
 
 func InputPet(t *testing.T, g *gormTestor) {
@@ -162,6 +164,18 @@ func InputPet(t *testing.T, g *gormTestor) {
 	result = g.gdb.Table("pet").Create(&p3) // pass pointer of data to Create
 	assert.Nil(result.Error)
 	result = g.gdb.Table("pet").Create(&p4) // pass pointer of data to Create
+	for i := 0; i < Petsize; i++ {
+		result = g.gdb.Table("pet").Create(&Pet{
+			Id:           Pet_ids[i],
+			Name:         Pet_names[i],
+			Image:        Pet_imgs[i],
+			Gender:       Pet_genders[i],
+			Breed:        Pet_breeds[i],
+			IsCastration: Pet_isCastrations[i],
+			Birthday:     Pet_Birthdays[i],
+		})
+		assert.Nil(result.Error)
+	}
 	assert.Nil(result.Error)
 }
 
@@ -174,6 +188,13 @@ func InputPetOwner(t *testing.T, g *gormTestor) {
 	result = g.gdb.Table("petowner").Create(&po3)
 	assert.Nil(result.Error)
 	result = g.gdb.Table("petowner").Create(&po4)
+	for i := 0; i < Petsize; i++ {
+		result = g.gdb.Table("petowner").Create(&Pet_owner{
+			User_id: User_4_id,
+			Pet_id:  Pet_ids[i],
+		})
+		assert.Nil(result.Error)
+	}
 	assert.Nil(result.Error)
 }
 
@@ -193,9 +214,19 @@ func InputPetRecommend(t *testing.T, g *gormTestor) {
 	if pr2.Id1 > pr2.Id2 {
 		pr2.Id1, pr2.Id2 = pr2.Id2, pr2.Id1
 	}
+	v := 0.1
 	result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr1.Id1, pr1.Id2, pr1.Score, pr1.Status)
 	assert.Nil(result.Error)
 	result = g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?, ?)", pr2.Id1, pr2.Id2, pr2.Score, pr2.Status)
+	for i := 1; i < Petsize; i++ {
+		pid1 := Pet_ids[0]
+		pid2 := Pet_ids[i]
+		if pid1 > pid2 {
+			pid1, pid2 = pid2, pid1
+		}
+		result := g.gdb.Exec("INSERT INTO pet_recommend VALUES (?, ?, ?,?)", pid1, pid2, float64(i)*v, 0)
+		assert.Nil(result.Error)
+	}
 	assert.Nil(result.Error)
 }
 
@@ -211,9 +242,6 @@ func InputEventParticipant(t *testing.T, g *gormTestor) {
 	assert.Nil(result.Error)
 	result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep2.Event_id, ep2.Participant_id, ep2.Pet_id, ep2.Status)
 	assert.Nil(result.Error)
-	// result = g.gdb.Exec("INSERT INTO event_participant VALUES (?, ?, ?, ?)", ep3.Event_id, ep3.Participant_id, ep3.Pet_id, ep3.Status)
-	// assert.Nil(result.Error)
-
 }
 
 func InputUserLocation(t *testing.T, g *gormTestor) {

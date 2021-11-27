@@ -18,8 +18,8 @@ func TestFireBaseMessage(t *testing.T) {
 			"time":  "2:45",
 		},
 		Notification: &messaging.Notification{
-			Title: "y",
-			Body:  "pupgo",
+			Title: "is turkey good to eat?",
+			Body:  "delicious!",
 		},
 		Token: token,
 	}
