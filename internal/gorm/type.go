@@ -3,8 +3,9 @@ package gorm
 import (
 	"context"
 	"fmt"
-	"gorm.io/gorm/clause"
 	"time"
+
+	"gorm.io/gorm/clause"
 
 	"gorm.io/gorm"
 )
