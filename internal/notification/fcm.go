@@ -13,23 +13,24 @@ type Notification struct {
 }
 
 func (n *Notification) SendFriendsInviteMessage(ctx context.Context, petId string, recommendId string, s *gorm.SQLCnter) {
-	tokens, err := s.FindDeviceByPetID(ctx, petId)
-	if err != nil {
-		log.Print(err)
-		return
-	}
+	panic("abandon")
+	// tokens, err := s.FindDeviceByPetID(ctx, petId)
+	// if err != nil {
+	// 	log.Print(err)
+	// 	return
+	// }
 
-	msg, err := n.generateFriendsInviteMessage(ctx, petId, recommendId, tokens)
-	if err != nil {
-		log.Print(err)
-		return
-	}
-	app := firebase.GetApp()
-	err = app.SendNotificationMultiDevices(ctx, msg)
-	if err != nil {
-		log.Print(err)
-		return
-	}
+	// msg, err := n.generateFriendsInviteMessage(ctx, petId, recommendId, tokens)
+	// if err != nil {
+	// 	log.Print(err)
+	// 	return
+	// }
+	// app := firebase.GetApp()
+	// err = app.SendNotificationMultiDevices(ctx, msg)
+	// if err != nil {
+	// 	log.Print(err)
+	// 	return
+	// }
 }
 func (n *Notification) SendNewFriendMessage(ctx context.Context, petId string, recommendId string, s *gorm.SQLCnter) {
 	// write notification db

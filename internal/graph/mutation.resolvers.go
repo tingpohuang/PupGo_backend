@@ -125,12 +125,6 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	}
 	pid := eventsAcceptInput.Pid
 	eid := eventsAcceptInput.EventID
-	// if pid == "" {
-	// 	return nil, errors.New("pid should not be empty")
-	// }
-	// if eid == "" {
-	// 	return nil, errors.New("event id should not be empty")
-	// }
 	var status EventStatus = EventStatusNoAnswer
 	if !eventsAcceptInput.Accept {
 		status = EventStatusDecline
@@ -143,6 +137,8 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	}
 	participants.Status = int(status)
 	err = sqlCnter.UpdateParticipants(ctx, *participants)
+	n := notification.Notification{}
+	go n.SendEventJoinedMessage(context.Background(), eid, pid, sqlCnter)
 	if err != nil {
 		return nil, err
 	}
@@ -186,6 +182,7 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 		}
 		n := notification.Notification{}
 		go n.SendNewFriendMessage(context.Background(), petId, recommendId, sqlCnter)
+		go n.SendNewFriendMessage(context.Background(), recommendId, petId, sqlCnter)
 	} else if res.Status == int(RecommendationStatusHighAgree) && petId < recommendId { // second pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
@@ -200,6 +197,7 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 		}
 		n := notification.Notification{}
 		go n.SendNewFriendMessage(context.Background(), petId, recommendId, sqlCnter)
+		go n.SendNewFriendMessage(context.Background(), recommendId, petId, sqlCnter)
 	} else if res.Status == int(RecommendationStatusNoAnswer) && petId < recommendId { // no pet agree
 		res.Status = int(RecommendationStatusLowAgree)
 		fmt.Print(res)
@@ -208,9 +206,6 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 			fmt.Print(err)
 			return nil, err
 		}
-		n := notification.Notification{}
-		//check for go
-		go n.SendFriendsInviteMessage(context.Background(), petId, recommendId, sqlCnter)
 	} else if res.Status == int(RecommendationStatusNoAnswer) && petId > recommendId { // no pet agree
 		res.Status = int(RecommendationStatusHighAgree)
 		fmt.Print(res)
@@ -219,15 +214,11 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 			fmt.Print(err)
 			return nil, err
 		}
-		n := notification.Notification{}
-		//check for go
-		go n.SendFriendsInviteMessage(context.Background(), petId, recommendId, sqlCnter)
 	}
 	petProfile, err := sqlCnter.FindPetProfileByPetID(ctx, recommendId)
 	if err != nil {
 		return nil, err
 	}
-
 	//TODO: adapter
 	payload.Result = &model1.PetProfile{
 		ID:           &petProfile.Id,
