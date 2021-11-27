@@ -25,9 +25,70 @@ func GraphQLHandler() gin.HandlerFunc {
 		srv.ServeHTTP(c.Writer, c.Request)
 	}
 }
-func SigninHandler() gin.HandlerFunc {
+func SignInHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var signinPayload SinginPayload
+		var signinPayload SingInPayload
+		// Deserialize payload
+		err := c.ShouldBindJSON(&signinPayload)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		// verify google Id token
+		switch signinPayload.Type {
+		case "google":
+			_, err = verifyGoogleToken(signinPayload.Token)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+		case "facebook":
+			err = verifyFBToken(signinPayload.Token)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
+		// create or signin
+		tmpUser, err := sqlCnter.FindUserByEmail(signinPayload.Email)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			tmpUser = sqlCnter.CreateUser(signinPayload.Account, signinPayload.Email)
+		}
+
+		accessToken, err := CreateJWT(signinPayload.Account, signinPayload.Email)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Write to DB
+		userToken, err := sqlCnter.FindTokenByID(tmpUser.Id)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = sqlCnter.CreateUserToken(tmpUser.Id, accessToken)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+				return
+			}
+		} else {
+			userToken.Token = accessToken
+			err = sqlCnter.UpdateTokenByID(tmpUser.Id, userToken)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
+		c.JSON(http.StatusOK, userToken)
+
+	}
+}
+func SignUpHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var signinPayload SingInPayload
 		// Deserialize payload
 		err := c.ShouldBindJSON(&signinPayload)
 		if err != nil {

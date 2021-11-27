@@ -26,7 +26,8 @@ func main() {
 	})
 	server.GET("/playground", handler.PlaygroundHandler())
 	server.POST("/query", handler.AuthRequired, handler.GraphQLHandler())
-	server.POST("/token/signin", handler.SigninHandler())
+	server.GET("/users", handler.SignInHandler())
+	server.POST("/users", handler.SignUpHandler())
 	server.Run(viper.GetString("server.address"))
 
 }

@@ -14,11 +14,16 @@ import (
 	"time"
 )
 
-type SinginPayload struct {
+type SingInPayload struct {
 	Token   string `json:"token"`
 	Email   string `json:"email"`
 	Account string `json:"account"`
 	Type    string `json:"type"`
+}
+
+type SingUpPayload struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 var httpClient = &http.Client{}
