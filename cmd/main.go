@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/tingpo/pupgobackend/internal/handler"
-	"net/http"
 )
 
 func init() {
@@ -25,7 +26,7 @@ func main() {
 
 	})
 	server.GET("/playground", handler.PlaygroundHandler())
-	server.POST("/query", handler.AuthRequired, handler.GraphQLHandler())
+	server.POST("/query", handler.GraphQLHandler())
 	server.POST("/token/signin", handler.SigninHandler())
 	server.Run(viper.GetString("server.address"))
 

@@ -195,18 +195,18 @@ func (s *SQLCnter) CreatePetConnection(ctx context.Context, pid1 string, pid2 st
 	if pid1 > pid2 {
 		pid1, pid2 = pid2, pid1
 	}
-	p :=
-		Pet_connection{
-			id1: pid1,
-			id2: pid2,
-		}
-	result := s.gdb.Table("pet_connection").Create(&p)
+	result := s.gdb.Exec("INSERT INTO pet_connection VALUES (?, ?)", pid1, pid2)
+	// result := s.gdb.Table("pet_connection").Create(&p)
 	return result.Error
 }
 
 func (s *SQLCnter) FindPetById(ctx context.Context, pid string) (pets []Pet) {
 	(*s.gdb).Table("pet").Where("id IN ? ", pid).Find(&pets)
 	return pets
+}
+func (s *SQLCnter) FindHolderIdByEventId(ctx context.Context, eid string) (str string) {
+	(*s.gdb).Table("event").Select("holder_id").Where("id = ? ", eid).Find(&str)
+	return str
 }
 
 func (s *SQLCnter) UpdatePet(ctx context.Context, pet Pet) error {
@@ -244,6 +244,12 @@ func (s *SQLCnter) FindDeviceByPetID(ctx context.Context, pid string) (devices [
 	result := s.gdb.Table("user_device").Select("device_id").Joins("left join petowner on user_device.user_id = petowner.user_id where petowner.pet_id = ?", pid).Scan(&devices)
 	return devices, result.Error
 }
+
+func (s *SQLCnter) FindDeviceByPetIDs(ctx context.Context, pid []string) (devices []string, err error) {
+	result := s.gdb.Table("user_device").Select("device_id").Joins("left join petowner on user_device.user_id = petowner.user_id where petowner.pet_id IN ?", pid).Scan(&devices)
+	return devices, result.Error
+}
+
 func (s *SQLCnter) FindDeviceByAllParticipant(ctx context.Context, eid string) (devices []string, err error) {
 	result := s.gdb.Table("user_device").Select("device_id").Joins("left join event_participant on user_device.user_id = event_participant.user_id wherer event_participant.event_id = ?", eid).Scan(&devices)
 	return devices, result.Error
@@ -271,4 +277,31 @@ func (s *SQLCnter) FindEventParticipantById(ctx context.Context, id string) (pet
 		participants = append(participants, cur.Participant_id)
 	}
 	return pets, participants
+}
+
+func (s *SQLCnter) CreateNotification(ctx context.Context, n *Notification) error {
+	result := s.gdb.Table("user_notification").Create(n)
+	return result.Error
+}
+
+func (s *SQLCnter) FindUserIdListByEventId(ctx context.Context, eventId string) (res []string, err error) {
+	result := s.gdb.Table("event_id").Select("participant_id").Where("event_id = ?", eventId).Find(res)
+	return res, result.Error
+}
+
+func (s *SQLCnter) GetUserIdsbyPetIds(ctx context.Context, pid []string) (uid []string, err error) {
+	result := s.gdb.Table("petowner").Distinct("user_id").Select("user_Id").Where("Pet_id IN ?", pid).Find(&uid)
+	return uid, result.Error
+}
+
+func (s *SQLCnter) GetFriendsPetIdByPetId(ctx context.Context, pid string) (freindPids []string, err error) {
+	var friendPids1 []string
+	var friendPids2 []string
+	result := s.gdb.Table("pet_connection").Where("Id1 = ?", pid).Select("Id2").Find(&friendPids1)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	result = s.gdb.Table("pet_connection").Where("Id2 = ?", pid).Select("Id1").Find(&friendPids2)
+	freindPids = append(friendPids1, friendPids2...)
+	return freindPids, result.Error
 }

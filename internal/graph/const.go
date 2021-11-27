@@ -14,6 +14,6 @@ const (
 	RecommendationStatusHighAgree RecommendationStatus = 2
 	RecommendationStatusBothAgree RecommendationStatus = 3
 	RecommendationStatusDecline   RecommendationStatus = -1
-	PetGenderMale                 PetGender            = 0
-	PetGenderFemale               PetGender            = 1
+	PetGenderMale                 PetGender            = 1
+	PetGenderFemale               PetGender            = 0
 )

@@ -31,6 +31,7 @@ func GetApp() *firebase_controller {
 			ProjectID: "pupgo-e03ef",
 			// ServiceAccountID: "",
 		}
+
 		fapp, err := firebase.NewApp(context.Background(), config, opt)
 		instance = &firebase_controller{
 			FApp: fapp,

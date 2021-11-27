@@ -51,8 +51,6 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	if errmsg != "" {
 		return nil, errors.New(errmsg)
 	}
-	// trStart := tr.StartTime.String()
-	// trEnd := tr.EndTime.String()
 	data := gorm.Event{
 		Id:        uuid.NewString(),
 		Holder_Id: pid,
@@ -68,6 +66,7 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	if err != nil {
 		return nil, err
 	}
+
 	tstmp := time.Now().String()
 	ret := &model1.EventsCreatePayload{
 		Timestamp: &tstmp,
@@ -79,6 +78,8 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 			Image:        &data.Image,
 		},
 	}
+	n := &notification.Notification{}
+	go n.SendEventsToFriends(ctx, data.Id, sqlCnter)
 	return ret, nil
 }
 
@@ -107,7 +108,7 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 		})
 		n := notification.Notification{}
 		// bug over here
-		go n.SendNewParticipantsMessage(context.Background(), pid, pid, sqlCnter)
+		go n.SendNewParticipantsMessage(context.Background(), pid, eid, sqlCnter)
 		if err != nil {
 			return nil, err
 		}
@@ -124,12 +125,6 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	}
 	pid := eventsAcceptInput.Pid
 	eid := eventsAcceptInput.EventID
-	// if pid == "" {
-	// 	return nil, errors.New("pid should not be empty")
-	// }
-	// if eid == "" {
-	// 	return nil, errors.New("event id should not be empty")
-	// }
 	var status EventStatus = EventStatusNoAnswer
 	if !eventsAcceptInput.Accept {
 		status = EventStatusDecline
@@ -142,6 +137,8 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	}
 	participants.Status = int(status)
 	err = sqlCnter.UpdateParticipants(ctx, *participants)
+	n := notification.Notification{}
+	go n.SendEventJoinedMessage(context.Background(), eid, pid, sqlCnter)
 	if err != nil {
 		return nil, err
 	}
@@ -168,64 +165,60 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 	if !result {
 		res.Status = int(RecommendationStatusDecline)
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
+		fmt.Print(err)
 		return payload, err
 	}
 	if res.Status == int(RecommendationStatusLowAgree) && petId > recommendId { // first pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
-			log.Print("CreatePetConnection", err)
+			fmt.Print(err)
 			return nil, err
 		}
 		res.Status = int(RecommendationStatusBothAgree) // means all agree
 		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
-			log.Print("UpdatePetRecommendByID", err)
+			fmt.Print(err)
 			return nil, err
 		}
 		n := notification.Notification{}
 		go n.SendNewFriendMessage(context.Background(), petId, recommendId, sqlCnter)
+		go n.SendNewFriendMessage(context.Background(), recommendId, petId, sqlCnter)
 	} else if res.Status == int(RecommendationStatusHighAgree) && petId < recommendId { // second pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
-			log.Print("CreatePetConnection", err)
+			fmt.Print(err)
 			return nil, err
 		}
 		res.Status = int(RecommendationStatusBothAgree) // means all agree
 		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
-			log.Print("UpdatePetRecommendByID", err)
+			fmt.Print(err)
 			return nil, err
 		}
 		n := notification.Notification{}
 		go n.SendNewFriendMessage(context.Background(), petId, recommendId, sqlCnter)
+		go n.SendNewFriendMessage(context.Background(), recommendId, petId, sqlCnter)
 	} else if res.Status == int(RecommendationStatusNoAnswer) && petId < recommendId { // no pet agree
 		res.Status = int(RecommendationStatusLowAgree)
 		fmt.Print(res)
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
-			log.Print("UpdatePetRecommendByID", err)
+			fmt.Print(err)
 			return nil, err
 		}
-		n := notification.Notification{}
-		//check for go
-		go n.SendFriendsInviteMessage(context.Background(), petId, recommendId, sqlCnter)
 	} else if res.Status == int(RecommendationStatusNoAnswer) && petId > recommendId { // no pet agree
 		res.Status = int(RecommendationStatusHighAgree)
 		fmt.Print(res)
 		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
 		if err != nil {
-			log.Print("UpdatePetRecommendByID", err)
+			fmt.Print(err)
 			return nil, err
 		}
-		n := notification.Notification{}
-		//check for go
-		go n.SendFriendsInviteMessage(context.Background(), petId, recommendId, sqlCnter)
 	}
 	petProfile, err := sqlCnter.FindPetProfileByPetID(ctx, recommendId)
 	if err != nil {
 		return nil, err
 	}
-
 	//TODO: adapter
 	payload.Result = &model1.PetProfile{
 		ID:           &petProfile.Id,
@@ -313,6 +306,13 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 	breed := petCreateInput.Breed
 	isCastration := petCreateInput.IsCastration
 	birthday := petCreateInput.Birthday
+	var t *time.Time
+	if birthday != nil {
+		_t, err := time.Parse(time.UTC.String(), *birthday)
+		t = &_t
+		log.Print(err)
+	}
+	// time.
 	uid := petCreateInput.UID
 	errmsg := ""
 	gender_num := PetGenderMale
@@ -338,31 +338,43 @@ func (r *mutationResolver) PetCreate(ctx context.Context, petCreateInput model1.
 		return nil, errors.New(errmsg)
 	}
 	pid := uuid.NewString()
-	res := sqlCnter.CreatePets(ctx, gorm.Pet{
+	input := gorm.Pet{
 		Id:           pid,
 		Name:         *name,
 		Image:        *img,
 		Gender:       int(gender_num),
 		Breed:        *breed,
 		IsCastration: isCastration,
-	})
+	}
+	if birthday != nil {
+		input.Birthday = *t
+	}
+	log.Print(input)
+	res := sqlCnter.CreatePets(ctx, input)
 	if res != nil {
+		log.Print(res)
 		return nil, errors.New("internal error in SQL")
 	}
 	res = sqlCnter.CreateUserPetRelation(ctx, uid, pid)
 	if res != nil {
+		log.Print(res)
 		return nil, errors.New("internal error in SQL")
 	}
+	ret := model1.PetProfile{
+		ID:           &pid,
+		Name:         name,
+		Image:        img,
+		Gender:       petCreateInput.Gender,
+		Breed:        petCreateInput.Breed,
+		IsCastration: petCreateInput.IsCastration,
+	}
+	if birthday != nil {
+		_t := (*t).String()
+		ret.Birthday = &(_t)
+	}
 	return &model1.PetCreatePayload{
-		Error: nil,
-		Result: &model1.PetProfile{
-			ID:           &pid,
-			Name:         name,
-			Image:        img,
-			Gender:       petCreateInput.Gender,
-			Breed:        petCreateInput.Breed,
-			IsCastration: petCreateInput.IsCastration,
-		}}, nil
+		Error:  nil,
+		Result: &ret}, nil
 }
 
 func (r *mutationResolver) PetDelete(ctx context.Context, petDeleteInput model1.PetDeleteInput) (*model1.PetDeletePayload, error) {
