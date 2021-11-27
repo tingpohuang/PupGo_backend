@@ -119,11 +119,12 @@ type Event_participant struct {
 }
 
 type Notification struct {
-	Notification_id   string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	Notification_type int    `gorm:"type:int"`
-	User_id           string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	Pet_id            string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	Event_id          string `gorm:"type:VARCHAR(36);OnDelete:CASCADE"`
-	Created_at        string `gorm:"type:timestamp; default: NOW(); not null"`
-	Payload           string `gorm:"type:VARCHAR(1024)"`
+	Notification_id   string    `gorm:"type:VARCHAR(36);not null"`
+	Notification_type int       `gorm:"type:int"`
+	User_id           string    `gorm:"type:VARCHAR(36);OnDelete:CASCADE;not null"`
+	Pet_id            string    `gorm:"type:VARCHAR(36)"`
+	Event_id          string    `gorm:"type:VARCHAR(36)"`
+	Created_at        time.Time `gorm:"type:timestamp; default: NOW(); not null"`
+	Payload           string    `gorm:"type:VARCHAR(1024)"`
+	Has_read          bool      `gorm:"type:Boolean"`
 }

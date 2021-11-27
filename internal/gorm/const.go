@@ -18,6 +18,7 @@ const (
 	Notification_EventJoined          = 2
 	Notification_EventContentUpdate   = 3
 	Notification_EventsToNotification = 4
+	Notification_EventsToFriends      = 5
 )
 
 var (

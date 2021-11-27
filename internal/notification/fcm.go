@@ -2,6 +2,7 @@ package notification
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/tingpo/pupgobackend/internal/firebase"
@@ -39,6 +40,8 @@ func (n *Notification) SendNewFriendMessage(ctx context.Context, petId string, r
 	}
 	nMsg.User_id = *uid
 	nMsg.Pet_id = recommendId
+	nMsg.Notification_type = gorm.Notification_NewFriend
+
 	if err = s.CreateNotification(ctx, nMsg); err != nil {
 		print(err, nMsg)
 	}
@@ -77,6 +80,7 @@ func (n *Notification) SendNewParticipantsMessage(ctx context.Context, applicant
 	nMsg.User_id = *uid
 	nMsg.Pet_id = applicantId
 	nMsg.Event_id = eventId
+	nMsg.Notification_type = gorm.Notification_NewParticipants
 	if err = s.CreateNotification(ctx, nMsg); err != nil {
 		print(err, nMsg)
 	}
@@ -108,10 +112,11 @@ func (n *Notification) SendEventJoinedMessage(ctx context.Context, eventId strin
 	nMsg.User_id = *uid
 	nMsg.Pet_id = petId
 	nMsg.Event_id = eventId
+	nMsg.Notification_type = gorm.Notification_EventJoined
 	if err = s.CreateNotification(ctx, nMsg); err != nil {
-		print(err, nMsg)
+		fmt.Print(err, nMsg)
 	}
-	//
+	fmt.Print(nMsg)
 	tokens, err := s.FindDeviceByPetID(ctx, petId)
 	if err != nil {
 		log.Print(err)
@@ -142,6 +147,7 @@ func (n *Notification) SendEventContentUpdateMessage(ctx context.Context, eventI
 		uid := uids[i]
 		nMsg.User_id = uid
 		nMsg.Event_id = eventId
+		nMsg.Notification_type = gorm.Notification_EventContentUpdate
 		if err = s.CreateNotification(ctx, nMsg); err != nil {
 			print(err, nMsg)
 		}
@@ -165,15 +171,14 @@ func (n *Notification) SendEventContentUpdateMessage(ctx context.Context, eventI
 	}
 }
 
-func (n *Notification) SendEventsToFriemds(ctx context.Context, eventId string, s *gorm.SQLCnter) {
+func (n *Notification) SendEventsToFriends(ctx context.Context, eventId string, s *gorm.SQLCnter) {
 	// write notification db
-
 	nMsg := NewNotification()
 	nMsg.Event_id = eventId
+	nMsg.Notification_type = gorm.Notification_EventsToFriends
 	// uids, err := s.FindUserIdListByEventId(ctx, eventId)
 	holderId := s.FindHolderIdByEventId(ctx, eventId)
 	friendIds, err := s.GetFriendsPetIdByPetId(ctx, holderId)
-
 	if err != nil {
 		print(err, holderId, eventId)
 	}
@@ -187,5 +192,21 @@ func (n *Notification) SendEventsToFriemds(ctx context.Context, eventId string, 
 		if err = s.CreateNotification(ctx, nMsg); err != nil {
 			print(err, nMsg)
 		}
+	}
+	tokens, err := s.FindDeviceByPetIDs(ctx, friendIds)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	msg, err := n.generateEventsToFriendsMessage(ctx, eventId, tokens)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	app := firebase.GetApp()
+	err = app.SendNotificationMultiDevices(ctx, msg)
+	if err != nil {
+		log.Print(err)
+		return
 	}
 }

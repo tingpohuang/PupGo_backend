@@ -51,8 +51,6 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	if errmsg != "" {
 		return nil, errors.New(errmsg)
 	}
-	// trStart := tr.StartTime.String()
-	// trEnd := tr.EndTime.String()
 	data := gorm.Event{
 		Id:        uuid.NewString(),
 		Holder_Id: pid,
@@ -68,6 +66,7 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	if err != nil {
 		return nil, err
 	}
+
 	tstmp := time.Now().String()
 	ret := &model1.EventsCreatePayload{
 		Timestamp: &tstmp,
@@ -79,6 +78,8 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 			Image:        &data.Image,
 		},
 	}
+	n := &notification.Notification{}
+	go n.SendEventsToFriends(ctx, data.Id, sqlCnter)
 	return ret, nil
 }
 

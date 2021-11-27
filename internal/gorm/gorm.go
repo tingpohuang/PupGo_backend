@@ -244,6 +244,12 @@ func (s *SQLCnter) FindDeviceByPetID(ctx context.Context, pid string) (devices [
 	result := s.gdb.Table("user_device").Select("device_id").Joins("left join petowner on user_device.user_id = petowner.user_id where petowner.pet_id = ?", pid).Scan(&devices)
 	return devices, result.Error
 }
+
+func (s *SQLCnter) FindDeviceByPetIDs(ctx context.Context, pid []string) (devices []string, err error) {
+	result := s.gdb.Table("user_device").Select("device_id").Joins("left join petowner on user_device.user_id = petowner.user_id where petowner.pet_id IN ?", pid).Scan(&devices)
+	return devices, result.Error
+}
+
 func (s *SQLCnter) FindDeviceByAllParticipant(ctx context.Context, eid string) (devices []string, err error) {
 	result := s.gdb.Table("user_device").Select("device_id").Joins("left join event_participant on user_device.user_id = event_participant.user_id wherer event_participant.event_id = ?", eid).Scan(&devices)
 	return devices, result.Error
@@ -274,7 +280,7 @@ func (s *SQLCnter) FindEventParticipantById(ctx context.Context, id string) (pet
 }
 
 func (s *SQLCnter) CreateNotification(ctx context.Context, n *Notification) error {
-	result := s.gdb.Table("notification").Create(n)
+	result := s.gdb.Table("user_notification").Create(n)
 	return result.Error
 }
 

@@ -3,15 +3,16 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"github.com/tingpo/pupgobackend/internal/gorm"
-	"google.golang.org/api/oauth2/v2"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"github.com/tingpo/pupgobackend/internal/gorm"
+	"google.golang.org/api/oauth2/v2"
 )
 
 type SinginPayload struct {
