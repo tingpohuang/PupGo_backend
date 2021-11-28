@@ -25,6 +25,8 @@ func init() {
 	sqlCnter = gorm.NewSQLCnter(db)
 	payloadCreator = gorm.NewPayloadCreator(sqlCnter)
 
+	//sqlCnter.FindRecommendEventByUId(nil, "bf448152-bf2c-421e-af4c-ae458737da0e")
+
 	//a := []string{"64c2d025-61d0-484f-ad0f-8df773d41a82"}
 	//a := "170ed548-ebe4-46f1-8800-7f153e50e69f"
 	//payloadCreator.GetPetListByUId(nil, a[0])

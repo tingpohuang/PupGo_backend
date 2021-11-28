@@ -21,13 +21,6 @@ type ProfileNode interface {
 	IsProfileNode()
 }
 
-type Coordinate struct {
-	// when blur is setting that means the latitude and longitude is not the precise.
-	IsBlur    bool    `json:"isBlur"`
-	Latitude  *string `json:"latitude"`
-	Longitude *string `json:"longitude"`
-}
-
 type CoordinateInput struct {
 	// when blur is setting that means the latitude and longitude is not the precise.
 	IsBlur    bool    `json:"isBlur"`
@@ -168,11 +161,12 @@ func (FriendsListGetPayload) IsPayload() {}
 
 // location relation
 type Location struct {
-	Country *string     `json:"country"`
-	State   *string     `json:"state"`
-	City    *string     `json:"city"`
-	Address *string     `json:"address"`
-	Coor    *Coordinate `json:"coor"`
+	Country   *string `json:"country"`
+	State     *string `json:"state"`
+	City      *string `json:"city"`
+	Address   *string `json:"address"`
+	Latitude  *string `json:"latitude"`
+	Longitude *string `json:"longitude"`
 }
 
 type LocationInput struct {
@@ -230,7 +224,7 @@ type NotificationSetting struct {
 }
 
 type NotificationsGetInput struct {
-	UID string `json:"uid"`
+	UID string `json:"UID"`
 }
 
 type NotificationsGetPayload struct {

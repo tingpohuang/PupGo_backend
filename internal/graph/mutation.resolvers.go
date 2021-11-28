@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -103,16 +104,18 @@ func (r *mutationResolver) EventsUpdate(ctx context.Context, eventsUpdateInput m
 		e.Limit_pet_num = *eventsUpdateInput.Limit.LimitOfDog
 		e.Limit_user_num = *eventsUpdateInput.Limit.LimitOfHuman
 	}
+
+	lat, err := strconv.ParseFloat(*eventsUpdateInput.Location.Coordinate.Latitude, 64)
+	long, err := strconv.ParseFloat(*eventsUpdateInput.Location.Coordinate.Longitude, 64)
+
 	if eventsUpdateInput.Location != nil {
 		sqlCnter.UpdateEventLocations(ctx, gorm.EventLocation{
-			Event_id: eid,
-			Country:  *eventsUpdateInput.Location.Country,
-			City:     *eventsUpdateInput.Location.City,
-			State:    *eventsUpdateInput.Location.State,
-			Position: gorm.Location{
-				// Lat:  eventsUpdateInput.Location.Coordinate.Latitude,
-				// Long: eventsUpdateInput.Location.Coordinate.Longitude,
-			},
+			Event_id:  eid,
+			Country:   *eventsUpdateInput.Location.Country,
+			City:      *eventsUpdateInput.Location.City,
+			State:     *eventsUpdateInput.Location.State,
+			Latitude:  lat,
+			Longitude: long,
 		})
 	}
 	// if eventsUpdateInput.TimeRange != nil {
@@ -286,7 +289,7 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 		Breed:        &petProfile.Breed,
 		IsCastration: petProfile.IsCastration,
 		// Birthday:     &petProfile.Birthday,
-		// Location:     &petProfile.Location,
+		// Position:     &petProfile.Position,
 	}
 	log.Print(payload)
 	return payload, nil

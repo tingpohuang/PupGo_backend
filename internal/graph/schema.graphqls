@@ -98,14 +98,10 @@ type Location{
     state: String
     city: String
     address: String
-    coor: Coordinate
+    latitude: String
+    longitude: String
 }
-type Coordinate{
-    "when blur is setting that means the latitude and longitude is not the precise."
-    isBlur: Boolean!
-    latitude: Numbers
-    longitude: Numbers
-}
+
 type Recommendation{
     id: ID!
     pet: PetProfile

@@ -23,6 +23,17 @@ func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput mo
 	return newPayload, nil
 }
 
+func (r *queryResolver) RecommendEventsListGet(ctx context.Context, eventsListGetInput model1.EventsListGetInput) (*model1.EventsListGetPayload, error) {
+	timestamp := time.Now().String()
+	events := payloadCreator.GetRecommendEventsByUId(ctx, eventsListGetInput.UID)
+	newPayload := &model1.EventsListGetPayload{
+		Error:     nil,
+		Result:    events,
+		Timestamp: &timestamp,
+	}
+	return newPayload, nil
+}
+
 func (r *queryResolver) NotificationsGet(ctx context.Context, notificationsGetInput model1.NotificationsGetInput) (*model1.NotificationsGetPayload, error) {
 	timestamp := time.Now().String()
 	res, err := sqlCnter.GetNotificationByUserId(ctx, notificationsGetInput.UID)

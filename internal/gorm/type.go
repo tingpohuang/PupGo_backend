@@ -1,11 +1,7 @@
 package gorm
 
 import (
-	"context"
-	"fmt"
 	"time"
-
-	"gorm.io/gorm/clause"
 
 	"gorm.io/gorm"
 )
@@ -25,44 +21,24 @@ type UserToken struct {
 	Token   string `json:"token"`
 }
 
-type Location struct {
-	Lat  float64
-	Long float64
-}
-
-func (loc Location) GormDataType() string {
-	return "geometry"
-}
-
-func (loc Location) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
-	return clause.Expr{
-		SQL:  "ST_PointFromText(?)",
-		Vars: []interface{}{fmt.Sprintf("POINT(%v %v)", loc.Lat, loc.Long)},
-	}
-}
-
-func (loc *Location) Scan(v interface{}) error {
-	// Scan a value into struct from database driver
-	//fmt.Printf("Scan value %v", v)
-	return nil
-}
-
 type UserLocation struct {
-	User_id  string
-	Position Location
-	Country  string
-	State    string
-	City     string
-	Address  string
+	User_id   string
+	Latitude  float64
+	Longitude float64
+	Country   string
+	State     string
+	City      string
+	Address   string
 }
 
 type EventLocation struct {
-	Event_id string
-	Position Location
-	Country  string
-	State    string
-	City     string
-	Address  string
+	Event_id  string
+	Latitude  float64
+	Longitude float64
+	Country   string
+	State     string
+	City      string
+	Address   string
 }
 
 func (u *User) BeforeCreate(db *gorm.DB) error {

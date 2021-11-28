@@ -92,6 +92,28 @@ var (
 		Limit_pet_num:  0,
 		Description:    "",
 	}
+
+	e2 = Event{
+		Id:             Event_2_id,
+		Holder_Id:      Pet_1_id,
+		Start_date:     time.Now(),
+		End_date:       time.Now(),
+		Image:          "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/holiday-logo-202111?wid=71&hei=87&fmt=jpeg&qlt=95&.v=1636070054000",
+		Limit_user_num: 0,
+		Limit_pet_num:  0,
+		Description:    "",
+	}
+	e3 = Event{
+		Id:             Event_3_id,
+		Holder_Id:      Pet_1_id,
+		Start_date:     time.Now(),
+		End_date:       time.Now(),
+		Image:          "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/holiday-logo-202111?wid=71&hei=87&fmt=jpeg&qlt=95&.v=1636070054000",
+		Limit_user_num: 0,
+		Limit_pet_num:  0,
+		Description:    "",
+	}
+
 	ep1 = Event_participant{
 		Event_id:       Event_1_id,
 		Participant_id: User_1_id,
@@ -106,15 +128,33 @@ var (
 	}
 
 	e1Loc = EventLocation{
-		Event_id: Event_1_id,
-		Position: Location{
-			Lat:  13.33,
-			Long: 24.432,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "fwfewfewfew",
+		Event_id:  Event_1_id,
+		Latitude:  101,
+		Longitude: 101,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "fwfewfewfew",
+	}
+
+	e2Loc = EventLocation{
+		Event_id:  Event_2_id,
+		Latitude:  301,
+		Longitude: 301,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "fwfewfewfew",
+	}
+
+	e3Loc = EventLocation{
+		Event_id:  Event_3_id,
+		Latitude:  201,
+		Longitude: 201,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "fwfewfewfew",
 	}
 )
 
@@ -236,6 +276,10 @@ func InputEvent(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
 	result := g.gdb.Table("event").Create(&e1)
 	assert.Nil(result.Error)
+	result = g.gdb.Table("event").Create(&e2)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("event").Create(&e3)
+	assert.Nil(result.Error)
 }
 
 func InputEventParticipant(t *testing.T, g *gormTestor) {
@@ -259,6 +303,10 @@ func InputUserLocation(t *testing.T, g *gormTestor) {
 func InputEventLocation(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
 	result := g.gdb.Table("event_location").Create(&e1Loc)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("event_location").Create(&e2Loc)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("event_location").Create(&e3Loc)
 	assert.Nil(result.Error)
 }
 
