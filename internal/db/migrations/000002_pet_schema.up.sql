@@ -5,5 +5,6 @@ create table pet(
 		gender int,
 		breed varchar(50),
 		isCastration boolean,
-		birthday timestamp
+		birthday timestamp,
+		description varchar(500)
 	 );

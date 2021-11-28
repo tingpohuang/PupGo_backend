@@ -21,13 +21,6 @@ type ProfileNode interface {
 	IsProfileNode()
 }
 
-type Coordinate struct {
-	// when blur is setting that means the latitude and longitude is not the precise.
-	IsBlur    bool    `json:"isBlur"`
-	Latitude  *string `json:"latitude"`
-	Longitude *string `json:"longitude"`
-}
-
 type CoordinateInput struct {
 	// when blur is setting that means the latitude and longitude is not the precise.
 	IsBlur    bool    `json:"isBlur"`
@@ -168,11 +161,12 @@ func (FriendsListGetPayload) IsPayload() {}
 
 // location relation
 type Location struct {
-	Country *string     `json:"country"`
-	State   *string     `json:"state"`
-	City    *string     `json:"city"`
-	Address *string     `json:"address"`
-	Coor    *Coordinate `json:"coor"`
+	Country   *string `json:"country"`
+	State     *string `json:"state"`
+	City      *string `json:"city"`
+	Address   *string `json:"address"`
+	Latitude  *string `json:"latitude"`
+	Longitude *string `json:"longitude"`
 }
 
 type LocationInput struct {
@@ -186,18 +180,6 @@ type LocationInput struct {
 type NewEmail struct {
 	Email string `json:"email"`
 }
-
-type NotificationsGetInput struct {
-	UID string `json:"uid"`
-}
-
-type NotificationsGetPayload struct {
-	Error     []Error         `json:"error"`
-	Timestamp *string         `json:"timestamp"`
-	Result    []*Notification `json:"result"`
-}
-
-func (NotificationsGetPayload) IsPayload() {}
 
 type Notification struct {
 	NotificationID   string  `json:"notification_id"`
@@ -228,6 +210,18 @@ type NotificationSetting struct {
 	AllowedNotificationWhenEventsWillStartIn30Mins bool `json:"allowedNotificationWhenEventsWillStartIn30Mins"`
 	AllowedNotificationWhenEventsStatusChanged     bool `json:"allowedNotificationWhenEventsStatusChanged"`
 }
+
+type NotificationsGetInput struct {
+	UID string `json:"UID"`
+}
+
+type NotificationsGetPayload struct {
+	Error     []Error         `json:"error"`
+	Timestamp *string         `json:"timestamp"`
+	Result    []*Notification `json:"result"`
+}
+
+func (NotificationsGetPayload) IsPayload() {}
 
 type Pet struct {
 	ID              string           `json:"id"`

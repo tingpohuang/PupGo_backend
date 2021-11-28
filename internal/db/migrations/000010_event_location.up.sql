@@ -1,6 +1,7 @@
 create table event_location(
 		event_id VARCHAR(36) NOT NULL PRIMARY KEY,
-		position point,
+		latitude FLOAT(8,5),
+		longitude FLOAT(8,5),
 		country varchar(50),
 		state varchar(50),
 		city varchar(50),

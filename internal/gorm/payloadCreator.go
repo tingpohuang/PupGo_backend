@@ -61,6 +61,12 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 	return petsProfile
 }
 
+// 0
+// 1 first
+// 2 second
+// 3
+// -1
+
 func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid string) (petRecommendations []*model1.Recommendation) {
 	petConnections := p.sql.findPetRecommend(ctx, pid)
 	recommendations := make([]*model1.Recommendation, len(petConnections))
@@ -69,6 +75,13 @@ func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid strin
 		var friendId = petConnection.Id1
 		if pid == petConnection.Id1 {
 			friendId = petConnection.Id2
+			if petConnection.Status == 1 || petConnection.Status == 3 || petConnection.Status == -1 {
+				continue
+			}
+		} else {
+			if petConnection.Status == 2 || petConnection.Status == 3 || petConnection.Status == -1 {
+				continue
+			}
 		}
 
 		status := model1.RecommendationStatus(strconv.Itoa(petConnection.Status))
@@ -123,23 +136,58 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 	return events
 }
 
+func (p *PayloadCreator) GetRecommendEventsByUId(ctx context.Context, uid string) (events []*model1.Event) {
+	eventId := p.sql.FindRecommendEventByUId(ctx, uid)
+	eventsRaw := p.sql.findEventByIdList(ctx, eventId)
+	eventLocations := p.createEventLocationById(ctx, eventId)
+	events = make([]*model1.Event, len(eventsRaw))
+	for i := 0; i < len(eventsRaw); i++ {
+		event := eventsRaw[i]
+		eventLocation := eventLocations[i]
+		eventLimit := model1.EventsLimits{
+			LimitOfPet:  &event.Limit_pet_num,
+			LimitOfUser: &event.Limit_user_num,
+		}
+		holderProfile := p.GetPetProfileById(ctx, []string{event.Holder_Id})
+		pets, participants := p.sql.findEventParticipantById(ctx, event.Id)
+		petsProfile := p.GetPetProfileById(ctx, pets)
+		participantsProfile := p.GetUserProfileById(ctx, participants)
+		startTime := event.Start_date.String()
+		endTime := event.End_date.String()
+		timeRange := model1.TimeRange{
+			StartTime: &startTime,
+			EndTime:   &endTime,
+		}
+		events[i] = &model1.Event{
+			ID:           event.Id,
+			Location:     &eventLocation,
+			TimeRange:    &timeRange,
+			Limit:        &eventLimit,
+			Image:        &event.Image,
+			Description:  []string{event.Description},
+			Holder:       holderProfile[0],
+			Pets:         petsProfile,
+			Participants: participantsProfile,
+		}
+
+	}
+	return events
+}
+
 func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []string) (userLocations []model1.Location) {
 	locations, _ := p.sql.findUserLocationByIdList(ctx, uid)
 	userLocations = make([]model1.Location, len(locations))
 	for i := 0; i < len(locations); i++ {
 		userLocation := locations[i]
-		lat := fmt.Sprintf("%f", userLocation.Position.Lat)
-		long := fmt.Sprintf("%f", userLocation.Position.Long)
+		lat := fmt.Sprintf("%f", userLocation.Latitude)
+		long := fmt.Sprintf("%f", userLocation.Longitude)
 		userLocations[i] = model1.Location{
-			Country: &userLocation.Country,
-			State:   &userLocation.State,
-			City:    &userLocation.City,
-			Address: &userLocation.Address,
-			Coor: &model1.Coordinate{
-				IsBlur:    false,
-				Latitude:  &lat,
-				Longitude: &long,
-			},
+			Country:   &userLocation.Country,
+			State:     &userLocation.State,
+			City:      &userLocation.City,
+			Address:   &userLocation.Address,
+			Latitude:  &lat,
+			Longitude: &long,
 		}
 	}
 
@@ -148,18 +196,15 @@ func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []strin
 
 func (p *PayloadCreator) createPetLocation(ctx context.Context, userLocation UserLocation) (petLocation model1.Location) {
 
-	lat := fmt.Sprintf("%f", userLocation.Position.Lat)
-	long := fmt.Sprintf("%f", userLocation.Position.Long)
+	lat := fmt.Sprintf("%f", userLocation.Latitude)
+	long := fmt.Sprintf("%f", userLocation.Longitude)
 	petLocation = model1.Location{
-		Country: &userLocation.Country,
-		State:   &userLocation.State,
-		City:    &userLocation.City,
-		Address: &userLocation.Address,
-		Coor: &model1.Coordinate{
-			IsBlur:    false,
-			Latitude:  &lat,
-			Longitude: &long,
-		},
+		Country:   &userLocation.Country,
+		State:     &userLocation.State,
+		City:      &userLocation.City,
+		Address:   &userLocation.Address,
+		Latitude:  &lat,
+		Longitude: &long,
 	}
 
 	return petLocation
@@ -170,18 +215,15 @@ func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []strin
 	eventLocations = make([]model1.Location, len(locations))
 	for i := 0; i < len(locations); i++ {
 		eventLocation := locations[i]
-		lat := fmt.Sprintf("%f", eventLocation.Position.Lat)
-		long := fmt.Sprintf("%f", eventLocation.Position.Long)
+		lat := fmt.Sprintf("%f", eventLocation.Latitude)
+		long := fmt.Sprintf("%f", eventLocation.Longitude)
 		eventLocations[i] = model1.Location{
-			Country: &eventLocation.Country,
-			State:   &eventLocation.State,
-			City:    &eventLocation.City,
-			Address: &eventLocation.Address,
-			Coor: &model1.Coordinate{
-				IsBlur:    false,
-				Latitude:  &lat,
-				Longitude: &long,
-			},
+			Country:   &eventLocation.Country,
+			State:     &eventLocation.State,
+			City:      &eventLocation.City,
+			Address:   &eventLocation.Address,
+			Latitude:  &lat,
+			Longitude: &long,
 		}
 	}
 
