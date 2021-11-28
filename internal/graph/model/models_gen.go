@@ -21,13 +21,6 @@ type ProfileNode interface {
 	IsProfileNode()
 }
 
-type Coordinate struct {
-	// when blur is setting that means the latitude and longitude is not the precise.
-	IsBlur    bool    `json:"isBlur"`
-	Latitude  *string `json:"latitude"`
-	Longitude *string `json:"longitude"`
-}
-
 type CoordinateInput struct {
 	// when blur is setting that means the latitude and longitude is not the precise.
 	IsBlur    bool    `json:"isBlur"`
