@@ -143,7 +143,6 @@ func (p *PayloadCreator) GetRecommendEventsByUId(ctx context.Context, uid string
 	events = make([]*model1.Event, len(eventsRaw))
 	for i := 0; i < len(eventsRaw); i++ {
 		event := eventsRaw[i]
-		println(event.Id)
 		eventLocation := eventLocations[i]
 		eventLimit := model1.EventsLimits{
 			LimitOfPet:  &event.Limit_pet_num,

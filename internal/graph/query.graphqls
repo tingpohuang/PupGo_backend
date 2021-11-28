@@ -2,7 +2,7 @@
 type Query{
     eventsListGet(eventsListGetInput: EventsListGetInput!) : EventsListGetPayload!
     recommendEventsListGet(eventsListGetInput: EventsListGetInput!): EventsListGetPayload!
-    notifiactionsGet(notifiactionsGetInput: NotifiactionsGetInput!) : NotifiactionsGetPayload!
+    notificationsGet(notificationsGetInput: NotificationsGetInput!) : NotificationsGetPayload!
     recommendationGet(recommendationGetInput: RecommendationGetInput!) : RecommendationGetPayload!
     friendsListGet(friendsListGetInput: FriendsListGetInput!) : FriendsListGetPayload!
     petProfileListGet(petProfileListGetInput: PetProfileListGetInput!) : PetProfileListGetPayload!
@@ -21,10 +21,10 @@ type EventsListGetPayload implements Payload{
     result: [Event!]!
 }
 
-input NotifiactionsGetInput{
-    pid:ID!
+input NotificationsGetInput{
+    UID:ID!
 }
-type NotifiactionsGetPayload implements Payload{
+type NotificationsGetPayload implements Payload{
     error: [Error!]!
     timestamp: Timestamp
     result: [Notification!]!

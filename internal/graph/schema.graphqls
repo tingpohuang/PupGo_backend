@@ -108,13 +108,13 @@ type Recommendation{
     status: RecommendationStatus
 }
 type Notification{
-    id:ID!
-    title: String
-    description: String
-    time: Timestamp
-    eventid: ID
-    userid: ID
-    type: Numbers
+    notification_id:ID!
+    notification_type:Int
+    userId: ID
+    created_at: Timestamp
+    eventId: ID
+    petId: ID
+    has_read: Boolean
 }
 type UserNotification{
     notificationList: [Notification!]
