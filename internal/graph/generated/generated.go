@@ -54,6 +54,7 @@ type ComplexityRoot struct {
 		Participants func(childComplexity int) int
 		Pets         func(childComplexity int) int
 		TimeRange    func(childComplexity int) int
+		Type         func(childComplexity int) int
 	}
 
 	EventRequest struct {
@@ -425,6 +426,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Event.TimeRange(childComplexity), true
+
+	case "Event.type":
+		if e.complexity.Event.Type == nil {
+			break
+		}
+
+		return e.complexity.Event.Type(childComplexity), true
 
 	case "EventRequest.description":
 		if e.complexity.EventRequest.Description == nil {
@@ -1980,6 +1988,7 @@ type Event{
     limit: EventsLimits
     image: URL
     description: [String!]
+    type : Int
     "holder shuold be pet"
     holder: PetProfile
     pets: [PetProfile!]!
@@ -2669,6 +2678,38 @@ func (ec *executionContext) _Event_description(ctx context.Context, field graphq
 	res := resTmp.([]string)
 	fc.Result = res
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Event_type(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Event_holder(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
@@ -10212,6 +10253,8 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Event_image(ctx, field, obj)
 		case "description":
 			out.Values[i] = ec._Event_description(ctx, field, obj)
+		case "type":
+			out.Values[i] = ec._Event_type(ctx, field, obj)
 		case "holder":
 			out.Values[i] = ec._Event_holder(ctx, field, obj)
 		case "pets":

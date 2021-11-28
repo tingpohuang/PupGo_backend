@@ -35,6 +35,7 @@ type Event struct {
 	Limit       *EventsLimits `json:"limit"`
 	Image       *string       `json:"image"`
 	Description []string      `json:"description"`
+	Type        *int          `json:"type"`
 	// holder shuold be pet
 	Holder       *PetProfile    `json:"holder"`
 	Pets         []*PetProfile  `json:"pets"`
