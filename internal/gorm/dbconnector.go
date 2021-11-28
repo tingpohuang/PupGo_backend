@@ -43,6 +43,7 @@ func (m MySQLDBConnector) NewDBConnection() *gorm.DB {
 		DB_PORT := os.Getenv("DB_PORT")
 		DB_TABLENAME := os.Getenv("DB_TABLENAME")
 		dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", DB_USERNAME, DB_PASSWORD, DB_URL, DB_PORT, DB_TABLENAME)
+		dsn = "tim:greenfield204@tcp(192.168.1.129:3306)/pupgo?charset=utf8mb4&parseTime=True&loc=Local"
 		// log.Fatal(dsn)
 		tmpgdb, err := gorm.Open(mysql.New(mysql.Config{
 			DSN: dsn,

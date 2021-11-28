@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,6 +22,10 @@ func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput mo
 		Timestamp: &timestamp,
 	}
 	return newPayload, nil
+}
+
+func (r *queryResolver) RecommendEventsListGet(ctx context.Context, eventsListGetInput model1.EventsListGetInput) (*model1.EventsListGetPayload, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) NotifiactionsGet(ctx context.Context, notifiactionsGetInput model1.NotifiactionsGetInput) (*model1.NotifiactionsGetPayload, error) {

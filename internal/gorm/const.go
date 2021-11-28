@@ -12,6 +12,8 @@ const (
 	Pet_3_id                          = "26906919-7cbe-4e41-bd6b-fafd560b4ca6"
 	Pet_4_id                          = "0ede6c06-18b7-44c1-b5fe-4c01de57c770"
 	Event_1_id                        = "eba52c68-15a7-4883-9ad4-a3ecc09b0fe7"
+	Event_2_id                        = "1ba52c68-15a7-4883-9ad4-a1ec09b0fefq"
+	Event_3_id                        = "2ba52c68-15a7-4883-9ad4-a1ec09b0few3"
 	Petsize                           = 11
 	Notification_NewFriend            = 0
 	Notification_NewParticipants      = 1
@@ -68,8 +70,8 @@ var (
 	UserLocation1 = UserLocation{
 		User_id: User_1_id,
 		Position: Location{
-			Lat:  1.23,
-			Long: 4.56,
+			Lat:  100,
+			Long: 100,
 		},
 		Country: "USA",
 		State:   "CA",
@@ -79,8 +81,8 @@ var (
 	UserLocation2 = UserLocation{
 		User_id: User_2_id,
 		Position: Location{
-			Lat:  1.23,
-			Long: 4.56,
+			Lat:  300,
+			Long: 304.56,
 		},
 		Country: "USA",
 		State:   "CA",
@@ -90,8 +92,8 @@ var (
 	UserLocation3 = UserLocation{
 		User_id: User_3_id,
 		Position: Location{
-			Lat:  1.232,
-			Long: 4.56,
+			Lat:  400,
+			Long: 500,
 		},
 		Country: "USA",
 		State:   "CA",

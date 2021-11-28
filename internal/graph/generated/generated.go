@@ -235,14 +235,15 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		EventsListGet      func(childComplexity int, eventsListGetInput model.EventsListGetInput) int
-		FriendsListGet     func(childComplexity int, friendsListGetInput model.FriendsListGetInput) int
-		NotifiactionsGet   func(childComplexity int, notifiactionsGetInput model.NotifiactionsGetInput) int
-		PetProfileListGet  func(childComplexity int, petProfileListGetInput model.PetProfileListGetInput) int
-		PetsListGet        func(childComplexity int, petsListGetInput model.PetsListGetInput) int
-		ProfileListGet     func(childComplexity int, profileListGetInput model.ProfileListGetInput) int
-		RecommendationGet  func(childComplexity int, recommendationGetInput model.RecommendationGetInput) int
-		UserProfileListGet func(childComplexity int, userProfileListGetInput model.UserProfileListGetInput) int
+		EventsListGet          func(childComplexity int, eventsListGetInput model.EventsListGetInput) int
+		FriendsListGet         func(childComplexity int, friendsListGetInput model.FriendsListGetInput) int
+		NotifiactionsGet       func(childComplexity int, notifiactionsGetInput model.NotifiactionsGetInput) int
+		PetProfileListGet      func(childComplexity int, petProfileListGetInput model.PetProfileListGetInput) int
+		PetsListGet            func(childComplexity int, petsListGetInput model.PetsListGetInput) int
+		ProfileListGet         func(childComplexity int, profileListGetInput model.ProfileListGetInput) int
+		RecommendEventsListGet func(childComplexity int, eventsListGetInput model.EventsListGetInput) int
+		RecommendationGet      func(childComplexity int, recommendationGetInput model.RecommendationGetInput) int
+		UserProfileListGet     func(childComplexity int, userProfileListGetInput model.UserProfileListGetInput) int
 	}
 
 	Recommendation struct {
@@ -326,6 +327,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	EventsListGet(ctx context.Context, eventsListGetInput model.EventsListGetInput) (*model.EventsListGetPayload, error)
+	RecommendEventsListGet(ctx context.Context, eventsListGetInput model.EventsListGetInput) (*model.EventsListGetPayload, error)
 	NotifiactionsGet(ctx context.Context, notifiactionsGetInput model.NotifiactionsGetInput) (*model.NotifiactionsGetPayload, error)
 	RecommendationGet(ctx context.Context, recommendationGetInput model.RecommendationGetInput) (*model.RecommendationGetPayload, error)
 	FriendsListGet(ctx context.Context, friendsListGetInput model.FriendsListGetInput) (*model.FriendsListGetPayload, error)
@@ -1219,6 +1221,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ProfileListGet(childComplexity, args["profileListGetInput"].(model.ProfileListGetInput)), true
 
+	case "Query.recommendEventsListGet":
+		if e.complexity.Query.RecommendEventsListGet == nil {
+			break
+		}
+
+		args, err := ec.field_Query_recommendEventsListGet_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.RecommendEventsListGet(childComplexity, args["eventsListGetInput"].(model.EventsListGetInput)), true
+
 	case "Query.recommendationGet":
 		if e.complexity.Query.RecommendationGet == nil {
 			break
@@ -1709,6 +1723,7 @@ input UpdatesNotificationSettingsInput{
 	{Name: "internal/graph/query.graphqls", Input: `
 type Query{
     eventsListGet(eventsListGetInput: EventsListGetInput!) : EventsListGetPayload!
+    recommendEventsListGet(eventsListGetInput: EventsListGetInput!): EventsListGetPayload!
     notifiactionsGet(notifiactionsGetInput: NotifiactionsGetInput!) : NotifiactionsGetPayload!
     recommendationGet(recommendationGetInput: RecommendationGetInput!) : RecommendationGetPayload!
     friendsListGet(friendsListGetInput: FriendsListGetInput!) : FriendsListGetPayload!
@@ -1716,6 +1731,7 @@ type Query{
     userProfileListGet(userProfileListGetInput:UserProfileListGetInput!): UserProfileListGetPayload!
     profileListGet(profileListGetInput: ProfileListGetInput!): ProfileListGetPayload!
     petsListGet(petsListGetInput: PetsListGetInput!): PetsListGetPayload!
+
 }
 input EventsListGetInput{
     uid: ID!
@@ -2258,6 +2274,21 @@ func (ec *executionContext) field_Query_profileListGet_args(ctx context.Context,
 		}
 	}
 	args["profileListGetInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_recommendEventsListGet_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EventsListGetInput
+	if tmp, ok := rawArgs["eventsListGetInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventsListGetInput"))
+		arg0, err = ec.unmarshalNEventsListGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsListGetInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["eventsListGetInput"] = arg0
 	return args, nil
 }
 
@@ -5977,6 +6008,48 @@ func (ec *executionContext) _Query_eventsListGet(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().EventsListGet(rctx, args["eventsListGetInput"].(model.EventsListGetInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.EventsListGetPayload)
+	fc.Result = res
+	return ec.marshalNEventsListGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsListGetPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_recommendEventsListGet(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_recommendEventsListGet_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().RecommendEventsListGet(rctx, args["eventsListGetInput"].(model.EventsListGetInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10669,6 +10742,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_eventsListGet(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "recommendEventsListGet":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_recommendEventsListGet(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
