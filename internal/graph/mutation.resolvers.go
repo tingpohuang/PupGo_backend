@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -30,6 +29,7 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	tr := eventsCreateInput.TimeRange
 	lmt := eventsCreateInput.Limit
 	img := eventsCreateInput.Image
+	description := eventsCreateInput.Description
 	errmsg := ""
 	if eventsCreateInput.Pid == "" {
 		errmsg += "pid cannot be empty"
@@ -62,7 +62,7 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 		Image:          *img,
 		Limit_user_num: 5,
 		Limit_pet_num:  5,
-		Description:    "",
+		Description:    *description,
 	}
 	err := sqlCnter.CreateEvents(ctx, data)
 	if err != nil {
@@ -96,10 +96,8 @@ func (r *mutationResolver) EventsUpdate(ctx context.Context, eventsUpdateInput m
 	if err != nil {
 		return nil, err
 	}
-	if len(eventsUpdateInput.Description) > 0 {
-		description := strings.Join(eventsUpdateInput.Description, "\n")
-		e.Description = description
-	}
+	e.Description = *eventsUpdateInput.Description
+
 	if eventsUpdateInput.Limit != nil {
 		e.Limit_pet_num = *eventsUpdateInput.Limit.LimitOfDog
 		e.Limit_user_num = *eventsUpdateInput.Limit.LimitOfHuman

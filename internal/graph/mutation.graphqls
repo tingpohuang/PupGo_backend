@@ -84,7 +84,7 @@ input EventsCreateInput{
     timeRange: TimeRangeInput
     limit: EventsLimitsInput
     image: URL
-    description: [String!]
+    description: String
 }
 input EventsJoinInput{
     pid:ID!
@@ -171,7 +171,7 @@ input EventsUpdateInput{
     timeRange: TimeRangeInput
     limit: EventsLimitsInput
     image: URL
-    description: [String!]
+    description: String
 }
 type EventsUpdatePayload implements Payload{
     error: [Error!]!
