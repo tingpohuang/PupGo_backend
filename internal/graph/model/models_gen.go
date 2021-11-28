@@ -191,6 +191,18 @@ type Notification struct {
 	HasRead          *bool   `json:"has_read"`
 }
 
+type NotificationReadInput struct {
+	Nid string `json:"nid"`
+}
+
+type NotificationReadPayload struct {
+	Error     []Error `json:"error"`
+	Timestamp *string `json:"timestamp"`
+	Result    bool    `json:"result"`
+}
+
+func (NotificationReadPayload) IsPayload() {}
+
 type NotificationRemoveInput struct {
 	Pid            string `json:"pid"`
 	NotificationID string `json:"notificationID"`

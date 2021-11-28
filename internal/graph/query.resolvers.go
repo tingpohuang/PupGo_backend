@@ -59,7 +59,6 @@ func (r *queryResolver) NotificationsGet(ctx context.Context, notificationsGetIn
 		Timestamp: &timestamp,
 	}
 	return payload, nil
-
 }
 
 func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGetInput model1.RecommendationGetInput) (*model1.RecommendationGetPayload, error) {
