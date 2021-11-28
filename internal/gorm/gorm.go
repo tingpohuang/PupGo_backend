@@ -118,12 +118,24 @@ func (s *SQLCnter) FindRecommendEventByUId(ctx context.Context, uid string) (eve
 }
 
 func (s *SQLCnter) findEventLocationByIdList(ctx context.Context, id []string) (eventLocations []EventLocation) {
-	(*s.gdb).Table("event_location").Where("event_id IN ? ", id).Find(&eventLocations)
+	for i := 0; i < len(id); i++ {
+		var eventLocation EventLocation
+		(*s.gdb).Table("event_location").Where("event_id = ? ", id[i]).Find(&eventLocation)
+		eventLocations = append(eventLocations, eventLocation)
+
+	}
+
 	return eventLocations
 }
 
 func (s *SQLCnter) findEventByIdList(ctx context.Context, id []string) (events []Event) {
-	(*s.gdb).Table("event").Where("id IN ? ", id).Find(&events)
+
+	for i := 0; i < len(id); i++ {
+		var event Event
+		(*s.gdb).Table("event").Where("id = ? ", id[i]).Find(&event)
+		events = append(events, event)
+	}
+
 	return events
 }
 
@@ -151,7 +163,7 @@ func (s *SQLCnter) findPetsByUId(ctx context.Context, uid string) (pets []string
 }
 
 func (s *SQLCnter) findUserLocationByPetsIdList(ctx context.Context, pid []string) (userLocations []UserLocation) {
-	err := (*s.gdb).Table("petowner").Select("user_location.user_id as user_id,user_location.position as position, user_location.country as country, user_location.state as state, user_location.address as address,user_location.city as city").Joins("left join user_location on user_location.user_id = petowner.user_id where pet_id in ?", pid).Scan(&userLocations)
+	err := (*s.gdb).Table("petowner").Select("user_location.user_id as user_id,user_location.latitude as latitude, user_location.longitude as longitude, user_location.country as country, user_location.state as state, user_location.address as address,user_location.city as city").Joins("left join user_location on user_location.user_id = petowner.user_id where pet_id in ?", pid).Scan(&userLocations)
 
 	if err.Error != nil {
 		fmt.Println(err.Error)
@@ -183,7 +195,7 @@ func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) 
 }
 
 func (s *SQLCnter) findPetRecommend(ctx context.Context, pid string) (petRecommend []Pet_recommend) {
-	s.gdb.Table("pet_recommend").Where("Id1 = ? OR Id2 = ?", pid, pid).Find(&petRecommend)
+	s.gdb.Table("pet_recommend").Limit(5).Where("Id1 = ? OR Id2 = ?", pid, pid).Find(&petRecommend)
 	return petRecommend
 }
 func (s *SQLCnter) FindPetRecommendByID(ctx context.Context, pid1 string, pid2 string) (petRecommend Pet_recommend, err error) {

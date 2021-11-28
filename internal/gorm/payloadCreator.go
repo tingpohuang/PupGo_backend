@@ -61,6 +61,12 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 	return petsProfile
 }
 
+// 0
+// 1 first
+// 2 second
+// 3
+// -1
+
 func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid string) (petRecommendations []*model1.Recommendation) {
 	petConnections := p.sql.findPetRecommend(ctx, pid)
 	recommendations := make([]*model1.Recommendation, len(petConnections))
@@ -69,6 +75,13 @@ func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid strin
 		var friendId = petConnection.Id1
 		if pid == petConnection.Id1 {
 			friendId = petConnection.Id2
+			if petConnection.Status == 1 || petConnection.Status == 3 || petConnection.Status == -1 {
+				continue
+			}
+		} else {
+			if petConnection.Status == 2 || petConnection.Status == 3 || petConnection.Status == -1 {
+				continue
+			}
 		}
 
 		status := model1.RecommendationStatus(strconv.Itoa(petConnection.Status))
@@ -130,6 +143,7 @@ func (p *PayloadCreator) GetRecommendEventsByUId(ctx context.Context, uid string
 	events = make([]*model1.Event, len(eventsRaw))
 	for i := 0; i < len(eventsRaw); i++ {
 		event := eventsRaw[i]
+		println(event.Id)
 		eventLocation := eventLocations[i]
 		eventLimit := model1.EventsLimits{
 			LimitOfPet:  &event.Limit_pet_num,
