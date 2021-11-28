@@ -129,7 +129,7 @@ var (
 
 	e1Loc = EventLocation{
 		Event_id: Event_1_id,
-		Position: Location{
+		Position: Position{
 			Lat:  101,
 			Long: 101,
 		},
@@ -141,7 +141,7 @@ var (
 
 	e2Loc = EventLocation{
 		Event_id: Event_2_id,
-		Position: Location{
+		Position: Position{
 			Lat:  301,
 			Long: 301,
 		},
@@ -153,7 +153,7 @@ var (
 
 	e3Loc = EventLocation{
 		Event_id: Event_3_id,
-		Position: Location{
+		Position: Position{
 			Lat:  201,
 			Long: 201,
 		},

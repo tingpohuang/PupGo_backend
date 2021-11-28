@@ -3,6 +3,8 @@ package gorm
 import (
 	"context"
 	"fmt"
+	"math"
+	"sort"
 	"time"
 
 	"github.com/google/uuid"
@@ -78,6 +80,41 @@ func (s *SQLCnter) findEventByUId(ctx context.Context, uid string) (event []stri
 		}
 
 	}
+	return event
+}
+
+func (s *SQLCnter) FindRecommendEventByUId(ctx context.Context, uid string) (event []string) {
+
+	var eventRaw []Event
+	s.gdb.Table("event").Find(&eventRaw)
+
+	userLocations, err := s.findUserLocationByIdList(ctx, []string{uid})
+	if err != nil {
+		return nil
+	}
+
+	userLocation := userLocations[0]
+	distanceMap := make(map[float64][]string)
+	for i := 0; i < len(eventRaw); i++ {
+		cur := eventRaw[i]
+		eventLocations := s.findEventLocationByIdList(ctx, []string{eventRaw[i].Id})
+		eventLocation := eventLocations[0]
+		println(eventLocation.Position.Long)
+		distance := math.Sqrt(math.Pow(userLocation.Position.Lat-eventLocation.Position.Lat, 2) + math.Pow(userLocation.Position.Long-eventLocation.Position.Long, 2))
+		distanceMap[distance] = append(distanceMap[distance], cur.Id)
+		event = append(event, cur.Id)
+	}
+
+	println(len(eventRaw))
+	keys := make([]float64, 0, len(distanceMap))
+	println(len(distanceMap))
+	for k := range distanceMap {
+		keys = append(keys, k)
+	}
+	sort.Float64s(keys)
+	println(keys)
+	println(len(keys))
+
 	return event
 }
 

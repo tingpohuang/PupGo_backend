@@ -69,7 +69,7 @@ var (
 	}
 	UserLocation1 = UserLocation{
 		User_id: User_1_id,
-		Position: Location{
+		Position: Position{
 			Lat:  100,
 			Long: 100,
 		},
@@ -80,7 +80,7 @@ var (
 	}
 	UserLocation2 = UserLocation{
 		User_id: User_2_id,
-		Position: Location{
+		Position: Position{
 			Lat:  300,
 			Long: 304.56,
 		},
@@ -91,7 +91,7 @@ var (
 	}
 	UserLocation3 = UserLocation{
 		User_id: User_3_id,
-		Position: Location{
+		Position: Position{
 			Lat:  400,
 			Long: 500,
 		},

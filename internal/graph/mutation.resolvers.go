@@ -228,7 +228,7 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 		Breed:        &petProfile.Breed,
 		IsCastration: petProfile.IsCastration,
 		// Birthday:     &petProfile.Birthday,
-		// Location:     &petProfile.Location,
+		// Position:     &petProfile.Position,
 	}
 	log.Print(payload)
 	return payload, nil

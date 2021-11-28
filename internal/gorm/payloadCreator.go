@@ -123,6 +123,44 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 	return events
 }
 
+func (p *PayloadCreator) GetRecommendEventsByUId(ctx context.Context, uid string) (events []*model1.Event) {
+	eventId := p.sql.FindRecommendEventByUId(ctx, uid)
+	eventsRaw := p.sql.findEventByIdList(ctx, eventId)
+	eventLocations := p.createEventLocationById(ctx, eventId)
+	events = make([]*model1.Event, len(eventsRaw))
+	for i := 0; i < len(eventsRaw); i++ {
+		event := eventsRaw[i]
+		eventLocation := eventLocations[i]
+		eventLimit := model1.EventsLimits{
+			LimitOfPet:  &event.Limit_pet_num,
+			LimitOfUser: &event.Limit_user_num,
+		}
+		holderProfile := p.GetPetProfileById(ctx, []string{event.Holder_Id})
+		pets, participants := p.sql.findEventParticipantById(ctx, event.Id)
+		petsProfile := p.GetPetProfileById(ctx, pets)
+		participantsProfile := p.GetUserProfileById(ctx, participants)
+		startTime := event.Start_date.String()
+		endTime := event.End_date.String()
+		timeRange := model1.TimeRange{
+			StartTime: &startTime,
+			EndTime:   &endTime,
+		}
+		events[i] = &model1.Event{
+			ID:           event.Id,
+			Location:     &eventLocation,
+			TimeRange:    &timeRange,
+			Limit:        &eventLimit,
+			Image:        &event.Image,
+			Description:  []string{event.Description},
+			Holder:       holderProfile[0],
+			Pets:         petsProfile,
+			Participants: participantsProfile,
+		}
+
+	}
+	return events
+}
+
 func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []string) (userLocations []model1.Location) {
 	locations, _ := p.sql.findUserLocationByIdList(ctx, uid)
 	userLocations = make([]model1.Location, len(locations))
