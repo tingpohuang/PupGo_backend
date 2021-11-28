@@ -47,13 +47,7 @@ func (r *queryResolver) NotificationsGet(ctx context.Context, notificationsGetIn
 		Result:    m,
 		Timestamp: &timestamp,
 	}
-	// fmt.Print(payload)
-	// for i := 0; i < len(m); i++ {
-	// 	p := *m[i]
-	// 	fmt.Print(p.NotificationID)
-	// }
 	return payload, nil
-	// return newPayload, nil
 }
 
 func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGetInput model1.RecommendationGetInput) (*model1.RecommendationGetPayload, error) {

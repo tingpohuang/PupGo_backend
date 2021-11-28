@@ -329,3 +329,21 @@ func QueryResolver_NotificationsGet(c *graphql.Client, assert *assert.Assertions
 	}
 	return res, nil
 }
+
+func TestAgreeHW(t *testing.T) {
+	// "go test -timeout 30s -run ^TestAgreeHW$ github.com/tingpo/pupgobackend/internal/graph/test"
+	assert := assert.New(t)
+	client := graphql.NewClient(graphql_endpoint)
+	// ctx := context.Background()
+	mysqlConnector, err := gorm.GetConnectorFactory("mySQL")
+	assert.Nil(err)
+	db := mysqlConnector.NewDBConnection()
+	sqlCnter := gorm.NewSQLCnter(db)
+	assert.NotNil(sqlCnter)
+	assert.NotNil(client)
+	MutationResolver_RecommendationResponse(t, client, assert, &model.RecommendationResponseInput{
+		Pid:         gorm.Pet_ids[10],
+		RecommendID: gorm.Pet_ids[0],
+		Result:      true,
+	})
+}
