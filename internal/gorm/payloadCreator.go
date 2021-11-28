@@ -166,18 +166,15 @@ func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []strin
 	userLocations = make([]model1.Location, len(locations))
 	for i := 0; i < len(locations); i++ {
 		userLocation := locations[i]
-		lat := fmt.Sprintf("%f", userLocation.Position.Lat)
-		long := fmt.Sprintf("%f", userLocation.Position.Long)
+		lat := fmt.Sprintf("%f", userLocation.Latitude)
+		long := fmt.Sprintf("%f", userLocation.Longitude)
 		userLocations[i] = model1.Location{
-			Country: &userLocation.Country,
-			State:   &userLocation.State,
-			City:    &userLocation.City,
-			Address: &userLocation.Address,
-			Coor: &model1.Coordinate{
-				IsBlur:    false,
-				Latitude:  &lat,
-				Longitude: &long,
-			},
+			Country:   &userLocation.Country,
+			State:     &userLocation.State,
+			City:      &userLocation.City,
+			Address:   &userLocation.Address,
+			Latitude:  &lat,
+			Longitude: &long,
 		}
 	}
 
@@ -186,18 +183,15 @@ func (p *PayloadCreator) createUserLocationById(ctx context.Context, uid []strin
 
 func (p *PayloadCreator) createPetLocation(ctx context.Context, userLocation UserLocation) (petLocation model1.Location) {
 
-	lat := fmt.Sprintf("%f", userLocation.Position.Lat)
-	long := fmt.Sprintf("%f", userLocation.Position.Long)
+	lat := fmt.Sprintf("%f", userLocation.Latitude)
+	long := fmt.Sprintf("%f", userLocation.Longitude)
 	petLocation = model1.Location{
-		Country: &userLocation.Country,
-		State:   &userLocation.State,
-		City:    &userLocation.City,
-		Address: &userLocation.Address,
-		Coor: &model1.Coordinate{
-			IsBlur:    false,
-			Latitude:  &lat,
-			Longitude: &long,
-		},
+		Country:   &userLocation.Country,
+		State:     &userLocation.State,
+		City:      &userLocation.City,
+		Address:   &userLocation.Address,
+		Latitude:  &lat,
+		Longitude: &long,
 	}
 
 	return petLocation
@@ -208,18 +202,15 @@ func (p *PayloadCreator) createEventLocationById(ctx context.Context, id []strin
 	eventLocations = make([]model1.Location, len(locations))
 	for i := 0; i < len(locations); i++ {
 		eventLocation := locations[i]
-		lat := fmt.Sprintf("%f", eventLocation.Position.Lat)
-		long := fmt.Sprintf("%f", eventLocation.Position.Long)
+		lat := fmt.Sprintf("%f", eventLocation.Latitude)
+		long := fmt.Sprintf("%f", eventLocation.Longitude)
 		eventLocations[i] = model1.Location{
-			Country: &eventLocation.Country,
-			State:   &eventLocation.State,
-			City:    &eventLocation.City,
-			Address: &eventLocation.Address,
-			Coor: &model1.Coordinate{
-				IsBlur:    false,
-				Latitude:  &lat,
-				Longitude: &long,
-			},
+			Country:   &eventLocation.Country,
+			State:     &eventLocation.State,
+			City:      &eventLocation.City,
+			Address:   &eventLocation.Address,
+			Latitude:  &lat,
+			Longitude: &long,
 		}
 	}
 

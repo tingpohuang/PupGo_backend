@@ -1,13 +1,7 @@
 package gorm
 
 import (
-	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"time"
-
-	"gorm.io/gorm/clause"
 
 	"gorm.io/gorm"
 )
@@ -27,53 +21,24 @@ type UserToken struct {
 	Token   string `json:"token"`
 }
 
-type Position struct {
-	Lat  float64 `gorm:"column:lat"`
-	Long float64 `gorm:"column:long"`
-}
-
-func (loc Position) GormDataType() string {
-	return "geometry"
-}
-
-func (loc Position) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
-	return clause.Expr{
-		SQL:  "ST_PointFromText(?)",
-		Vars: []interface{}{fmt.Sprintf("POINT(%v %v)", loc.Lat, loc.Long)},
-	}
-}
-
-func (loc *Position) Scan(v interface{}) error {
-	// Scan a value into struct from database driver
-	fmt.Printf("Scan value %v", v)
-	bytes, ok := v.([]byte)
-	if !ok {
-		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", v))
-	}
-
-	var pos map[interface{}]interface{}
-	json.Unmarshal(bytes, &pos)
-	println(pos)
-
-	return nil
-}
-
 type UserLocation struct {
-	User_id  string
-	Position Position
-	Country  string
-	State    string
-	City     string
-	Address  string
+	User_id   string
+	Latitude  float64
+	Longitude float64
+	Country   string
+	State     string
+	City      string
+	Address   string
 }
 
 type EventLocation struct {
-	Event_id string
-	Position Position
-	Country  string
-	State    string
-	City     string
-	Address  string
+	Event_id  string
+	Latitude  float64
+	Longitude float64
+	Country   string
+	State     string
+	City      string
+	Address   string
 }
 
 func (u *User) BeforeCreate(db *gorm.DB) error {

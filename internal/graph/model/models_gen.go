@@ -150,11 +150,12 @@ func (FriendsListGetPayload) IsPayload() {}
 
 // location relation
 type Location struct {
-	Country *string     `json:"country"`
-	State   *string     `json:"state"`
-	City    *string     `json:"city"`
-	Address *string     `json:"address"`
-	Coor    *Coordinate `json:"coor"`
+	Country   *string `json:"country"`
+	State     *string `json:"state"`
+	City      *string `json:"city"`
+	Address   *string `json:"address"`
+	Latitude  *string `json:"latitude"`
+	Longitude *string `json:"longitude"`
 }
 
 type LocationInput struct {

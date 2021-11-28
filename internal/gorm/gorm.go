@@ -3,7 +3,6 @@ package gorm
 import (
 	"context"
 	"fmt"
-	"math"
 	"sort"
 	"time"
 
@@ -88,19 +87,19 @@ func (s *SQLCnter) FindRecommendEventByUId(ctx context.Context, uid string) (eve
 	var eventRaw []Event
 	s.gdb.Table("event").Find(&eventRaw)
 
-	userLocations, err := s.findUserLocationByIdList(ctx, []string{uid})
-	if err != nil {
-		return nil
-	}
+	//userLocations, err := s.findUserLocationByIdList(ctx, []string{uid})
+	//if err != nil {
+	//	return nil
+	//}
 
-	userLocation := userLocations[0]
+	//userLocation := userLocations[0]
 	distanceMap := make(map[float64][]string)
 	for i := 0; i < len(eventRaw); i++ {
 		cur := eventRaw[i]
-		eventLocations := s.findEventLocationByIdList(ctx, []string{eventRaw[i].Id})
-		eventLocation := eventLocations[0]
-		println(eventLocation.Position.Long)
-		distance := math.Sqrt(math.Pow(userLocation.Position.Lat-eventLocation.Position.Lat, 2) + math.Pow(userLocation.Position.Long-eventLocation.Position.Long, 2))
+		//eventLocations := s.findEventLocationByIdList(ctx, []string{eventRaw[i].Id})
+		//eventLocation := eventLocations[0]
+		//distance := math.Sqrt(math.Pow(userLocation.Position.Lat-eventLocation.Position.Lat, 2) + math.Pow(userLocation.Position.Long-eventLocation.Position.Long, 2))
+		distance := 0.4
 		distanceMap[distance] = append(distanceMap[distance], cur.Id)
 		event = append(event, cur.Id)
 	}

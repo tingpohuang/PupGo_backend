@@ -68,36 +68,30 @@ var (
 		time.Date(2019, 8, 1, 0, 0, 0, 0, loc),
 	}
 	UserLocation1 = UserLocation{
-		User_id: User_1_id,
-		Position: Position{
-			Lat:  100,
-			Long: 100,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "1878 Greenfield Avenue",
+		User_id:   User_1_id,
+		Latitude:  100,
+		Longitude: 100,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "1878 Greenfield Avenue",
 	}
 	UserLocation2 = UserLocation{
-		User_id: User_2_id,
-		Position: Position{
-			Lat:  300,
-			Long: 304.56,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "1878 Greenfield Avenue",
+		User_id:   User_2_id,
+		Latitude:  300,
+		Longitude: 304.56,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "1878 Greenfield Avenue",
 	}
 	UserLocation3 = UserLocation{
-		User_id: User_3_id,
-		Position: Position{
-			Lat:  400,
-			Long: 500,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "1878 Greenfield Avenue",
+		User_id:   User_3_id,
+		Latitude:  400,
+		Longitude: 500,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "1878 Greenfield Avenue",
 	}
 )

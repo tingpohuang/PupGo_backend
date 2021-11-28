@@ -128,39 +128,33 @@ var (
 	}
 
 	e1Loc = EventLocation{
-		Event_id: Event_1_id,
-		Position: Position{
-			Lat:  101,
-			Long: 101,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "fwfewfewfew",
+		Event_id:  Event_1_id,
+		Latitude:  101,
+		Longitude: 101,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "fwfewfewfew",
 	}
 
 	e2Loc = EventLocation{
-		Event_id: Event_2_id,
-		Position: Position{
-			Lat:  301,
-			Long: 301,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "fwfewfewfew",
+		Event_id:  Event_2_id,
+		Latitude:  301,
+		Longitude: 301,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "fwfewfewfew",
 	}
 
 	e3Loc = EventLocation{
-		Event_id: Event_3_id,
-		Position: Position{
-			Lat:  201,
-			Long: 201,
-		},
-		Country: "USA",
-		State:   "CA",
-		City:    "Los Angeles",
-		Address: "fwfewfewfew",
+		Event_id:  Event_3_id,
+		Latitude:  201,
+		Longitude: 201,
+		Country:   "USA",
+		State:     "CA",
+		City:      "Los Angeles",
+		Address:   "fwfewfewfew",
 	}
 )
 
