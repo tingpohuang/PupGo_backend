@@ -7,7 +7,6 @@ type Mutation{
     eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
     eventsAccept(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
     notificationRead(notificationReadInput: NotificationReadInput!): NotificationReadPayload!
-    
     notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
     recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
     friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!
@@ -15,7 +14,6 @@ type Mutation{
     petCreate(petCreateInput: PetCreateInput!): PetCreatePayload!
     petDelete(petDeleteInput: PetDeleteInput!) :PetDeletePayload!
     updatesNotificationSettings(updatesNotificationSettingsInput: UpdatesNotificationSettingsInput!) : UpdatesNotificationSettings!
-    #update user/dog profile for location
 }
 
 

@@ -35,17 +35,17 @@ var (
 		"a29fb9c3-4bc4-438f-9589-5b9143098da7",
 		"eba52c68-15a7-4883-9ad4-a1ec20930f67"}
 	Pet_imgs = [Petsize]string{
-		"https://i.ibb.co/bQ3mLf6/IMG-3228.jpg",
-		"https://i.ibb.co/MGDdKLz/IMG-3227.jpg",
-		"https://i.ibb.co/M7dzvTJ/IMG-3225.jpg",
-		"https://i.ibb.co/1QyWfzR/IMG-3224.jpg",
-		"https://i.ibb.co/Zm92f1q/IMG-3235.jpg",
-		"https://i.ibb.co/nc2dsPb/IMG-3234.jpg",
-		"https://i.ibb.co/MNwM89M/IMG-3233.jpg",
-		"https://i.ibb.co/y6HbW1h/IMG-3232.jpg",
-		"https://i.ibb.co/g4q0FgW/IMG-3231.jpg",
-		"https://i.ibb.co/wW3htjY/IMG-3230.jpg",
-		"https://i.ibb.co/xJrjQHz/IMG-3229.jpg"}
+		"https://i.ibb.co/DVqdYWP/IMG-3228-min.jpg",
+		"https://i.ibb.co/TcLZTXm/IMG-3227-min.jpg",
+		"https://i.ibb.co/JB31CsL/IMG-3225-min.jpg",
+		"https://i.ibb.co/YXYHtB8/IMG-3224-min.jpg",
+		"https://i.ibb.co/ccK4g5R/IMG-3235-min.jpg",
+		"https://i.ibb.co/cFJN2sd/IMG-3234-min.jpg",
+		"https://i.ibb.co/7XKCfbW/IMG-3233-min.jpg",
+		"https://i.ibb.co/jwqGVXV/IMG-3232-min.jpg",
+		"https://i.ibb.co/bJ2s4tc/IMG-3231-min.jpg",
+		"https://i.ibb.co/x3NDrwq/IMG-3230-min.jpg",
+		"https://i.ibb.co/C2tFDw7/IMG-3229-min.jpg"}
 	Pet_names         = [Petsize]string{"Tuple", "Array", "Sequel", "Class", "struct", "Abstract", "Hoare", "Queue", "Stack", "List", "String"}
 	Pet_genders       = [Petsize]int{0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0}
 	Pet_breeds        = [Petsize]string{"Husky", "Husky", "Corgi", "Russell Terrier", "French BuildDog", "Autsralian Shepherd", "Bichon Frise", "Golden Retriever", "Sennenhunde", "American Eskimo", "Affenpinscher"}
