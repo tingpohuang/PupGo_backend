@@ -41,6 +41,16 @@ type EventLocation struct {
 	Address   string
 }
 
+type Hobby struct {
+	Id   int
+	Name string
+}
+
+type PetHobby struct {
+	Pet_id   string
+	Hobby_id int
+}
+
 func (u *User) BeforeCreate(db *gorm.DB) error {
 	u.Created_at = time.Now()
 	return nil
