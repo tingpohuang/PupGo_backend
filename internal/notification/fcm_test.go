@@ -31,7 +31,6 @@ func TestSendEventJoinedMessage(t *testing.T) {
 
 func TestSendNewFriendMessage(t *testing.T) {
 	// go test -timeout 30s -run ^TestSendNewFriendMessage$ github.com/tingpo/pupgobackend/internal/notification
-
 	ctx := context.Background()
 	n := Notification{}
 	mysqlConnector, err := gorm.GetConnectorFactory("mySQL")
@@ -40,7 +39,7 @@ func TestSendNewFriendMessage(t *testing.T) {
 	}
 	db := mysqlConnector.NewDBConnection()
 	s := gorm.NewSQLCnter(db)
-	n.SendNewFriendMessage(ctx, gorm.Pet_1_id, gorm.Pet_1_id, s)
+	n.SendNewFriendMessage(ctx, gorm.Pet_4_id, gorm.Pet_4_id, s)
 }
 
 func TestWriteNotification(t *testing.T) {
@@ -54,11 +53,13 @@ func TestWriteNotification(t *testing.T) {
 	db := mysqlConnector.NewDBConnection()
 	s := gorm.NewSQLCnter(db)
 	nMsg := NewNotification()
-	uid, err := s.GetUserIdbyPetId(ctx, gorm.Pet_1_id)
+	uid, err := s.GetUserIdbyPetId(ctx, gorm.Pet_4_id)
 	assert.Nil(err)
 	nMsg.User_id = *uid
-	nMsg.Pet_id = gorm.Pet_1_id
+	// log.Fatal(nMsg.User_id)
+	nMsg.Pet_id = gorm.Pet_4_id
 	err = s.CreateNotification(ctx, nMsg)
 	assert.Nil(err)
-
 }
+
+// "eNTUoWOXr0Z3oDzsNXiqKR:APA91bHbCAahTVQDx34Kif1XklEoPhtf0PEqaMXI0935xQ4bygZ046h-e9ApkrAkZbx6NIKFHNZpKfU1GHxIVMslUHVBUBPtChVnqIn8weNd_u6eNeMIiqv5sCcprw_J-G9TNsLZGeUH"

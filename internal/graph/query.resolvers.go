@@ -23,14 +23,37 @@ func (r *queryResolver) EventsListGet(ctx context.Context, eventsListGetInput mo
 	return newPayload, nil
 }
 
-func (r *queryResolver) NotifiactionsGet(ctx context.Context, notifiactionsGetInput model1.NotifiactionsGetInput) (*model1.NotifiactionsGetPayload, error) {
+func (r *queryResolver) NotificationsGet(ctx context.Context, notificationsGetInput model1.NotificationsGetInput) (*model1.NotificationsGetPayload, error) {
 	timestamp := time.Now().String()
-	newPayload := &model1.NotifiactionsGetPayload{
+	res, err := sqlCnter.GetNotificationByUserId(ctx, notificationsGetInput.UID)
+	if err != nil {
+		return nil, err
+	}
+	// fmt.Print(res)
+	m := make([]*model1.Notification, len(res))
+	for i := 0; i < len(res); i++ {
+		m[i] = &model1.Notification{
+			NotificationID:   res[i].Notification_id,
+			NotificationType: &res[i].Notification_type,
+			UserID:           &res[i].User_id,
+			EventID:          &res[i].Event_id,
+			PetID:            &res[i].Pet_id,
+			HasRead:          &res[i].Has_read,
+		}
+	}
+
+	payload := &model1.NotificationsGetPayload{
 		Error:     nil,
-		Result:    []*model1.Notification{},
+		Result:    m,
 		Timestamp: &timestamp,
 	}
-	return newPayload, nil
+	// fmt.Print(payload)
+	// for i := 0; i < len(m); i++ {
+	// 	p := *m[i]
+	// 	fmt.Print(p.NotificationID)
+	// }
+	return payload, nil
+	// return newPayload, nil
 }
 
 func (r *queryResolver) RecommendationGet(ctx context.Context, recommendationGetInput model1.RecommendationGetInput) (*model1.RecommendationGetPayload, error) {

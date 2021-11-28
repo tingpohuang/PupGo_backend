@@ -123,6 +123,24 @@ type EventsListGetPayload struct {
 
 func (EventsListGetPayload) IsPayload() {}
 
+type EventsUpdateInput struct {
+	Eid         string             `json:"eid"`
+	Pid         string             `json:"pid"`
+	Location    *LocationInput     `json:"location"`
+	TimeRange   *TimeRangeInput    `json:"timeRange"`
+	Limit       *EventsLimitsInput `json:"limit"`
+	Image       *string            `json:"image"`
+	Description []string           `json:"description"`
+}
+
+type EventsUpdatePayload struct {
+	Error     []Error `json:"error"`
+	Timestamp *string `json:"timestamp"`
+	Result    bool    `json:"result"`
+}
+
+func (EventsUpdatePayload) IsPayload() {}
+
 type FriendRemoveInput struct {
 	PetID    string `json:"petID"`
 	FriendID string `json:"friendID"`
@@ -161,6 +179,7 @@ type LocationInput struct {
 	Country    *string          `json:"country"`
 	City       *string          `json:"city"`
 	Address    *string          `json:"address"`
+	State      *string          `json:"State"`
 	Coordinate *CoordinateInput `json:"Coordinate"`
 }
 
@@ -168,26 +187,26 @@ type NewEmail struct {
 	Email string `json:"email"`
 }
 
-type NotifiactionsGetInput struct {
-	Pid string `json:"pid"`
+type NotificationsGetInput struct {
+	UID string `json:"uid"`
 }
 
-type NotifiactionsGetPayload struct {
+type NotificationsGetPayload struct {
 	Error     []Error         `json:"error"`
 	Timestamp *string         `json:"timestamp"`
 	Result    []*Notification `json:"result"`
 }
 
-func (NotifiactionsGetPayload) IsPayload() {}
+func (NotificationsGetPayload) IsPayload() {}
 
 type Notification struct {
-	ID          string  `json:"id"`
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
-	Time        *string `json:"time"`
-	Eventid     *string `json:"eventid"`
-	Userid      *string `json:"userid"`
-	Type        *string `json:"type"`
+	NotificationID   string  `json:"notification_id"`
+	NotificationType *int    `json:"notification_type"`
+	UserID           *string `json:"userId"`
+	CreatedAt        *string `json:"created_at"`
+	EventID          *string `json:"eventId"`
+	PetID            *string `json:"petId"`
+	HasRead          *bool   `json:"has_read"`
 }
 
 type NotificationRemoveInput struct {

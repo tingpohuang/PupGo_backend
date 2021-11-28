@@ -305,3 +305,25 @@ func (s *SQLCnter) GetFriendsPetIdByPetId(ctx context.Context, pid string) (frei
 	freindPids = append(friendPids1, friendPids2...)
 	return freindPids, result.Error
 }
+
+func (s *SQLCnter) UpdatesEvents(ctx context.Context, e Event) error {
+	result := s.gdb.Table("event").Updates(&e)
+	return result.Error
+}
+
+func (s *SQLCnter) GetEventByEventId(ctx context.Context, eid string) (event Event, err error) {
+
+	result := s.gdb.Table("event").First(&event)
+	return event, result.Error
+}
+
+func (s *SQLCnter) UpdateEventLocations(ctx context.Context, e EventLocation) (err error) {
+	result := s.gdb.Table("event_location").Updates(&e)
+	return result.Error
+}
+
+func (s *SQLCnter) GetNotificationByUserId(ctx context.Context, uid string) (n []Notification, err error) {
+	result := s.gdb.Table("user_notification").Order("created_at DESC").
+		Where("user_id = ? AND has_read = 0", uid).Find(&n)
+	return n, result.Error
+}

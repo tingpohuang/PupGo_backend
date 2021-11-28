@@ -100,7 +100,17 @@ func TestMutationResolver_RecommendationResponse(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(-1, res.Status)
 }
-
+func TestQueryResolver_NotificationsGet(t *testing.T) {
+	// go test -timeout 30s -run ^TestQueryResolver_NotificationsGet$ github.com/tingpo/pupgobackend/internal/graph/test
+	assert := assert.New(t)
+	client := graphql.NewClient(graphql_endpoint)
+	uid := gorm.User_2_id
+	p, err := QueryResolver_NotificationsGet(client, assert, &model.NotificationsGetInput{
+		UID: uid,
+	})
+	assert.Nil(err)
+	t.Log("p", p)
+}
 func TestMutationResolver_PetCreate(t *testing.T) {
 	assert := assert.New(t)
 	client := graphql.NewClient(graphql_endpoint)
@@ -290,4 +300,32 @@ func MutationResolver_PetDelete(c *graphql.Client, assert *assert.Assertions, m 
 		assert.Nil(err)
 	}
 	return &respData
+}
+
+func QueryResolver_NotificationsGet(c *graphql.Client, assert *assert.Assertions, m *model.NotificationsGetInput) (res *model.NotificationsGetPayload, err error) {
+	ctx := context.Background()
+	req := graphql.NewRequest(`
+	query($input: NotificationsGetInput!){
+		notificationsGet(notificationsGetInput:$input){
+		  result{
+        notification_id,
+        notification_type
+        userId,
+        created_at,
+        eventId,
+        petId,
+        has_read
+      }
+    	timestamp
+		}
+	}
+	`)
+	req.Var("input", m)
+	res = &model.NotificationsGetPayload{
+		// Result:,
+	}
+	if err := c.Run(ctx, req, res); err != nil {
+		assert.Nil(err)
+	}
+	return res, nil
 }
