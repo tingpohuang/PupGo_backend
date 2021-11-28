@@ -101,7 +101,6 @@ func (s *SQLCnter) FindRecommendEventByUId(ctx context.Context, uid string) (eve
 		eventLocation := eventLocations[0]
 		distance := math.Sqrt(math.Pow(userLocation.Latitude-eventLocation.Latitude, 2) + math.Pow(userLocation.Longitude-eventLocation.Longitude, 2))
 		distanceMap[distance] = append(distanceMap[distance], cur.Id)
-		event = append(event, cur.Id)
 	}
 
 	keys := make([]float64, 0, len(distanceMap))
@@ -109,9 +108,12 @@ func (s *SQLCnter) FindRecommendEventByUId(ctx context.Context, uid string) (eve
 		keys = append(keys, k)
 	}
 	sort.Float64s(keys)
-	println(keys)
-	println(len(keys))
 
+	for i := 0; i < len(keys); i++ {
+		for j := 0; j < len(distanceMap[keys[i]]); j++ {
+			event = append(event, distanceMap[keys[i]][j])
+		}
+	}
 	return event
 }
 
