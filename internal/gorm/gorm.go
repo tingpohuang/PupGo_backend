@@ -195,7 +195,7 @@ func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) 
 }
 
 func (s *SQLCnter) findPetRecommend(ctx context.Context, pid string) (petRecommend []Pet_recommend) {
-	s.gdb.Table("pet_recommend").Limit(5).Where("Id1 = ? OR Id2 = ?", pid, pid).Find(&petRecommend)
+	s.gdb.Table("pet_recommend").Where("Id1 = ? OR Id2 = ?", pid, pid).Find(&petRecommend)
 	return petRecommend
 }
 func (s *SQLCnter) FindPetRecommendByID(ctx context.Context, pid1 string, pid2 string) (petRecommend Pet_recommend, err error) {
