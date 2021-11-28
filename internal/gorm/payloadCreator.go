@@ -8,6 +8,10 @@ import (
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 )
 
+const (
+	PET_RECOMMEND_LIST_LENGTH = 5
+)
+
 type PayloadCreator struct {
 	sql *SQLCnter
 }
@@ -69,10 +73,11 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 
 func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid string) (petRecommendations []*model1.Recommendation) {
 	petConnections := p.sql.findPetRecommend(ctx, pid)
-	recommendations := make([]*model1.Recommendation, len(petConnections))
-	for i := 0; i < len(petConnections); i++ {
+
+	for i := 0; i < len(petConnections) && len(petRecommendations) < PET_RECOMMEND_LIST_LENGTH; i++ {
 		petConnection := petConnections[i]
 		var friendId = petConnection.Id1
+
 		if pid == petConnection.Id1 {
 			friendId = petConnection.Id2
 			if petConnection.Status == 1 || petConnection.Status == 3 || petConnection.Status == -1 {
@@ -87,14 +92,14 @@ func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid strin
 		status := model1.RecommendationStatus(strconv.Itoa(petConnection.Status))
 		petProfiles := p.GetPetProfileById(ctx, []string{friendId})
 
-		recommendations[i] = &model1.Recommendation{
+		petRecommendations = append(petRecommendations, &model1.Recommendation{
 			ID:     friendId,
 			Pet:    petProfiles[0],
 			Status: &status,
-		}
+		})
 	}
 
-	return recommendations
+	return petRecommendations
 
 }
 
