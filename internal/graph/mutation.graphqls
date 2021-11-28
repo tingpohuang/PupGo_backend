@@ -3,6 +3,7 @@ type Mutation{
     "[testing] new a user with special id"
     userCreateByID(userCreateByIDInput: UserCreateByIDInput!): UserCreateByIDPayload!
     eventsCreate(eventsCreateInput: EventsCreateInput!): EventsCreatePayload!
+    eventsUpdate(eventsUpdateInput: EventsUpdateInput!): EventsUpdatePayload!
     eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
     eventsAccept(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
     notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
@@ -14,6 +15,9 @@ type Mutation{
     updatesNotificationSettings(updatesNotificationSettingsInput: UpdatesNotificationSettingsInput!) : UpdatesNotificationSettings!
     #update user/dog profile for location
 }
+
+
+
 
 type UserCreateByIDPayload implements Payload{
     error: [Error!]!
@@ -124,6 +128,7 @@ input LocationInput{
     country: String
     city: String
     address: String
+    State: String
     Coordinate: CoordinateInput
 }
 input PetCreateInput{
@@ -151,3 +156,17 @@ input UpdatesNotificationSettingsInput{
 }
 
 
+input EventsUpdateInput{
+    eid: ID!
+    pid: ID!
+    location: LocationInput
+    timeRange: TimeRangeInput
+    limit: EventsLimitsInput
+    image: URL
+    description: [String!]
+}
+type EventsUpdatePayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}

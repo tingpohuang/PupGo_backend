@@ -141,6 +141,7 @@ func TestInputValueToDatabse(t *testing.T) {
 	InputEvent(t, &g)
 	InputEventParticipant(t, &g)
 	InputEventLocation(t, &g)
+	InputUserDevice(t, &g)
 
 }
 
@@ -258,5 +259,13 @@ func InputUserLocation(t *testing.T, g *gormTestor) {
 func InputEventLocation(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
 	result := g.gdb.Table("event_location").Create(&e1Loc)
+	assert.Nil(result.Error)
+}
+
+func InputUserDevice(t *testing.T, g *gormTestor) {
+	assert := assert.New(t)
+	result := g.gdb.Exec("INSERT INTO user_device VALUES (?, ?)", User_1_id, "eKWNaSb5FkHmrRiJ_4SUg-:APA91bGjnf2hGD_jUkpwUIMgp0z-UZJnFc-7YvdiJ-eX0KiGhevbh7bw9mhoT9XYXhdxFkpnI0h2SZSS_VPv_q6-esp7xld1fx7Wil-NKhbahjUgEk1sA3yc1h5INKpNitd2sEHua5Tt")
+	assert.Nil(result.Error)
+	result = g.gdb.Exec("INSERT INTO user_device VALUES (?, ?)", User_2_id, "cyu9JfHduEfOtr6Y0Wyqz2:APA91bEC_NEGcK71QB7YclvMMXOv0DgzK7MJeCc99disvVQtrNkiPpunpjo1ILEoo1eEyBKi28ChFEMcX-gz0AU_6dbgTCJsXYDfHwRBDb89E_DSMRzcgxon7f_o3E33GYwq8oj_VG4b")
 	assert.Nil(result.Error)
 }

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -81,6 +82,51 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	n := &notification.Notification{}
 	go n.SendEventsToFriends(ctx, data.Id, sqlCnter)
 	return ret, nil
+}
+
+func (r *mutationResolver) EventsUpdate(ctx context.Context, eventsUpdateInput model1.EventsUpdateInput) (*model1.EventsUpdatePayload, error) {
+	// panic(fmt.Errorf("not implemented"))
+	eid := eventsUpdateInput.Eid
+	pid := eventsUpdateInput.Pid
+	if eid == "" || pid == "" {
+		return nil, errors.New("event id and pet id should be given")
+	}
+	e, err := sqlCnter.GetEventByEventId(ctx, eid)
+	if err != nil {
+		return nil, err
+	}
+	if len(eventsUpdateInput.Description) > 0 {
+		description := strings.Join(eventsUpdateInput.Description, "\n")
+		e.Description = description
+	}
+	if eventsUpdateInput.Limit != nil {
+		e.Limit_pet_num = *eventsUpdateInput.Limit.LimitOfDog
+		e.Limit_user_num = *eventsUpdateInput.Limit.LimitOfHuman
+	}
+	if eventsUpdateInput.Location != nil {
+		sqlCnter.UpdateEventLocations(ctx, gorm.EventLocation{
+			Event_id: eid,
+			Country:  *eventsUpdateInput.Location.Country,
+			City:     *eventsUpdateInput.Location.City,
+			State:    *eventsUpdateInput.Location.State,
+			Position: gorm.Location{
+				// Lat:  eventsUpdateInput.Location.Coordinate.Latitude,
+				// Long: eventsUpdateInput.Location.Coordinate.Longitude,
+			},
+		})
+	}
+	// if eventsUpdateInput.TimeRange != nil {
+	// 	e.timeRange = eventsUpdateInput.TimeRange
+	// }
+	if eventsUpdateInput.Image != nil {
+		e.Image = *eventsUpdateInput.Image
+	}
+
+	err = sqlCnter.UpdatesEvents(ctx, e)
+	return &model1.EventsUpdatePayload{
+		Timestamp: GetNowTimestamp(),
+		Result:    true,
+	}, err
 }
 
 func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model1.EventsJoinInput) (*model1.EventsJoinPayload, error) {
