@@ -135,6 +135,7 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 			Holder:       holderProfile[0],
 			Pets:         petsProfile,
 			Participants: participantsProfile,
+			Type:         &event.Type,
 		}
 
 	}
@@ -173,6 +174,7 @@ func (p *PayloadCreator) GetRecommendEventsByUId(ctx context.Context, uid string
 			Holder:       holderProfile[0],
 			Pets:         petsProfile,
 			Participants: participantsProfile,
+			Type:         &event.Type,
 		}
 
 	}

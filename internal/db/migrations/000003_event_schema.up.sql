@@ -7,5 +7,6 @@ create table event(
 		limit_user_num int,
 		limit_pet_num int,
 		description varchar(300),
+		type int,
 		FOREIGN KEY (holder_id) REFERENCES pet(id) ON DELETE CASCADE
 );
