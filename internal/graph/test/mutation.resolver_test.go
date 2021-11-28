@@ -347,3 +347,33 @@ func TestAgreeHW(t *testing.T) {
 		Result:      true,
 	})
 }
+
+func TestMutationResolver_NotificationRead(t *testing.T) {
+	assert := assert.New(t)
+	client := graphql.NewClient(graphql_endpoint)
+	assert.NotNil(client)
+	MutationResolver_NotificationRead(client, assert, &model.NotificationReadInput{
+		Nid: "8540167f-f1de-4341-9aff-72435c6e9f2d",
+	})
+}
+
+func MutationResolver_NotificationRead(c *graphql.Client, assert *assert.Assertions, input *model.NotificationReadInput) (payload *model.NotificationReadPayload, err error) {
+	ctx := context.Background()
+	req := graphql.NewRequest(`
+	mutation($input: NotificationReadInput!){
+		notificationRead(notificationReadInput:$input){
+		  result
+    		timestamp
+		}
+	}
+	`)
+	req.Var("input", input)
+	s := ""
+	payload = &model.NotificationReadPayload{
+		Timestamp: &s,
+	}
+	if err := c.Run(ctx, req, payload); err != nil {
+		assert.Nil(err)
+	}
+	return payload, nil
+}

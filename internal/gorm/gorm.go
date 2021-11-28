@@ -327,3 +327,8 @@ func (s *SQLCnter) GetNotificationByUserId(ctx context.Context, uid string) (n [
 		Where("user_id = ? AND has_read = 0", uid).Find(&n)
 	return n, result.Error
 }
+
+func (s *SQLCnter) UpdateNotificationHasReadStatus(ctx context.Context, n string) (err error) {
+	result := s.gdb.Table("user_notification").Where("notification_id = ?", n).Update("has_read", true)
+	return result.Error
+}

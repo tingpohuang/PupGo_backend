@@ -6,6 +6,8 @@ type Mutation{
     eventsUpdate(eventsUpdateInput: EventsUpdateInput!): EventsUpdatePayload!
     eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
     eventsAccept(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
+    notificationRead(notificationReadInput: NotificationReadInput!): NotificationReadPayload!
+    
     notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
     recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
     friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!
@@ -155,6 +157,14 @@ input UpdatesNotificationSettingsInput{
     allowedNotificationWhenEventsStatusChanged: Boolean!
 }
 
+input NotificationReadInput{
+    nid: ID!
+}
+type NotificationReadPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
 
 input EventsUpdateInput{
     eid: ID!

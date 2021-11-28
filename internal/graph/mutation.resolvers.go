@@ -191,6 +191,18 @@ func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput m
 	return res, nil
 }
 
+func (r *mutationResolver) NotificationRead(ctx context.Context, notificationReadInput model1.NotificationReadInput) (*model1.NotificationReadPayload, error) {
+	err := sqlCnter.UpdateNotificationHasReadStatus(ctx, notificationReadInput.Nid)
+	if err != nil {
+		return nil, err
+	}
+	res := &model1.NotificationReadPayload{
+		Timestamp: GetNowTimestamp(),
+		Result:    true,
+	}
+	return res, nil
+}
+
 func (r *mutationResolver) NotificationRemove(ctx context.Context, notificationRemoveInput model1.NotificationRemoveInput) (*model1.NotificationRemovePayload, error) {
 	panic(fmt.Errorf("this function no long support"))
 }

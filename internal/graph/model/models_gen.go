@@ -187,18 +187,6 @@ type NewEmail struct {
 	Email string `json:"email"`
 }
 
-type NotificationsGetInput struct {
-	UID string `json:"uid"`
-}
-
-type NotificationsGetPayload struct {
-	Error     []Error         `json:"error"`
-	Timestamp *string         `json:"timestamp"`
-	Result    []*Notification `json:"result"`
-}
-
-func (NotificationsGetPayload) IsPayload() {}
-
 type Notification struct {
 	NotificationID   string  `json:"notification_id"`
 	NotificationType *int    `json:"notification_type"`
@@ -208,6 +196,18 @@ type Notification struct {
 	PetID            *string `json:"petId"`
 	HasRead          *bool   `json:"has_read"`
 }
+
+type NotificationReadInput struct {
+	Nid string `json:"nid"`
+}
+
+type NotificationReadPayload struct {
+	Error     []Error `json:"error"`
+	Timestamp *string `json:"timestamp"`
+	Result    bool    `json:"result"`
+}
+
+func (NotificationReadPayload) IsPayload() {}
 
 type NotificationRemoveInput struct {
 	Pid            string `json:"pid"`
@@ -228,6 +228,18 @@ type NotificationSetting struct {
 	AllowedNotificationWhenEventsWillStartIn30Mins bool `json:"allowedNotificationWhenEventsWillStartIn30Mins"`
 	AllowedNotificationWhenEventsStatusChanged     bool `json:"allowedNotificationWhenEventsStatusChanged"`
 }
+
+type NotificationsGetInput struct {
+	UID string `json:"uid"`
+}
+
+type NotificationsGetPayload struct {
+	Error     []Error         `json:"error"`
+	Timestamp *string         `json:"timestamp"`
+	Result    []*Notification `json:"result"`
+}
+
+func (NotificationsGetPayload) IsPayload() {}
 
 type Pet struct {
 	ID              string           `json:"id"`

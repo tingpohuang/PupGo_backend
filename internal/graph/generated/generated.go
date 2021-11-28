@@ -130,6 +130,7 @@ type ComplexityRoot struct {
 		EventsJoin                  func(childComplexity int, eventsJoinInput model.EventsJoinInput) int
 		EventsUpdate                func(childComplexity int, eventsUpdateInput model.EventsUpdateInput) int
 		FriendRemove                func(childComplexity int, friendRemoveInput model.FriendRemoveInput) int
+		NotificationRead            func(childComplexity int, notificationReadInput model.NotificationReadInput) int
 		NotificationRemove          func(childComplexity int, notificationRemoveInput model.NotificationRemoveInput) int
 		PetCreate                   func(childComplexity int, petCreateInput model.PetCreateInput) int
 		PetDelete                   func(childComplexity int, petDeleteInput model.PetDeleteInput) int
@@ -137,12 +138,6 @@ type ComplexityRoot struct {
 		RecommendationResponse      func(childComplexity int, recommendationResponseInput model.RecommendationResponseInput) int
 		UpdatesNotificationSettings func(childComplexity int, updatesNotificationSettingsInput model.UpdatesNotificationSettingsInput) int
 		UserCreateByID              func(childComplexity int, userCreateByIDInput model.UserCreateByIDInput) int
-	}
-
-	NotificationsGetPayload struct {
-		Error     func(childComplexity int) int
-		Result    func(childComplexity int) int
-		Timestamp func(childComplexity int) int
 	}
 
 	Notification struct {
@@ -155,6 +150,12 @@ type ComplexityRoot struct {
 		UserID           func(childComplexity int) int
 	}
 
+	NotificationReadPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
 	NotificationRemovePayload struct {
 		Error     func(childComplexity int) int
 		Result    func(childComplexity int) int
@@ -165,6 +166,12 @@ type ComplexityRoot struct {
 		AllowedNotificationWhenEventsStatusChanged     func(childComplexity int) int
 		AllowedNotificationWhenEventsWillStartIn30Mins func(childComplexity int) int
 		AllowedNotificationWhenNewEventsFromFriends    func(childComplexity int) int
+	}
+
+	NotificationsGetPayload struct {
+		Error     func(childComplexity int) int
+		Result    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
 	}
 
 	Pet struct {
@@ -324,6 +331,7 @@ type MutationResolver interface {
 	EventsUpdate(ctx context.Context, eventsUpdateInput model.EventsUpdateInput) (*model.EventsUpdatePayload, error)
 	EventsJoin(ctx context.Context, eventsJoinInput model.EventsJoinInput) (*model.EventsJoinPayload, error)
 	EventsAccept(ctx context.Context, eventsAcceptInput model.EventsAcceptInput) (*model.EventsAcceptPayload, error)
+	NotificationRead(ctx context.Context, notificationReadInput model.NotificationReadInput) (*model.NotificationReadPayload, error)
 	NotificationRemove(ctx context.Context, notificationRemoveInput model.NotificationRemoveInput) (*model.NotificationRemovePayload, error)
 	RecommendationResponse(ctx context.Context, recommendationResponseInput model.RecommendationResponseInput) (*model.RecommendationResponsePayload, error)
 	FriendRemove(ctx context.Context, friendRemoveInput model.FriendRemoveInput) (*model.FriendRemovePayload, error)
@@ -726,6 +734,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.FriendRemove(childComplexity, args["friendRemoveInput"].(model.FriendRemoveInput)), true
 
+	case "Mutation.notificationRead":
+		if e.complexity.Mutation.NotificationRead == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_notificationRead_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.NotificationRead(childComplexity, args["notificationReadInput"].(model.NotificationReadInput)), true
+
 	case "Mutation.notificationRemove":
 		if e.complexity.Mutation.NotificationRemove == nil {
 			break
@@ -810,27 +830,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UserCreateByID(childComplexity, args["userCreateByIDInput"].(model.UserCreateByIDInput)), true
 
-	case "NotificationsGetPayload.error":
-		if e.complexity.NotificationsGetPayload.Error == nil {
-			break
-		}
-
-		return e.complexity.NotificationsGetPayload.Error(childComplexity), true
-
-	case "NotificationsGetPayload.result":
-		if e.complexity.NotificationsGetPayload.Result == nil {
-			break
-		}
-
-		return e.complexity.NotificationsGetPayload.Result(childComplexity), true
-
-	case "NotificationsGetPayload.timestamp":
-		if e.complexity.NotificationsGetPayload.Timestamp == nil {
-			break
-		}
-
-		return e.complexity.NotificationsGetPayload.Timestamp(childComplexity), true
-
 	case "Notification.created_at":
 		if e.complexity.Notification.CreatedAt == nil {
 			break
@@ -880,6 +879,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Notification.UserID(childComplexity), true
 
+	case "NotificationReadPayload.error":
+		if e.complexity.NotificationReadPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.NotificationReadPayload.Error(childComplexity), true
+
+	case "NotificationReadPayload.result":
+		if e.complexity.NotificationReadPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.NotificationReadPayload.Result(childComplexity), true
+
+	case "NotificationReadPayload.timestamp":
+		if e.complexity.NotificationReadPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.NotificationReadPayload.Timestamp(childComplexity), true
+
 	case "NotificationRemovePayload.error":
 		if e.complexity.NotificationRemovePayload.Error == nil {
 			break
@@ -921,6 +941,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.NotificationSetting.AllowedNotificationWhenNewEventsFromFriends(childComplexity), true
+
+	case "NotificationsGetPayload.error":
+		if e.complexity.NotificationsGetPayload.Error == nil {
+			break
+		}
+
+		return e.complexity.NotificationsGetPayload.Error(childComplexity), true
+
+	case "NotificationsGetPayload.result":
+		if e.complexity.NotificationsGetPayload.Result == nil {
+			break
+		}
+
+		return e.complexity.NotificationsGetPayload.Result(childComplexity), true
+
+	case "NotificationsGetPayload.timestamp":
+		if e.complexity.NotificationsGetPayload.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.NotificationsGetPayload.Timestamp(childComplexity), true
 
 	case "Pet.eventList":
 		if e.complexity.Pet.EventList == nil {
@@ -1601,6 +1642,8 @@ type Mutation{
     eventsUpdate(eventsUpdateInput: EventsUpdateInput!): EventsUpdatePayload!
     eventsJoin(eventsJoinInput: EventsJoinInput!) : EventsJoinPayload!
     eventsAccept(eventsAcceptInput: EventsAcceptInput!) : EventsAcceptPayload!
+    notificationRead(notificationReadInput: NotificationReadInput!): NotificationReadPayload!
+    
     notificationRemove(notificationRemoveInput: NotificationRemoveInput!): NotificationRemovePayload!
     recommendationResponse(recommendationResponseInput: RecommendationResponseInput!) : RecommendationResponsePayload!
     friendRemove(friendRemoveInput: FriendRemoveInput!) : FriendRemovePayload!
@@ -1750,6 +1793,14 @@ input UpdatesNotificationSettingsInput{
     allowedNotificationWhenEventsStatusChanged: Boolean!
 }
 
+input NotificationReadInput{
+    nid: ID!
+}
+type NotificationReadPayload implements Payload{
+    error: [Error!]!
+    timestamp: Timestamp
+    result: Boolean!
+}
 
 input EventsUpdateInput{
     eid: ID!
@@ -2123,6 +2174,21 @@ func (ec *executionContext) field_Mutation_friendRemove_args(ctx context.Context
 		}
 	}
 	args["friendRemoveInput"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_notificationRead_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NotificationReadInput
+	if tmp, ok := rawArgs["notificationReadInput"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notificationReadInput"))
+		arg0, err = ec.unmarshalNNotificationReadInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationReadInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["notificationReadInput"] = arg0
 	return args, nil
 }
 
@@ -4076,6 +4142,48 @@ func (ec *executionContext) _Mutation_eventsAccept(ctx context.Context, field gr
 	return ec.marshalNEventsAcceptPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEventsAcceptPayload(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_notificationRead(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_notificationRead_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().NotificationRead(rctx, args["notificationReadInput"].(model.NotificationReadInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.NotificationReadPayload)
+	fc.Result = res
+	return ec.marshalNNotificationReadPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationReadPayload(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_notificationRemove(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4370,108 +4478,6 @@ func (ec *executionContext) _Mutation_updatesNotificationSettings(ctx context.Co
 	return ec.marshalNUpdatesNotificationSettings2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUpdatesNotificationSettings(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _NotificationsGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.NotificationsGetPayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NotificationsGetPayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Error, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]model.Error)
-	fc.Result = res
-	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NotificationsGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.NotificationsGetPayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NotificationsGetPayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Timestamp, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NotificationsGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.NotificationsGetPayload) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NotificationsGetPayload",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Result, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Notification)
-	fc.Result = res
-	return ec.marshalNNotification2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationᚄ(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Notification_notification_id(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4699,6 +4705,108 @@ func (ec *executionContext) _Notification_has_read(ctx context.Context, field gr
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _NotificationReadPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.NotificationReadPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationReadPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationReadPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.NotificationReadPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationReadPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationReadPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.NotificationReadPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationReadPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _NotificationRemovePayload_error(ctx context.Context, field graphql.CollectedField, obj *model.NotificationRemovePayload) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4904,6 +5012,108 @@ func (ec *executionContext) _NotificationSetting_allowedNotificationWhenEventsSt
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationsGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.NotificationsGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationsGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]model.Error)
+	fc.Result = res
+	return ec.marshalNError2ᚕgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐErrorᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationsGetPayload_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.NotificationsGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationsGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NotificationsGetPayload_result(ctx context.Context, field graphql.CollectedField, obj *model.NotificationsGetPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NotificationsGetPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Result, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Notification)
+	fc.Result = res
+	return ec.marshalNNotification2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pet_id(ctx context.Context, field graphql.CollectedField, obj *model.Pet) (ret graphql.Marshaler) {
@@ -9286,8 +9496,8 @@ func (ec *executionContext) unmarshalInputNewEmail(ctx context.Context, obj inte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputNotificationsGetInput(ctx context.Context, obj interface{}) (model.NotificationsGetInput, error) {
-	var it model.NotificationsGetInput
+func (ec *executionContext) unmarshalInputNotificationReadInput(ctx context.Context, obj interface{}) (model.NotificationReadInput, error) {
+	var it model.NotificationReadInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -9295,11 +9505,11 @@ func (ec *executionContext) unmarshalInputNotificationsGetInput(ctx context.Cont
 
 	for k, v := range asMap {
 		switch k {
-		case "uid":
+		case "nid":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
-			it.UID, err = ec.unmarshalNID2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nid"))
+			it.Nid, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9331,6 +9541,29 @@ func (ec *executionContext) unmarshalInputNotificationRemoveInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("notificationID"))
 			it.NotificationID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNotificationsGetInput(ctx context.Context, obj interface{}) (model.NotificationsGetInput, error) {
+	var it model.NotificationsGetInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "uid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
+			it.UID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9870,6 +10103,13 @@ func (ec *executionContext) _Payload(ctx context.Context, sel ast.SelectionSet, 
 			return graphql.Null
 		}
 		return ec._UpdatesNotificationSettings(ctx, sel, obj)
+	case model.NotificationReadPayload:
+		return ec._NotificationReadPayload(ctx, sel, &obj)
+	case *model.NotificationReadPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._NotificationReadPayload(ctx, sel, obj)
 	case model.EventsUpdatePayload:
 		return ec._EventsUpdatePayload(ctx, sel, &obj)
 	case *model.EventsUpdatePayload:
@@ -10411,6 +10651,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "notificationRead":
+			out.Values[i] = ec._Mutation_notificationRead(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "notificationRemove":
 			out.Values[i] = ec._Mutation_notificationRemove(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -10457,40 +10702,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
-var notificationsGetPayloadImplementors = []string{"NotificationsGetPayload", "Payload"}
-
-func (ec *executionContext) _NotificationsGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.NotificationsGetPayload) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, notificationsGetPayloadImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("NotificationsGetPayload")
-		case "error":
-			out.Values[i] = ec._NotificationsGetPayload_error(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "timestamp":
-			out.Values[i] = ec._NotificationsGetPayload_timestamp(ctx, field, obj)
-		case "result":
-			out.Values[i] = ec._NotificationsGetPayload_result(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var notificationImplementors = []string{"Notification"}
 
 func (ec *executionContext) _Notification(ctx context.Context, sel ast.SelectionSet, obj *model.Notification) graphql.Marshaler {
@@ -10519,6 +10730,40 @@ func (ec *executionContext) _Notification(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._Notification_petId(ctx, field, obj)
 		case "has_read":
 			out.Values[i] = ec._Notification_has_read(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notificationReadPayloadImplementors = []string{"NotificationReadPayload", "Payload"}
+
+func (ec *executionContext) _NotificationReadPayload(ctx context.Context, sel ast.SelectionSet, obj *model.NotificationReadPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notificationReadPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NotificationReadPayload")
+		case "error":
+			out.Values[i] = ec._NotificationReadPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._NotificationReadPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._NotificationReadPayload_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10587,6 +10832,40 @@ func (ec *executionContext) _NotificationSetting(ctx context.Context, sel ast.Se
 			}
 		case "allowedNotificationWhenEventsStatusChanged":
 			out.Values[i] = ec._NotificationSetting_allowedNotificationWhenEventsStatusChanged(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var notificationsGetPayloadImplementors = []string{"NotificationsGetPayload", "Payload"}
+
+func (ec *executionContext) _NotificationsGetPayload(ctx context.Context, sel ast.SelectionSet, obj *model.NotificationsGetPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, notificationsGetPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NotificationsGetPayload")
+		case "error":
+			out.Values[i] = ec._NotificationsGetPayload_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._NotificationsGetPayload_timestamp(ctx, field, obj)
+		case "result":
+			out.Values[i] = ec._NotificationsGetPayload_result(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -12023,25 +12302,6 @@ func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast
 	return ret
 }
 
-func (ec *executionContext) unmarshalNNotificationsGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationsGetInput(ctx context.Context, v interface{}) (model.NotificationsGetInput, error) {
-	res, err := ec.unmarshalInputNotificationsGetInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNNotificationsGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationsGetPayload(ctx context.Context, sel ast.SelectionSet, v model.NotificationsGetPayload) graphql.Marshaler {
-	return ec._NotificationsGetPayload(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNNotificationsGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationsGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.NotificationsGetPayload) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._NotificationsGetPayload(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalNNotification2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Notification) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -12096,6 +12356,25 @@ func (ec *executionContext) marshalNNotification2ᚖgithubᚗcomᚋtingpoᚋpupg
 	return ec._Notification(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNNotificationReadInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationReadInput(ctx context.Context, v interface{}) (model.NotificationReadInput, error) {
+	res, err := ec.unmarshalInputNotificationReadInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNNotificationReadPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationReadPayload(ctx context.Context, sel ast.SelectionSet, v model.NotificationReadPayload) graphql.Marshaler {
+	return ec._NotificationReadPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNotificationReadPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationReadPayload(ctx context.Context, sel ast.SelectionSet, v *model.NotificationReadPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._NotificationReadPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNNotificationRemoveInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationRemoveInput(ctx context.Context, v interface{}) (model.NotificationRemoveInput, error) {
 	res, err := ec.unmarshalInputNotificationRemoveInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -12113,6 +12392,25 @@ func (ec *executionContext) marshalNNotificationRemovePayload2ᚖgithubᚗcomᚋ
 		return graphql.Null
 	}
 	return ec._NotificationRemovePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNNotificationsGetInput2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationsGetInput(ctx context.Context, v interface{}) (model.NotificationsGetInput, error) {
+	res, err := ec.unmarshalInputNotificationsGetInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNNotificationsGetPayload2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationsGetPayload(ctx context.Context, sel ast.SelectionSet, v model.NotificationsGetPayload) graphql.Marshaler {
+	return ec._NotificationsGetPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNotificationsGetPayload2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐNotificationsGetPayload(ctx context.Context, sel ast.SelectionSet, v *model.NotificationsGetPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._NotificationsGetPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPet2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Pet) graphql.Marshaler {
