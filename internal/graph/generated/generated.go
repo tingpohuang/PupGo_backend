@@ -204,6 +204,7 @@ type ComplexityRoot struct {
 		Breed        func(childComplexity int) int
 		Description  func(childComplexity int) int
 		Gender       func(childComplexity int) int
+		Hobby        func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Image        func(childComplexity int) int
 		IsCastration func(childComplexity int) int
@@ -1080,6 +1081,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PetProfile.Gender(childComplexity), true
+
+	case "PetProfile.hobby":
+		if e.complexity.PetProfile.Hobby == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Hobby(childComplexity), true
 
 	case "PetProfile.id":
 		if e.complexity.PetProfile.ID == nil {
@@ -1965,6 +1973,7 @@ type PetProfile implements ProfileNode{
     birthday: Timestamp
     location: Location
     description: String
+    hobby: [String]!
 }
 "User profile let open to public"
 type UserProfile implements ProfileNode{
@@ -5860,6 +5869,41 @@ func (ec *executionContext) _PetProfile_description(ctx context.Context, field g
 	res := resTmp.(*string)
 	fc.Result = res
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_hobby(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Hobby, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*string)
+	fc.Result = res
+	return ec.marshalNString2ᚕᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PetProfileListGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileListGetPayload) (ret graphql.Marshaler) {
@@ -11101,6 +11145,11 @@ func (ec *executionContext) _PetProfile(ctx context.Context, sel ast.SelectionSe
 			out.Values[i] = ec._PetProfile_location(ctx, field, obj)
 		case "description":
 			out.Values[i] = ec._PetProfile_description(ctx, field, obj)
+		case "hobby":
+			out.Values[i] = ec._PetProfile_hobby(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -12840,6 +12889,36 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOString2ᚖstring(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕᚖstring(ctx context.Context, sel ast.SelectionSet, v []*string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOString2ᚖstring(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNUpdatesNotificationSettings2githubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUpdatesNotificationSettings(ctx context.Context, sel ast.SelectionSet, v model.UpdatesNotificationSettings) graphql.Marshaler {

@@ -184,9 +184,17 @@ func (s *SQLCnter) findUserByIdList(ctx context.Context, uid []string) (users []
 	return users
 }
 
-func (s *SQLCnter) findPetByIdList(ctx context.Context, pid []string) (pets []Pet) {
-	(*s.gdb).Table("pet").Where("id IN ? ", pid).Find(&pets)
-	return pets
+func (s *SQLCnter) findPetByIdList(ctx context.Context, pid []string) (pets []Pet, petHobbies []PetHobbyString) {
+	(*s.gdb).Table("pet").Where("id IN ? ", pid).Order("id DESC").Find(&pets)
+
+	for i := 0; i < len(pets); i++ {
+		pid := pets[i].Id
+		var str []*string
+		(*s.gdb).Table("pet_hobby").Select("hobby.name").Joins("left join hobby on hobby.id = pet_hobby.hobby_id where pet_hobby.pet_id = ?", pid).Scan(&str)
+		petHobbies = append(petHobbies, PetHobbyString{hobbies: str})
+	}
+
+	return pets, petHobbies
 }
 
 func (s *SQLCnter) findPetByOwner(ctx context.Context, uid string) (pets []Pet) {

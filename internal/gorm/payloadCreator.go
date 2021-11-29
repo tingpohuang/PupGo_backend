@@ -43,7 +43,7 @@ func (p *PayloadCreator) GetUserProfileById(ctx context.Context, uid []string) (
 }
 
 func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (petProfiles []*model1.PetProfile) {
-	pets := p.sql.findPetByIdList(ctx, pid)
+	pets, petHobbies := p.sql.findPetByIdList(ctx, pid)
 	petsProfile := make([]*model1.PetProfile, len(pets))
 	usersLocations := p.sql.findUserLocationByPetsIdList(ctx, pid)
 	for i := 0; i < len(pets); i++ {
@@ -51,6 +51,7 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 		petGender := model1.PetGender(strconv.Itoa(pet.Gender))
 		petLocation := p.createPetLocation(ctx, usersLocations[i])
 		birthday := pet.Birthday.String()
+		hobbies := petHobbies[i].hobbies
 		petsProfile[i] = &model1.PetProfile{
 			ID:           &pet.Id,
 			Name:         &pet.Name,
@@ -60,6 +61,8 @@ func (p *PayloadCreator) GetPetProfileById(ctx context.Context, pid []string) (p
 			IsCastration: pet.IsCastration,
 			Birthday:     &birthday,
 			Location:     &petLocation,
+			Description:  &pet.Description,
+			Hobby:        hobbies,
 		}
 	}
 	return petsProfile

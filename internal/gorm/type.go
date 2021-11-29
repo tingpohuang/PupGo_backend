@@ -51,6 +51,10 @@ type PetHobby struct {
 	Hobby_id int
 }
 
+type PetHobbyString struct {
+	hobbies []*string
+}
+
 func (u *User) BeforeCreate(db *gorm.DB) error {
 	u.Created_at = time.Now()
 	return nil
@@ -96,6 +100,7 @@ type Pet struct {
 	Breed        string
 	IsCastration bool      `gorm:"column:isCastration"`
 	Birthday     time.Time `gorm:"type:timestamp; default: NOW(); not null"`
+	Description  string
 }
 
 type Event_participant struct {

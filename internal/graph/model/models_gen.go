@@ -303,6 +303,7 @@ type PetProfile struct {
 	Birthday     *string   `json:"birthday"`
 	Location     *Location `json:"location"`
 	Description  *string   `json:"description"`
+	Hobby        []*string `json:"hobby"`
 }
 
 func (PetProfile) IsProfileNode() {}

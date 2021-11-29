@@ -47,6 +47,7 @@ type PetProfile implements ProfileNode{
     birthday: Timestamp
     location: Location
     description: String
+    hobby: [String]!
 }
 "User profile let open to public"
 type UserProfile implements ProfileNode{
