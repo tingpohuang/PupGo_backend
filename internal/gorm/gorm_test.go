@@ -156,6 +156,32 @@ var (
 		City:      "Los Angeles",
 		Address:   "fwfewfewfew",
 	}
+
+	hobby1 = Hobby{
+		Name: "walk",
+	}
+
+	hobby2 = Hobby{
+		Name: "bite my owner",
+	}
+
+	hobby3 = Hobby{
+		Name: "wolf",
+	}
+
+	p1Hobby1 = PetHobby{
+		Pet_id:   Pet_1_id,
+		Hobby_id: 1,
+	}
+
+	p1Hobby2 = PetHobby{
+		Pet_id:   Pet_1_id,
+		Hobby_id: 2,
+	}
+	p2Hobby1 = PetHobby{
+		Pet_id:   Pet_2_id,
+		Hobby_id: 3,
+	}
 )
 
 type gormTestor struct {
@@ -182,6 +208,8 @@ func TestInputValueToDatabse(t *testing.T) {
 	InputEventParticipant(t, &g)
 	InputEventLocation(t, &g)
 	InputUserDevice(t, &g)
+	InputHobby(t, &g)
+	InputPetHobby(t, &g)
 
 }
 
@@ -315,5 +343,25 @@ func InputUserDevice(t *testing.T, g *gormTestor) {
 	result := g.gdb.Exec("INSERT INTO user_device VALUES (?, ?)", User_1_id, "eKWNaSb5FkHmrRiJ_4SUg-:APA91bGjnf2hGD_jUkpwUIMgp0z-UZJnFc-7YvdiJ-eX0KiGhevbh7bw9mhoT9XYXhdxFkpnI0h2SZSS_VPv_q6-esp7xld1fx7Wil-NKhbahjUgEk1sA3yc1h5INKpNitd2sEHua5Tt")
 	assert.Nil(result.Error)
 	result = g.gdb.Exec("INSERT INTO user_device VALUES (?, ?)", User_2_id, "cyu9JfHduEfOtr6Y0Wyqz2:APA91bEC_NEGcK71QB7YclvMMXOv0DgzK7MJeCc99disvVQtrNkiPpunpjo1ILEoo1eEyBKi28ChFEMcX-gz0AU_6dbgTCJsXYDfHwRBDb89E_DSMRzcgxon7f_o3E33GYwq8oj_VG4b")
+	assert.Nil(result.Error)
+}
+
+func InputHobby(t *testing.T, g *gormTestor) {
+	assert := assert.New(t)
+	result := g.gdb.Table("hobby").Create(&hobby1)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("hobby").Create(&hobby2)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("hobby").Create(&hobby3)
+	assert.Nil(result.Error)
+}
+
+func InputPetHobby(t *testing.T, g *gormTestor) {
+	assert := assert.New(t)
+	result := g.gdb.Table("pet_hobby").Create(&p1Hobby1)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("pet_hobby").Create(&p1Hobby2)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("pet_hobby").Create(&p2Hobby1)
 	assert.Nil(result.Error)
 }
