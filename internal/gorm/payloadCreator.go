@@ -106,6 +106,39 @@ func (p *PayloadCreator) GetPetRecommendationById(ctx context.Context, pid strin
 
 }
 
+func (p *PayloadCreator) GetEventsById(ctx context.Context, id []string) (events []*model1.Event) {
+	eventsRaw := p.sql.findEventByIdList(ctx, id)
+	eventLocations := p.createEventLocationById(ctx, id)
+	events = make([]*model1.Event, len(eventsRaw))
+	for i := 0; i < len(eventsRaw); i++ {
+		event := eventsRaw[i]
+		eventLocation := eventLocations[i]
+		eventLimit := model1.EventsLimits{
+			LimitOfPet:  &event.Limit_pet_num,
+			LimitOfUser: &event.Limit_user_num,
+		}
+		holderProfile := p.GetPetProfileById(ctx, []string{event.Holder_Id})
+		startTime := event.Start_date.String()
+		endTime := event.End_date.String()
+		timeRange := model1.TimeRange{
+			StartTime: &startTime,
+			EndTime:   &endTime,
+		}
+		events[i] = &model1.Event{
+			ID:          event.Id,
+			Location:    &eventLocation,
+			TimeRange:   &timeRange,
+			Limit:       &eventLimit,
+			Image:       &event.Image,
+			Description: &event.Description,
+			Holder:      holderProfile[0],
+			Type:        &event.Type,
+		}
+
+	}
+	return events
+}
+
 func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events []*model1.Event) {
 	eventId := p.sql.findEventByUId(ctx, uid)
 	eventsRaw := p.sql.findEventByIdList(ctx, eventId)

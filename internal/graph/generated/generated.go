@@ -136,11 +136,11 @@ type ComplexityRoot struct {
 
 	Notification struct {
 		CreatedAt        func(childComplexity int) int
-		EventID          func(childComplexity int) int
+		EventInfo        func(childComplexity int) int
 		HasRead          func(childComplexity int) int
 		NotificationID   func(childComplexity int) int
 		NotificationType func(childComplexity int) int
-		PetID            func(childComplexity int) int
+		PetInfo          func(childComplexity int) int
 		UserID           func(childComplexity int) int
 	}
 
@@ -814,12 +814,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Notification.CreatedAt(childComplexity), true
 
-	case "Notification.eventId":
-		if e.complexity.Notification.EventID == nil {
+	case "Notification.eventInfo":
+		if e.complexity.Notification.EventInfo == nil {
 			break
 		}
 
-		return e.complexity.Notification.EventID(childComplexity), true
+		return e.complexity.Notification.EventInfo(childComplexity), true
 
 	case "Notification.has_read":
 		if e.complexity.Notification.HasRead == nil {
@@ -842,12 +842,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Notification.NotificationType(childComplexity), true
 
-	case "Notification.petId":
-		if e.complexity.Notification.PetID == nil {
+	case "Notification.petInfo":
+		if e.complexity.Notification.PetInfo == nil {
 			break
 		}
 
-		return e.complexity.Notification.PetID(childComplexity), true
+		return e.complexity.Notification.PetInfo(childComplexity), true
 
 	case "Notification.userId":
 		if e.complexity.Notification.UserID == nil {
@@ -2023,8 +2023,8 @@ type Notification{
     notification_type:Int
     userId: ID
     created_at: Timestamp
-    eventId: ID
-    petId: ID
+    eventInfo: Event
+    petInfo: PetProfile
     has_read: Boolean
 }
 type UserNotification{
@@ -4516,7 +4516,7 @@ func (ec *executionContext) _Notification_created_at(ctx context.Context, field 
 	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Notification_eventId(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notification_eventInfo(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4534,7 +4534,7 @@ func (ec *executionContext) _Notification_eventId(ctx context.Context, field gra
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.EventID, nil
+		return obj.EventInfo, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4543,12 +4543,12 @@ func (ec *executionContext) _Notification_eventId(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.Event)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Notification_petId(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notification_petInfo(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4566,7 +4566,7 @@ func (ec *executionContext) _Notification_petId(ctx context.Context, field graph
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PetID, nil
+		return obj.PetInfo, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4575,9 +4575,9 @@ func (ec *executionContext) _Notification_petId(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.PetProfile)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Notification_has_read(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
@@ -10700,10 +10700,10 @@ func (ec *executionContext) _Notification(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._Notification_userId(ctx, field, obj)
 		case "created_at":
 			out.Values[i] = ec._Notification_created_at(ctx, field, obj)
-		case "eventId":
-			out.Values[i] = ec._Notification_eventId(ctx, field, obj)
-		case "petId":
-			out.Values[i] = ec._Notification_petId(ctx, field, obj)
+		case "eventInfo":
+			out.Values[i] = ec._Notification_eventInfo(ctx, field, obj)
+		case "petInfo":
+			out.Values[i] = ec._Notification_petInfo(ctx, field, obj)
 		case "has_read":
 			out.Values[i] = ec._Notification_has_read(ctx, field, obj)
 		default:
