@@ -75,6 +75,7 @@ type Event struct {
 	Limit_user_num int
 	Limit_pet_num  int
 	Description    string
+	Type           int
 }
 
 type Pet struct {

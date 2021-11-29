@@ -78,6 +78,7 @@ type Event{
     limit: EventsLimits
     image: URL
     description: [String!]
+    type : Int
     "holder shuold be pet"
     holder: PetProfile
     pets: [PetProfile!]!
