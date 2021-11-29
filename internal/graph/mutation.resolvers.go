@@ -80,8 +80,8 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 			Image:        &data.Image,
 		},
 	}
-	n := &notification.Notification{}
-	go n.SendEventsToFriends(ctx, data.Id, sqlCnter)
+	// n := &notification.Notification{}
+	// go n.SendEventsToFriends(ctx, data.Id, sqlCnter)
 	return ret, nil
 }
 

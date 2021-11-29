@@ -1,3 +1,5 @@
+//+First
+
 package gorm
 
 import (
@@ -316,4 +318,45 @@ func InputUserDevice(t *testing.T, g *gormTestor) {
 	assert.Nil(result.Error)
 	result = g.gdb.Exec("INSERT INTO user_device VALUES (?, ?)", User_2_id, "cyu9JfHduEfOtr6Y0Wyqz2:APA91bEC_NEGcK71QB7YclvMMXOv0DgzK7MJeCc99disvVQtrNkiPpunpjo1ILEoo1eEyBKi28ChFEMcX-gz0AU_6dbgTCJsXYDfHwRBDb89E_DSMRzcgxon7f_o3E33GYwq8oj_VG4b")
 	assert.Nil(result.Error)
+}
+
+func TestDeleteDatabse(t *testing.T) {
+	// From remove database to get away CS130
+	// please no add in db connection lol.
+	connector, err := GetConnectorFactory("mySQL")
+	db := connector.NewDBConnection()
+	assert := assert.New(t)
+	g := gormTestor{gdb}
+	assert.Nil(err)
+	assert.NotNil(db)
+	result := g.gdb.Exec("DELETE FROM user_device;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM pet;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM event;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM event_location;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM event_participant;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM pet;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM pet_connection;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM pet_recommend;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM petowner;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM schema_migrations;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM user_device;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM user_location;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM user_notification;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM user_token;")
+	t.Log(result)
+	result = g.gdb.Exec("DELETE FROM users;")
+	t.Log(result)
 }

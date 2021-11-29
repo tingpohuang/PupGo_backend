@@ -196,18 +196,18 @@ func (n *Notification) SendEventsToFriends(ctx context.Context, eventId string, 
 	}
 	tokens, err := s.FindDeviceByPetIDs(ctx, friendIds)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		return
 	}
 	msg, err := n.generateEventsToFriendsMessage(ctx, eventId, tokens)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		return
 	}
 	app := firebase.GetApp()
 	err = app.SendNotificationMultiDevices(ctx, msg)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		return
 	}
 }
