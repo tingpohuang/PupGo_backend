@@ -113,8 +113,8 @@ type Notification{
     notification_type:Int
     userId: ID
     created_at: Timestamp
-    eventId: ID
-    petId: ID
+    eventInfo: Event
+    petInfo: PetProfile
     has_read: Boolean
 }
 type UserNotification{

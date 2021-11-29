@@ -181,13 +181,13 @@ type NewEmail struct {
 }
 
 type Notification struct {
-	NotificationID   string  `json:"notification_id"`
-	NotificationType *int    `json:"notification_type"`
-	UserID           *string `json:"userId"`
-	CreatedAt        *string `json:"created_at"`
-	EventID          *string `json:"eventId"`
-	PetID            *string `json:"petId"`
-	HasRead          *bool   `json:"has_read"`
+	NotificationID   string      `json:"notification_id"`
+	NotificationType *int        `json:"notification_type"`
+	UserID           *string     `json:"userId"`
+	CreatedAt        *string     `json:"created_at"`
+	EventInfo        *Event      `json:"eventInfo"`
+	PetInfo          *PetProfile `json:"petInfo"`
+	HasRead          *bool       `json:"has_read"`
 }
 
 type NotificationReadInput struct {
