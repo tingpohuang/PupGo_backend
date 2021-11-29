@@ -73,11 +73,10 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 	ret := &model1.EventsCreatePayload{
 		Timestamp: &tstmp,
 		Result: &model1.Event{
-			ID:           data.Id,
-			TimeRange:    &model1.TimeRange{},
-			Holder:       nil,
-			Participants: nil,
-			Image:        &data.Image,
+			ID:        data.Id,
+			TimeRange: &model1.TimeRange{},
+			Holder:    nil,
+			Image:     &data.Image,
 		},
 	}
 	n := &notification.Notification{}

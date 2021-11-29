@@ -119,9 +119,6 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 			LimitOfUser: &event.Limit_user_num,
 		}
 		holderProfile := p.GetPetProfileById(ctx, []string{event.Holder_Id})
-		pets, participants := p.sql.findEventParticipantById(ctx, event.Id)
-		petsProfile := p.GetPetProfileById(ctx, pets)
-		participantsProfile := p.GetUserProfileById(ctx, participants)
 		startTime := event.Start_date.String()
 		endTime := event.End_date.String()
 		timeRange := model1.TimeRange{
@@ -129,16 +126,14 @@ func (p *PayloadCreator) GetEventsByUId(ctx context.Context, uid string) (events
 			EndTime:   &endTime,
 		}
 		events[i] = &model1.Event{
-			ID:           event.Id,
-			Location:     &eventLocation,
-			TimeRange:    &timeRange,
-			Limit:        &eventLimit,
-			Image:        &event.Image,
-			Description:  &event.Description,
-			Holder:       holderProfile[0],
-			Pets:         petsProfile,
-			Participants: participantsProfile,
-			Type:         &event.Type,
+			ID:          event.Id,
+			Location:    &eventLocation,
+			TimeRange:   &timeRange,
+			Limit:       &eventLimit,
+			Image:       &event.Image,
+			Description: &event.Description,
+			Holder:      holderProfile[0],
+			Type:        &event.Type,
 		}
 
 	}
@@ -158,9 +153,6 @@ func (p *PayloadCreator) GetRecommendEventsByUId(ctx context.Context, uid string
 			LimitOfUser: &event.Limit_user_num,
 		}
 		holderProfile := p.GetPetProfileById(ctx, []string{event.Holder_Id})
-		pets, participants := p.sql.findEventParticipantById(ctx, event.Id)
-		petsProfile := p.GetPetProfileById(ctx, pets)
-		participantsProfile := p.GetUserProfileById(ctx, participants)
 		startTime := event.Start_date.String()
 		endTime := event.End_date.String()
 		timeRange := model1.TimeRange{
@@ -168,16 +160,14 @@ func (p *PayloadCreator) GetRecommendEventsByUId(ctx context.Context, uid string
 			EndTime:   &endTime,
 		}
 		events[i] = &model1.Event{
-			ID:           event.Id,
-			Location:     &eventLocation,
-			TimeRange:    &timeRange,
-			Limit:        &eventLimit,
-			Image:        &event.Image,
-			Description:  &event.Description,
-			Holder:       holderProfile[0],
-			Pets:         petsProfile,
-			Participants: participantsProfile,
-			Type:         &event.Type,
+			ID:          event.Id,
+			Location:    &eventLocation,
+			TimeRange:   &timeRange,
+			Limit:       &eventLimit,
+			Image:       &event.Image,
+			Description: &event.Description,
+			Holder:      holderProfile[0],
+			Type:        &event.Type,
 		}
 
 	}

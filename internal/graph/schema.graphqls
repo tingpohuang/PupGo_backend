@@ -83,8 +83,6 @@ type Event{
     type : Int
     "holder shuold be pet"
     holder: PetProfile
-    pets: [PetProfile!]!
-    participants: [UserProfile!]!
 }
 "Limitation of Events"
 type EventsLimits{

@@ -45,16 +45,14 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Event struct {
-		Description  func(childComplexity int) int
-		Holder       func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Image        func(childComplexity int) int
-		Limit        func(childComplexity int) int
-		Location     func(childComplexity int) int
-		Participants func(childComplexity int) int
-		Pets         func(childComplexity int) int
-		TimeRange    func(childComplexity int) int
-		Type         func(childComplexity int) int
+		Description func(childComplexity int) int
+		Holder      func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Image       func(childComplexity int) int
+		Limit       func(childComplexity int) int
+		Location    func(childComplexity int) int
+		TimeRange   func(childComplexity int) int
+		Type        func(childComplexity int) int
 	}
 
 	EventRequest struct {
@@ -407,20 +405,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Event.Location(childComplexity), true
-
-	case "Event.participants":
-		if e.complexity.Event.Participants == nil {
-			break
-		}
-
-		return e.complexity.Event.Participants(childComplexity), true
-
-	case "Event.pets":
-		if e.complexity.Event.Pets == nil {
-			break
-		}
-
-		return e.complexity.Event.Pets(childComplexity), true
 
 	case "Event.timeRange":
 		if e.complexity.Event.TimeRange == nil {
@@ -2009,8 +1993,6 @@ type Event{
     type : Int
     "holder shuold be pet"
     holder: PetProfile
-    pets: [PetProfile!]!
-    participants: [UserProfile!]!
 }
 "Limitation of Events"
 type EventsLimits{
@@ -2760,76 +2742,6 @@ func (ec *executionContext) _Event_holder(ctx context.Context, field graphql.Col
 	res := resTmp.(*model.PetProfile)
 	fc.Result = res
 	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Event_pets(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Event",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Pets, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.PetProfile)
-	fc.Result = res
-	return ec.marshalNPetProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Event_participants(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Event",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Participants, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.UserProfile)
-	fc.Result = res
-	return ec.marshalNUserProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EventRequest_id(ctx context.Context, field graphql.CollectedField, obj *model.EventRequest) (ret graphql.Marshaler) {
@@ -10339,16 +10251,6 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Event_type(ctx, field, obj)
 		case "holder":
 			out.Values[i] = ec._Event_holder(ctx, field, obj)
-		case "pets":
-			out.Values[i] = ec._Event_pets(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "participants":
-			out.Values[i] = ec._Event_participants(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

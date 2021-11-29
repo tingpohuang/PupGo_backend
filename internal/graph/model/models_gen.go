@@ -37,9 +37,7 @@ type Event struct {
 	Description *string       `json:"description"`
 	Type        *int          `json:"type"`
 	// holder shuold be pet
-	Holder       *PetProfile    `json:"holder"`
-	Pets         []*PetProfile  `json:"pets"`
-	Participants []*UserProfile `json:"participants"`
+	Holder *PetProfile `json:"holder"`
 }
 
 type EventRequest struct {
