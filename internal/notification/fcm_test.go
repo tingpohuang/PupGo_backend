@@ -26,7 +26,7 @@ func TestSendEventJoinedMessage(t *testing.T) {
 	}
 	db := mysqlConnector.NewDBConnection()
 	s := gorm.NewSQLCnter(db)
-	n.SendEventJoinedMessage(ctx, gorm.Event_1_id, gorm.Pet_1_id, s)
+	n.SendEventJoinedMessage(ctx, gorm.Event_1_id, gorm.Pet_4_id, s)
 }
 
 func TestSendNewFriendMessage(t *testing.T) {
@@ -39,7 +39,7 @@ func TestSendNewFriendMessage(t *testing.T) {
 	}
 	db := mysqlConnector.NewDBConnection()
 	s := gorm.NewSQLCnter(db)
-	n.SendNewFriendMessage(ctx, gorm.Pet_4_id, gorm.Pet_4_id, s)
+	n.SendNewFriendMessage(ctx, gorm.Pet_3_id, gorm.Pet_3_id, s)
 }
 
 func TestWriteNotification(t *testing.T) {

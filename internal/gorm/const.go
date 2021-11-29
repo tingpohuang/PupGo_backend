@@ -44,7 +44,7 @@ var (
 		"https://i.ibb.co/ccK4g5R/IMG-3235-min.jpg",
 		"https://i.ibb.co/cFJN2sd/IMG-3234-min.jpg",
 		"https://i.ibb.co/7XKCfbW/IMG-3233-min.jpg",
-		"https://i.ibb.co/jwqGVXV/IMG-3232-min.jpg",
+		"https://pupgo-testing-pictures-1.s3.us-west-1.amazonaws.com/IMG-3232-min.jpeg",
 		"https://i.ibb.co/bJ2s4tc/IMG-3231-min.jpg",
 		"https://i.ibb.co/x3NDrwq/IMG-3230-min.jpg",
 		"https://i.ibb.co/C2tFDw7/IMG-3229-min.jpg"}
