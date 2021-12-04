@@ -210,8 +210,8 @@ func (s *SQLCnter) FindPetRecommendByID(ctx context.Context, pid1 string, pid2 s
 	if pid1 > pid2 {
 		pid1, pid2 = pid2, pid1
 	}
-	s.gdb.Table("pet_recommend").Find(&petRecommend, "id1 = ? AND id2 = ?", pid1, pid2)
-	return petRecommend, nil
+	res := s.gdb.Table("pet_recommend").First(&petRecommend, "id1 = ? AND id2 = ?", pid1, pid2)
+	return petRecommend, res.Error
 
 }
 func (s *SQLCnter) UpdatePetRecommendByID(ctx context.Context, p Pet_recommend) (err error) {
@@ -260,17 +260,21 @@ func (s *SQLCnter) FindPetById(ctx context.Context, pid string) (pets []Pet) {
 	(*s.gdb).Table("pet").Where("id IN ? ", pid).Find(&pets)
 	return pets
 }
+func (s *SQLCnter) FindThePetById(ctx context.Context, pid string) (pet Pet) {
+	(*s.gdb).Table("pet").Where("id IN = ", pid).First(&pet)
+	return pet
+}
 func (s *SQLCnter) FindHolderIdByEventId(ctx context.Context, eid string) (str string) {
 	(*s.gdb).Table("event").Select("holder_id").Where("id = ? ", eid).Find(&str)
 	return str
 }
 
 func (s *SQLCnter) UpdatePet(ctx context.Context, pet Pet) error {
-	result := (*s.gdb).Table("pet").Model(&pet).Updates(&pet)
+	result := (*s.gdb).Table("pet").Model(&pet).Where("id = ?", pet.Id).Updates(&pet)
 	return result.Error
 }
 func (s *SQLCnter) DeleteFriend(ctx context.Context, id1 string, id2 string) error {
-	result := s.gdb.Table("pet_connection").Delete(&Pet_connection{id1: id1, id2: id2})
+	result := s.gdb.Table("pet_connection").Where("id1 = ? AND id2 = ?", id1, id2).Delete(&Pet_connection{id1: id1, id2: id2})
 	return result.Error
 }
 func (s *SQLCnter) GetUserIdbyPetId(ctx context.Context, pid string) (*string, error) {

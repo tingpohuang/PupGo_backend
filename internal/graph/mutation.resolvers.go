@@ -14,9 +14,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/tingpo/pupgobackend/internal/gorm"
 	generated1 "github.com/tingpo/pupgobackend/internal/graph/generated"
+	"github.com/tingpo/pupgobackend/internal/graph/model"
 	model1 "github.com/tingpo/pupgobackend/internal/graph/model"
 	"github.com/tingpo/pupgobackend/internal/notification"
-	gormio "gorm.io/gorm"
 )
 
 func (r *mutationResolver) UserCreateByID(ctx context.Context, userCreateByIDInput model1.UserCreateByIDInput) (*model1.UserCreateByIDPayload, error) {
@@ -79,8 +79,6 @@ func (r *mutationResolver) EventsCreate(ctx context.Context, eventsCreateInput m
 			Image:     &data.Image,
 		},
 	}
-	n := &notification.Notification{}
-	go n.SendEventsToFriends(ctx, data.Id, sqlCnter)
 	return ret, nil
 }
 
@@ -139,13 +137,13 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 		return nil, errors.New("event id should not be empty")
 	}
 	_, err := sqlCnter.FindEventsParticipantByPetID(ctx, pid, eid)
-	if !errors.Is(err, gormio.ErrRecordNotFound) {
+	if err == nil {
 		return nil, errors.New("already exists participant log")
 	} else {
-		uid, err := sqlCnter.GetUserIdbyPetId(ctx, pid)
-		if err != nil {
-			return nil, err
-		}
+		uid, _ := sqlCnter.GetUserIdbyPetId(ctx, pid)
+		// if err != nil {
+		// 	return nil, err
+		// }
 		err = sqlCnter.CreateParticipants(ctx, gorm.Event_participant{
 			Event_id:       eid,
 			Participant_id: *uid,
@@ -155,12 +153,15 @@ func (r *mutationResolver) EventsJoin(ctx context.Context, eventsJoinInput model
 		n := notification.Notification{}
 		// bug over here
 		go n.SendNewParticipantsMessage(context.Background(), pid, eid, sqlCnter)
-		if err != nil {
-			return nil, err
-		}
+		// if err != nil {
+		// 	return nil, err
+		// }
 	}
-
-	return nil, nil
+	f := true
+	payload := &model.EventsJoinPayload{
+		Result: &f,
+	}
+	return payload, nil
 }
 
 func (r *mutationResolver) EventsAccept(ctx context.Context, eventsAcceptInput model1.EventsAcceptInput) (*model1.EventsAcceptPayload, error) {
@@ -215,22 +216,20 @@ func (r *mutationResolver) RecommendationResponse(ctx context.Context, recommend
 	recommendId := recommendationResponseInput.RecommendID
 	result := recommendationResponseInput.Result
 	res, err := sqlCnter.FindPetRecommendByID(ctx, petId, recommendId)
-	fmt.Print(res)
-	fmt.Print(recommendationResponseInput)
 	if err != nil {
 		return nil, errors.New("pet recommend not exist")
 	}
 	if !result {
 		res.Status = int(RecommendationStatusDecline)
-		err := sqlCnter.UpdatePetRecommendByID(ctx, res)
-		fmt.Print(err)
-		return payload, err
+		_ = sqlCnter.UpdatePetRecommendByID(ctx, res)
+		// fmt.Print(err)
+		return payload, errors.New("A")
 	}
 	if res.Status == int(RecommendationStatusLowAgree) && petId > recommendId { // first pet agree
 		err := sqlCnter.CreatePetConnection(ctx, petId, recommendId)
 		if err != nil {
 			fmt.Print(err)
-			return nil, err
+			return nil, errors.New("B")
 		}
 		res.Status = int(RecommendationStatusBothAgree) // means all agree
 		err = sqlCnter.UpdatePetRecommendByID(ctx, res)
@@ -310,11 +309,7 @@ func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpda
 	if id == "" {
 		return nil, errors.New("cannot updates null id")
 	}
-	petProfileList := sqlCnter.FindPetById(ctx, id)
-	if len(petProfileList) < 1 {
-		return nil, errors.New("pet id doesn't exist")
-	}
-	petProfile := petProfileList[0]
+	petProfile := sqlCnter.FindThePetById(ctx, id)
 	if petProfileUpdatesInput.Name != nil {
 		petProfile.Name = *petProfileUpdatesInput.Name
 	}
@@ -334,7 +329,6 @@ func (r *mutationResolver) PetProfileUpdates(ctx context.Context, petProfileUpda
 	if petProfileUpdatesInput.IsCastration {
 		petProfile.IsCastration = petProfileUpdatesInput.IsCastration
 	}
-	// TODO: location, birthday
 	err := sqlCnter.UpdatePet(ctx, petProfile)
 	if err != nil {
 		return nil, err

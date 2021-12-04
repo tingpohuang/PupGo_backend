@@ -8,6 +8,7 @@ require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/99designs/gqlgen v0.14.0
 	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/axw/gocov v1.0.0 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -20,6 +21,7 @@ require (
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/machinebox/graphql v0.2.2
+	github.com/matm/gocov-html v0.0.0-20200509184451-71874e2e203b // indirect
 	github.com/matryer/is v1.4.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
