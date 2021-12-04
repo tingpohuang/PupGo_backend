@@ -4,9 +4,9 @@ PUPGO Backend is a Go backend package to serve Pupgo
 
 
 
-1. Build 
+## 1. Build 
 
-## Component
+### Component
 
 MySQL Database
 
@@ -42,7 +42,7 @@ Go is a easily to build and reliable language with high concurrecy that fit for 
 
 
 
-##3. Build
+## 3. Build
 
 ### 3.1 Build Database
 
@@ -74,7 +74,11 @@ run command should be
 
 
 ### 3.2 Docker
-
+We build our backend server into Docker image. It can make us deploy PupGo API server effortlessly.
+Please build Docker image on the root folder.
+```bash
+docker build . -t IMAGE_NAME:IMAGE_TAG
+```
 
 
 ### 3.3 Go
