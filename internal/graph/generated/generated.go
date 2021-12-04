@@ -45,16 +45,14 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Event struct {
-		Description  func(childComplexity int) int
-		Holder       func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Image        func(childComplexity int) int
-		Limit        func(childComplexity int) int
-		Location     func(childComplexity int) int
-		Participants func(childComplexity int) int
-		Pets         func(childComplexity int) int
-		TimeRange    func(childComplexity int) int
-		Type         func(childComplexity int) int
+		Description func(childComplexity int) int
+		Holder      func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Image       func(childComplexity int) int
+		Limit       func(childComplexity int) int
+		Location    func(childComplexity int) int
+		TimeRange   func(childComplexity int) int
+		Type        func(childComplexity int) int
 	}
 
 	EventRequest struct {
@@ -138,11 +136,11 @@ type ComplexityRoot struct {
 
 	Notification struct {
 		CreatedAt        func(childComplexity int) int
-		EventID          func(childComplexity int) int
+		EventInfo        func(childComplexity int) int
 		HasRead          func(childComplexity int) int
 		NotificationID   func(childComplexity int) int
 		NotificationType func(childComplexity int) int
-		PetID            func(childComplexity int) int
+		PetInfo          func(childComplexity int) int
 		UserID           func(childComplexity int) int
 	}
 
@@ -202,7 +200,9 @@ type ComplexityRoot struct {
 	PetProfile struct {
 		Birthday     func(childComplexity int) int
 		Breed        func(childComplexity int) int
+		Description  func(childComplexity int) int
 		Gender       func(childComplexity int) int
+		Hobby        func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Image        func(childComplexity int) int
 		IsCastration func(childComplexity int) int
@@ -405,20 +405,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Event.Location(childComplexity), true
-
-	case "Event.participants":
-		if e.complexity.Event.Participants == nil {
-			break
-		}
-
-		return e.complexity.Event.Participants(childComplexity), true
-
-	case "Event.pets":
-		if e.complexity.Event.Pets == nil {
-			break
-		}
-
-		return e.complexity.Event.Pets(childComplexity), true
 
 	case "Event.timeRange":
 		if e.complexity.Event.TimeRange == nil {
@@ -828,12 +814,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Notification.CreatedAt(childComplexity), true
 
-	case "Notification.eventId":
-		if e.complexity.Notification.EventID == nil {
+	case "Notification.eventInfo":
+		if e.complexity.Notification.EventInfo == nil {
 			break
 		}
 
-		return e.complexity.Notification.EventID(childComplexity), true
+		return e.complexity.Notification.EventInfo(childComplexity), true
 
 	case "Notification.has_read":
 		if e.complexity.Notification.HasRead == nil {
@@ -856,12 +842,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Notification.NotificationType(childComplexity), true
 
-	case "Notification.petId":
-		if e.complexity.Notification.PetID == nil {
+	case "Notification.petInfo":
+		if e.complexity.Notification.PetInfo == nil {
 			break
 		}
 
-		return e.complexity.Notification.PetID(childComplexity), true
+		return e.complexity.Notification.PetInfo(childComplexity), true
 
 	case "Notification.userId":
 		if e.complexity.Notification.UserID == nil {
@@ -1066,12 +1052,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PetProfile.Breed(childComplexity), true
 
+	case "PetProfile.description":
+		if e.complexity.PetProfile.Description == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Description(childComplexity), true
+
 	case "PetProfile.gender":
 		if e.complexity.PetProfile.Gender == nil {
 			break
 		}
 
 		return e.complexity.PetProfile.Gender(childComplexity), true
+
+	case "PetProfile.hobby":
+		if e.complexity.PetProfile.Hobby == nil {
+			break
+		}
+
+		return e.complexity.PetProfile.Hobby(childComplexity), true
 
 	case "PetProfile.id":
 		if e.complexity.PetProfile.ID == nil {
@@ -1723,7 +1723,7 @@ input EventsCreateInput{
     timeRange: TimeRangeInput
     limit: EventsLimitsInput
     image: URL
-    description: [String!]
+    description: String
 }
 input EventsJoinInput{
     pid:ID!
@@ -1810,7 +1810,7 @@ input EventsUpdateInput{
     timeRange: TimeRangeInput
     limit: EventsLimitsInput
     image: URL
-    description: [String!]
+    description: String
 }
 type EventsUpdatePayload implements Payload{
     error: [Error!]!
@@ -1956,6 +1956,8 @@ type PetProfile implements ProfileNode{
     isCastration: Boolean!
     birthday: Timestamp
     location: Location
+    description: String
+    hobby: [String]!
 }
 "User profile let open to public"
 type UserProfile implements ProfileNode{
@@ -1987,12 +1989,10 @@ type Event{
     timeRange: TimeRange
     limit: EventsLimits
     image: URL
-    description: [String!]
+    description: String
     type : Int
     "holder shuold be pet"
     holder: PetProfile
-    pets: [PetProfile!]!
-    participants: [UserProfile!]!
 }
 "Limitation of Events"
 type EventsLimits{
@@ -2023,8 +2023,8 @@ type Notification{
     notification_type:Int
     userId: ID
     created_at: Timestamp
-    eventId: ID
-    petId: ID
+    eventInfo: Event
+    petInfo: PetProfile
     has_read: Boolean
 }
 type UserNotification{
@@ -2034,7 +2034,7 @@ type EventRequest{
     id:ID!
     requester: ProfileNode
     eventid: ID!
-    description: [String!]!
+    description: String
 }
 schema {
   query: Query
@@ -2675,9 +2675,9 @@ func (ec *executionContext) _Event_description(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Event_type(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
@@ -2742,76 +2742,6 @@ func (ec *executionContext) _Event_holder(ctx context.Context, field graphql.Col
 	res := resTmp.(*model.PetProfile)
 	fc.Result = res
 	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Event_pets(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Event",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Pets, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.PetProfile)
-	fc.Result = res
-	return ec.marshalNPetProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfileᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Event_participants(ctx context.Context, field graphql.CollectedField, obj *model.Event) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Event",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Participants, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.UserProfile)
-	fc.Result = res
-	return ec.marshalNUserProfile2ᚕᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐUserProfileᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EventRequest_id(ctx context.Context, field graphql.CollectedField, obj *model.EventRequest) (ret graphql.Marshaler) {
@@ -2941,14 +2871,11 @@ func (ec *executionContext) _EventRequest_description(ctx context.Context, field
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.([]string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EventsAcceptPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.EventsAcceptPayload) (ret graphql.Marshaler) {
@@ -4589,7 +4516,7 @@ func (ec *executionContext) _Notification_created_at(ctx context.Context, field 
 	return ec.marshalOTimestamp2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Notification_eventId(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notification_eventInfo(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4607,7 +4534,7 @@ func (ec *executionContext) _Notification_eventId(ctx context.Context, field gra
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.EventID, nil
+		return obj.EventInfo, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4616,12 +4543,12 @@ func (ec *executionContext) _Notification_eventId(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.Event)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOEvent2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐEvent(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Notification_petId(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notification_petInfo(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4639,7 +4566,7 @@ func (ec *executionContext) _Notification_petId(ctx context.Context, field graph
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PetID, nil
+		return obj.PetInfo, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4648,9 +4575,9 @@ func (ec *executionContext) _Notification_petId(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.PetProfile)
 	fc.Result = res
-	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOPetProfile2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐPetProfile(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Notification_has_read(ctx context.Context, field graphql.CollectedField, obj *model.Notification) (ret graphql.Marshaler) {
@@ -5822,6 +5749,73 @@ func (ec *executionContext) _PetProfile_location(ctx context.Context, field grap
 	res := resTmp.(*model.Location)
 	fc.Result = res
 	return ec.marshalOLocation2ᚖgithubᚗcomᚋtingpoᚋpupgobackendᚋinternalᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_description(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PetProfile_hobby(ctx context.Context, field graphql.CollectedField, obj *model.PetProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PetProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Hobby, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*string)
+	fc.Result = res
+	return ec.marshalNString2ᚕᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PetProfileListGetPayload_error(ctx context.Context, field graphql.CollectedField, obj *model.PetProfileListGetPayload) (ret graphql.Marshaler) {
@@ -9212,7 +9206,7 @@ func (ec *executionContext) unmarshalInputEventsCreateInput(ctx context.Context,
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9376,7 +9370,7 @@ func (ec *executionContext) unmarshalInputEventsUpdateInput(ctx context.Context,
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -10257,16 +10251,6 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Event_type(ctx, field, obj)
 		case "holder":
 			out.Values[i] = ec._Event_holder(ctx, field, obj)
-		case "pets":
-			out.Values[i] = ec._Event_pets(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "participants":
-			out.Values[i] = ec._Event_participants(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10303,9 +10287,6 @@ func (ec *executionContext) _EventRequest(ctx context.Context, sel ast.Selection
 			}
 		case "description":
 			out.Values[i] = ec._EventRequest_description(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10719,10 +10700,10 @@ func (ec *executionContext) _Notification(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._Notification_userId(ctx, field, obj)
 		case "created_at":
 			out.Values[i] = ec._Notification_created_at(ctx, field, obj)
-		case "eventId":
-			out.Values[i] = ec._Notification_eventId(ctx, field, obj)
-		case "petId":
-			out.Values[i] = ec._Notification_petId(ctx, field, obj)
+		case "eventInfo":
+			out.Values[i] = ec._Notification_eventInfo(ctx, field, obj)
+		case "petInfo":
+			out.Values[i] = ec._Notification_petInfo(ctx, field, obj)
 		case "has_read":
 			out.Values[i] = ec._Notification_has_read(ctx, field, obj)
 		default:
@@ -11064,6 +11045,13 @@ func (ec *executionContext) _PetProfile(ctx context.Context, sel ast.SelectionSe
 			out.Values[i] = ec._PetProfile_birthday(ctx, field, obj)
 		case "location":
 			out.Values[i] = ec._PetProfile_location(ctx, field, obj)
+		case "description":
+			out.Values[i] = ec._PetProfile_description(ctx, field, obj)
+		case "hobby":
+			out.Values[i] = ec._PetProfile_hobby(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -12805,7 +12793,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+func (ec *executionContext) unmarshalNString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -12815,10 +12803,10 @@ func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v
 		}
 	}
 	var err error
-	res := make([]string, len(vSlice))
+	res := make([]*string, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		res[i], err = ec.unmarshalOString2ᚖstring(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -12826,16 +12814,10 @@ func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v
 	return res, nil
 }
 
-func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+func (ec *executionContext) marshalNString2ᚕᚖstring(ctx context.Context, sel ast.SelectionSet, v []*string) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
-	}
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
+		ret[i] = ec.marshalOString2ᚖstring(ctx, sel, v[i])
 	}
 
 	return ret
@@ -13586,48 +13568,6 @@ func (ec *executionContext) unmarshalOString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
-}
-
-func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]string, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
-	}
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

@@ -158,6 +158,32 @@ var (
 		City:      "Los Angeles",
 		Address:   "fwfewfewfew",
 	}
+
+	hobby1 = Hobby{
+		Name: "walk",
+	}
+
+	hobby2 = Hobby{
+		Name: "bite my owner",
+	}
+
+	hobby3 = Hobby{
+		Name: "wolf",
+	}
+
+	p1Hobby1 = PetHobby{
+		Pet_id:   Pet_1_id,
+		Hobby_id: 1,
+	}
+
+	p1Hobby2 = PetHobby{
+		Pet_id:   Pet_1_id,
+		Hobby_id: 2,
+	}
+	p2Hobby1 = PetHobby{
+		Pet_id:   Pet_2_id,
+		Hobby_id: 3,
+	}
 )
 
 type gormTestor struct {
@@ -184,6 +210,8 @@ func TestInputValueToDatabse(t *testing.T) {
 	InputEventParticipant(t, &g)
 	InputEventLocation(t, &g)
 	InputUserDevice(t, &g)
+	InputHobby(t, &g)
+	InputPetHobby(t, &g)
 
 }
 
@@ -320,43 +348,22 @@ func InputUserDevice(t *testing.T, g *gormTestor) {
 	assert.Nil(result.Error)
 }
 
-func TestDeleteDatabse(t *testing.T) {
-	// From remove database to get away CS130
-	// please no add in db connection lol.
-	connector, err := GetConnectorFactory("mySQL")
-	db := connector.NewDBConnection()
+func InputHobby(t *testing.T, g *gormTestor) {
 	assert := assert.New(t)
-	g := gormTestor{gdb}
-	assert.Nil(err)
-	assert.NotNil(db)
-	result := g.gdb.Exec("DELETE FROM user_device;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM pet;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM event;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM event_location;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM event_participant;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM pet;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM pet_connection;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM pet_recommend;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM petowner;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM schema_migrations;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM user_device;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM user_location;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM user_notification;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM user_token;")
-	t.Log(result)
-	result = g.gdb.Exec("DELETE FROM users;")
-	t.Log(result)
+	result := g.gdb.Table("hobby").Create(&hobby1)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("hobby").Create(&hobby2)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("hobby").Create(&hobby3)
+	assert.Nil(result.Error)
+}
+
+func InputPetHobby(t *testing.T, g *gormTestor) {
+	assert := assert.New(t)
+	result := g.gdb.Table("pet_hobby").Create(&p1Hobby1)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("pet_hobby").Create(&p1Hobby2)
+	assert.Nil(result.Error)
+	result = g.gdb.Table("pet_hobby").Create(&p2Hobby1)
+	assert.Nil(result.Error)
 }

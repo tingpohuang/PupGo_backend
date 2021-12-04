@@ -34,19 +34,17 @@ type Event struct {
 	TimeRange   *TimeRange    `json:"timeRange"`
 	Limit       *EventsLimits `json:"limit"`
 	Image       *string       `json:"image"`
-	Description []string      `json:"description"`
+	Description *string       `json:"description"`
 	Type        *int          `json:"type"`
 	// holder shuold be pet
-	Holder       *PetProfile    `json:"holder"`
-	Pets         []*PetProfile  `json:"pets"`
-	Participants []*UserProfile `json:"participants"`
+	Holder *PetProfile `json:"holder"`
 }
 
 type EventRequest struct {
 	ID          string      `json:"id"`
 	Requester   ProfileNode `json:"requester"`
 	Eventid     string      `json:"eventid"`
-	Description []string    `json:"description"`
+	Description *string     `json:"description"`
 }
 
 type EventsAcceptInput struct {
@@ -69,7 +67,7 @@ type EventsCreateInput struct {
 	TimeRange   *TimeRangeInput    `json:"timeRange"`
 	Limit       *EventsLimitsInput `json:"limit"`
 	Image       *string            `json:"image"`
-	Description []string           `json:"description"`
+	Description *string            `json:"description"`
 }
 
 type EventsCreatePayload struct {
@@ -124,7 +122,7 @@ type EventsUpdateInput struct {
 	TimeRange   *TimeRangeInput    `json:"timeRange"`
 	Limit       *EventsLimitsInput `json:"limit"`
 	Image       *string            `json:"image"`
-	Description []string           `json:"description"`
+	Description *string            `json:"description"`
 }
 
 type EventsUpdatePayload struct {
@@ -183,13 +181,13 @@ type NewEmail struct {
 }
 
 type Notification struct {
-	NotificationID   string  `json:"notification_id"`
-	NotificationType *int    `json:"notification_type"`
-	UserID           *string `json:"userId"`
-	CreatedAt        *string `json:"created_at"`
-	EventID          *string `json:"eventId"`
-	PetID            *string `json:"petId"`
-	HasRead          *bool   `json:"has_read"`
+	NotificationID   string      `json:"notification_id"`
+	NotificationType *int        `json:"notification_type"`
+	UserID           *string     `json:"userId"`
+	CreatedAt        *string     `json:"created_at"`
+	EventInfo        *Event      `json:"eventInfo"`
+	PetInfo          *PetProfile `json:"petInfo"`
+	HasRead          *bool       `json:"has_read"`
 }
 
 type NotificationReadInput struct {
@@ -302,6 +300,8 @@ type PetProfile struct {
 	IsCastration bool      `json:"isCastration"`
 	Birthday     *string   `json:"birthday"`
 	Location     *Location `json:"location"`
+	Description  *string   `json:"description"`
+	Hobby        []*string `json:"hobby"`
 }
 
 func (PetProfile) IsProfileNode() {}

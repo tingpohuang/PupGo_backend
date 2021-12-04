@@ -41,6 +41,20 @@ type EventLocation struct {
 	Address   string
 }
 
+type Hobby struct {
+	Id   int
+	Name string
+}
+
+type PetHobby struct {
+	Pet_id   string
+	Hobby_id int
+}
+
+type PetHobbyString struct {
+	hobbies []*string
+}
+
 func (u *User) BeforeCreate(db *gorm.DB) error {
 	u.Created_at = time.Now()
 	return nil
@@ -86,6 +100,7 @@ type Pet struct {
 	Breed        string
 	IsCastration bool      `gorm:"column:isCastration"`
 	Birthday     time.Time `gorm:"type:timestamp; default: NOW(); not null"`
+	Description  string
 }
 
 type Event_participant struct {

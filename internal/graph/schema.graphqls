@@ -46,6 +46,8 @@ type PetProfile implements ProfileNode{
     isCastration: Boolean!
     birthday: Timestamp
     location: Location
+    description: String
+    hobby: [String]!
 }
 "User profile let open to public"
 type UserProfile implements ProfileNode{
@@ -77,12 +79,10 @@ type Event{
     timeRange: TimeRange
     limit: EventsLimits
     image: URL
-    description: [String!]
+    description: String
     type : Int
     "holder shuold be pet"
     holder: PetProfile
-    pets: [PetProfile!]!
-    participants: [UserProfile!]!
 }
 "Limitation of Events"
 type EventsLimits{
@@ -113,8 +113,8 @@ type Notification{
     notification_type:Int
     userId: ID
     created_at: Timestamp
-    eventId: ID
-    petId: ID
+    eventInfo: Event
+    petInfo: PetProfile
     has_read: Boolean
 }
 type UserNotification{
@@ -124,7 +124,7 @@ type EventRequest{
     id:ID!
     requester: ProfileNode
     eventid: ID!
-    description: [String!]!
+    description: String
 }
 schema {
   query: Query

@@ -43,12 +43,19 @@ func (r *queryResolver) NotificationsGet(ctx context.Context, notificationsGetIn
 	// fmt.Print(res)
 	m := make([]*model1.Notification, len(res))
 	for i := 0; i < len(res); i++ {
+
+		eventsInfo := payloadCreator.GetEventsById(ctx, []string{res[i].Event_id})
+		eventInfo := eventsInfo[0]
+
+		petInfos := payloadCreator.GetPetProfileById(ctx, []string{res[i].Pet_id})
+		petInfo := petInfos[0]
+
 		m[i] = &model1.Notification{
 			NotificationID:   res[i].Notification_id,
 			NotificationType: &res[i].Notification_type,
 			UserID:           &res[i].User_id,
-			EventID:          &res[i].Event_id,
-			PetID:            &res[i].Pet_id,
+			EventInfo:        eventInfo,
+			PetInfo:          petInfo,
 			HasRead:          &res[i].Has_read,
 		}
 	}
